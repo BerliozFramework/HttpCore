@@ -1,0 +1,68 @@
+{
+  "berlioz": {
+    "debug": false,
+    "directories": {
+      "templates": "%berlioz.directories.app%/templates",
+      "var": "%berlioz.directories.app%/var",
+      "debug": "%berlioz.directories.app%/var/debug",
+      "cache": "%berlioz.directories.app%/var/cache",
+      "log": "%berlioz.directories.app%/var/log",
+      "tmp": "%berlioz.directories.app%/var/tmp",
+      "vendor": "%berlioz.directories.app%/vendor"
+    },
+    "http": {
+      "errors": {
+        "default": "Berlioz\\HttpCore\\Http\\DefaultHttpErrorHandler"
+      }
+    }
+  },
+  "services": {
+    "_constraints": {
+      "berlioz": "Berlioz\\Core\\App\\AbstractApp",
+      "cache": "Psr\\SimpleCache\\CacheInterface",
+      "config": "Berlioz\\Config\\ConfigInterface",
+      "flashbag": "Berlioz\\FlashBag\\FlashBag",
+      "router": "Berlioz\\Router\\Router",
+      "templating": "Berlioz\\Core\\Package\\TemplateEngine"
+    },
+    "AppProfile": {
+      "class": "Berlioz\\HttpCore\\Twig\\AppProfile"
+    },
+    "phpDocFactory": {
+      "class": "Berlioz\\PhpDoc\\PhpDocFactory"
+    },
+    "router": {
+      "class": "Berlioz\\Router\\Router"
+    },
+    "flashbag": {
+      "class": "Berlioz\\FlashBag\\FlashBag"
+    },
+    "templating": {
+      "class": "Berlioz\\Package\\Twig\\Twig",
+      "arguments": {
+        "paths": {
+          "__main__": "%berlioz.directories.templates%",
+          "Berlioz-HttpCore": "%berlioz.directories.vendor%/berlioz/http-core/resources",
+          "Berlioz-Form": "%berlioz.directories.vendor%/berlioz/form/resources"
+        },
+        "options": {
+          "cache": "%berlioz.directories.cache%/twig",
+          "debug": true
+        },
+        "extensions": [
+          "Berlioz\\HttpCore\\Twig\\TwigExtension",
+          "Berlioz\\Form\\TwigExtension"
+        ]
+      },
+      "calls": [
+        {
+          "method": "addGlobal",
+          "arguments": {
+            "name": "app",
+            "value": "@AppProfile"
+          }
+        }
+      ]
+    }
+  }
+}

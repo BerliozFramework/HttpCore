@@ -1,0 +1,9 @@
+{
+  "debug-caller.js": "js/debug-caller.js",
+  "debug-toolbar.css": "css/debug-toolbar.css",
+  "debug-toolbar.css.map": "css/debug-toolbar.css.map",
+  "debug-toolbar.js": "js/debug-toolbar.js",
+  "debug.css": "css/debug.css",
+  "debug.css.map": "css/debug.css.map",
+  "debug.js": "js/debug.js"
+}

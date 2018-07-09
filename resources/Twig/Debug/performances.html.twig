@@ -1,0 +1,76 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1>Performances</h1>
+  </div>
+
+  <p>
+    It's a snapshot of performances at the moment of request.
+  </p>
+
+  <div class="row my-3">
+    <div class="col-12 col-sm">
+      <div class="widget bg-dark text-white">
+        <span class="d-block icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
+        <span class="d-block value">{{ (timeLine.duration * 1000)|round(3) }}ms</span>
+        <span class="d-block">Execution time</span>
+      </div>
+    </div>
+    <div class="col-12 col-sm">
+      <div class="widget bg-dark text-white">
+        <span class="d-block icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cpu"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg></span>
+        <span class="d-block value">{{ performances.loadavg|join(' / ')|default('--') }}</span>
+        <span class="d-block">Load average</span>
+      </div>
+    </div>
+    <div class="col-12 col-sm">
+      <div class="widget bg-dark text-white">
+        <span class="d-block icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-battery-charging"><path d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.19M15 6h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3.19"></path><line x1="23" y1="13" x2="23" y2="11"></line><polyline points="11 6 7 12 13 12 9 18"></polyline></svg></span>
+        <span class="d-block value">{{ performances.memory_peak_usage|human_file_size }}</span>
+        <span class="d-block">Memory peak usage</span>
+      </div>
+    </div>
+  </div>
+
+
+  <h2>Memory usage</h2>
+  {% set timeLineFirstTime = timeLine.firstTime %}
+  {% set timeLineDuration = timeLine.duration %}
+  {% set timeLineMemoryPeakUsage = timeLine.memoryPeakUsage %}
+  <div class="timeline timeline-memory mt-4" data-duration="{{ timeLineDuration }}">
+    <div class="scales">
+      <div class="scale scale-0">0ms</div>
+      <div class="scale scale-12-5">{{ ((timeLineDuration * 0.125) * 1000)|round(3) }}ms</div>
+      <div class="scale scale-25">{{ ((timeLineDuration * 0.25) * 1000)|round(3) }}ms</div>
+      <div class="scale scale-37-5">{{ ((timeLineDuration * 0.375) * 1000)|round(3) }}ms</div>
+      <div class="scale scale-50">{{ ((timeLineDuration * 0.50) * 1000)|round(3) }}ms</div>
+      <div class="scale scale-62-5">{{ ((timeLineDuration * 0.625) * 1000)|round(3) }}ms</div>
+      <div class="scale scale-75">{{ ((timeLineDuration * 0.75) * 1000)|round(3) }}ms</div>
+      <div class="scale scale-87-5">{{ ((timeLineDuration * 0.875) * 1000)|round(3) }}ms</div>
+      <div class="scale scale-100">{{ (timeLineDuration * 1000)|round(3) }}ms</div>
+
+      <div class="scale cursor" style="display: none;"><span class="cursor-value">0</span>ms</div>
+    </div>
+    <div class="memory-usage">
+      <div class="memory-container">
+        {% for memoryUsage in timeLine.memoryUsages %}
+          <span
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Usage: {{ memoryUsage.memory|human_file_size }} ; Peak: {{ memoryUsage.memory_peak|human_file_size }}"
+              class="peak"
+              style="width: {{ ((memoryUsage.to - memoryUsage.from) * 100 / timeLineDuration)|round(2, 'ceil') }}%;
+                  margin-left: {{ (memoryUsage.from * 100 / timeLineDuration)|round(2, 'floor') }}%;
+                  height: {{ memoryUsage.memory_peak * 100 / timeLineMemoryPeakUsage }}%;
+                  z-index: {{ loop.index }};">
+          <span class="memory" style="height: {{ memoryUsage.memory * 100 / memoryUsage.memory_peak }}%;"></span>
+        </span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <p>
+    To see memory usage versus activities, you can see "<a href="{{ path('_berlioz/console/activities', {id: report.uniqid}) }}">Activities page</a>".
+  </p>
+{% endblock %}

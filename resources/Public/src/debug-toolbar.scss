@@ -1,0 +1,78 @@
+/*!
+ * This file is part of Berlioz framework.
+ *
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @copyright 2017 Ronan GIRON
+ * @author    Ronan GIRON <https://github.com/ElGigi>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code, to the root.
+ */
+// Imports
+@import "bootstrap";
+@import "~bootstrap/scss/bootstrap";
+
+html, body {
+  height: 75px;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+#toolbar {
+  height: 75px;
+  padding: 35px 37.5px 0 0;
+
+  #toolbar-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    height: 40px;
+    padding: 5px 25px 5px 0;
+    cursor: pointer;
+    background-color: theme-color("primary");
+    border: 1px solid white;
+    border-left: none;
+    border-bottom: none;
+    box-shadow: 0 0 5px 0 white;
+    color: #fff;
+    font-size: .8rem;
+    line-height: 30px;
+
+    .col {
+      padding: 0 5px;
+      text-align: center;
+
+      .feather {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
+
+  #logo {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    right: 1px;
+    width: 69px;
+    height: 69px;
+    cursor: pointer;
+    fill: #fff;
+    border: 5px solid theme-color("primary");
+    border-radius: 34.5px;
+    background-color: theme-color("primary");
+  }
+
+  #logo-shadow {
+    position: absolute;
+    z-index: 0;
+    bottom: -1px;
+    right: 0;
+    width: 71px;
+    height: 71px;
+    border-radius: 35.5px;
+    background-color: white;
+    box-shadow: 0 0 5px 0 white;
+  }
+}
