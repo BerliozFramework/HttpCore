@@ -1,0 +1,192 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block menu %}
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2">
+    <circle cx="18" cy="5" r="3"></circle>
+    <circle cx="6" cy="12" r="3"></circle>
+    <circle cx="18" cy="19" r="3"></circle>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+  </svg>
+  {{ reportSection.sectionName }}
+{% endblock %}
+
+{% block main %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1>Router</h1>
+  </div>
+
+  <p>
+    It's a snapshot of server request and route at the moment of request.
+  </p>
+
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#route" role="tab" aria-controls="route" aria-selected="true">Route</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#server-request" role="tab" aria-controls="server-request" aria-selected="false">Server request</a>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane py-3 fade show active" id="route" role="tabpanel" aria-labelledby="route-tab">
+      {% if section.route is empty %}
+        <div class="alert alert-secondary" role="alert">
+          No route found!
+        </div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table border-bottom">
+            <tbody>
+            <tr>
+              <th scope="row" class="text-nowrap">Name</th>
+              <td>{{ section.route.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row" class="text-nowrap">Allowed methods</th>
+              <td>{{ section.route.methods|join(', ') }}</td>
+            </tr>
+            <tr>
+              <th scope="row" class="text-nowrap">Route found</th>
+              <td>{{ section.route.route }}</td>
+            </tr>
+            <tr>
+              <th scope="row" class="text-nowrap">Nb parameters</th>
+              <td>{{ section.route.numberOfParameters }}</td>
+            </tr>
+            <tr class="{% if section.route.context is empty %}bg-danger{% endif %}">
+              <th scope="row" class="text-nowrap">Context</th>
+              <td>
+                {% if section.route.context is empty %}
+                  No context!
+                {% else %}
+                  <table class="table table-sm table-bordered mb-0">
+                    <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for name, value in section.route.context %}
+                      <tr>
+                        <th scope="row">{{ name }}</th>
+                        <td>{{ value }}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                {% endif %}
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="tab-pane py-3 fade" id="server-request" role="tabpanel" aria-labelledby="request-tab">
+      {% if section.serverRequest is empty %}
+        <div class="alert alert-secondary" role="alert">
+          No server request!
+        </div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table border-bottom">
+            <tbody>
+            <tr>
+              <th scope="row" class="text-nowrap">Protocol version</th>
+              <td>{{ section.serverRequest.protocolVersion }}</td>
+            </tr>
+            <tr>
+              <th scope="row" class="text-nowrap">Method</th>
+              <td>{{ section.serverRequest.method }}</td>
+            </tr>
+            <tr>
+              <th scope="row" class="text-nowrap">URI</th>
+              <td>{{ section.serverRequest.uri }}</td>
+            </tr>
+            <tr>
+              <th scope="row" class="text-nowrap">Attributes</th>
+              <td>
+                {% if section.serverRequest.attributes is empty %}
+                  <em>No attributes!</em>
+                {% else %}
+                  <table class="table table-sm table-bordered mb-0">
+                    <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for name, value in section.serverRequest.attributes %}
+                      <tr>
+                        <th scope="row">{{ name }}</th>
+                        <td>{{ value }}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="text-nowrap">Headers</th>
+              <td>
+                {% if section.serverRequest.headers is empty %}
+                  <em>No headers!</em>
+                {% else %}
+                  <table class="table table-sm table-bordered mb-0">
+                    <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for name, requestHeader in section.serverRequest.headers %}
+                      {% for value in requestHeader %}
+                        <tr>
+                          <th scope="row">{{ name }}</th>
+                          <td>{{ value }}</td>
+                        </tr>
+                      {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="text-nowrap">Server parameters</th>
+              <td>
+                {% if section.serverRequest.serverParams is empty %}
+                  <em>No parameters!</em>
+                {% else %}
+                  <table class="table table-sm table-bordered mb-0">
+                    <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for name, value in section.serverRequest.serverParams %}
+                      <tr>
+                        <th scope="row">{{ name }}</th>
+                        <td>{{ value }}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                {% endif %}
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

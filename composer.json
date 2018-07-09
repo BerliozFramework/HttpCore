@@ -1,0 +1,48 @@
+{
+  "name": "berlioz/http-core",
+  "description": "Berlioz Framework HTTP Core",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "license": "MIT",
+  "homepage": "http://www.berlioz-framework.com",
+  "authors": [
+    {
+      "name": "Ronan Giron",
+      "email": "ronan.giron@berlioz-framework.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Berlioz\\HttpCore\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Berlioz\\HttpCore\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=7.1",
+    "berlioz/core": "@dev",
+    "berlioz/form": "dev-refactoring",
+    "berlioz/http-message": "@dev",
+    "berlioz/router": "@dev",
+    "berlioz/utils": "@dev",
+    "berlioz/flash-bag": "~1.0",
+    "berlioz/twig-package": "@dev",
+    "twig/twig": "~2.4"
+  },
+  "require-dev": {
+    "phpfastcache/phpfastcache": "~6.1",
+    "phpunit/phpunit": "~7.2"
+  },
+  "suggest": {
+    "phpfastcache/phpfastcache": "~6.1"
+  },
+  "provide": {
+    "psr/container-implementation": "~1.0",
+    "psr/http-message-implementation": "~1.0",
+    "psr/log-implementation": "~1.0",
+    "psr/simple-cache-implementation": "~1.0"
+  }
+}

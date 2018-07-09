@@ -1,0 +1,11 @@
+!function(o){var e={};function t(r){if(e[r])return e[r].exports;var n=e[r]={i:r,l:!1,exports:{}};return o[r].call(n.exports,n,n.exports,t),n.l=!0,n.exports}t.m=o,t.c=e,t.d=function(o,e,r){t.o(o,e)||Object.defineProperty(o,e,{configurable:!1,enumerable:!0,get:r})},t.n=function(o){var e=o&&o.__esModule?function(){return o.default}:function(){return o};return t.d(e,"a",e),e},t.o=function(o,e){return Object.prototype.hasOwnProperty.call(o,e)},t.p="",t(t.s=13)}({13:function(o,e,t){"use strict";
+/*
+ * This file is part of Berlioz framework.
+ *
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @copyright 2017 Ronan GIRON
+ * @author    Ronan GIRON <https://github.com/ElGigi>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code, to the root.
+ */if(window.berlioz_debug_report){var r=document.createElement("iframe");r.id="berlioz-toolbar",r.src="/_console/"+window.berlioz_debug_report+"/toolbar",r.setAttribute("style","position: fixed !important;z-index: 1000000 !important;bottom: 0 !important;height: 75px !important;width: 200px !important;background-color: transparent !important;border:none !important;"),document.body.appendChild(r)}else console.error("Unable to load Berlioz Debug Toolbar without report id");var n=null,i=null,l=null;window.toggleBerliozConsole=function(){if(window.berlioz_debug_report){var o=document.getElementById("berlioz-console");o||((o=document.createElement("iframe")).id="berlioz-console",o.src="/_console/"+window.berlioz_debug_report,o.setAttribute("style","position: fixed !important;z-index: 1000001 !important;top: 0 !important;bottom: 0 !important;left: 0 !important;right: 0 !important;width: 100% !important;height: 100% !important;background-color: white !important;border:none !important;"),document.body.appendChild(o)),"block"!==o.style.display?(o.style.display="block",n=document.body.style.overflow,i=document.body.style.overflowX,l=document.body.style.overflowY,document.body.style.overflow="hidden",document.body.style.overflowX="hidden",document.body.style.overflowY="hidden"):(o.style.display="none",document.body.style.overflow=n,document.body.style.overflowX=i,document.body.style.overflowY=l)}else console.error("Unable to load Berlioz Debug Toolbar without report id")}}});
