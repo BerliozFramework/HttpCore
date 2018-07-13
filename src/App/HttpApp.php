@@ -174,7 +174,8 @@ class HttpApp extends AbstractApp
                     try {
                         $controllerActivity = (new Debug\Activity('Controller'))->start();
 
-                        $controller = $this->getServiceContainer()->newInstanceOf($routeContext['_class']);
+                        $controller = $this->getServiceContainer()->newInstanceOf($routeContext['_class'],
+                                                                                  ['request' => $serverRequest]);
                         $response = $this->getServiceContainer()->invokeMethod($controller,
                                                                                $routeContext['_method'],
                                                                                ['request' => $serverRequest]);
