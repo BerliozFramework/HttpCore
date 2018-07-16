@@ -323,7 +323,7 @@ class DebugController extends AbstractHttpController
         $phpErrors = $report->getPhpError()->getPhpErrors();
 
         if ($phpError = $phpErrors[$request->getAttribute('error')] ?? null) {
-            return $this->render('@Berlioz-HttpCore/Twig/Debug/activity.html.twig',
+            return $this->render('@Berlioz-HttpCore/Twig/Debug/php-error.html.twig',
                                  ['report' => $report,
                                   'error'  => $phpError]);
         } else {
