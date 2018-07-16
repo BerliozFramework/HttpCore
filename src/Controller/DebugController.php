@@ -114,6 +114,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/toolbar", name="_berlioz/console/toolbar", requirements={"id":"\w+"})
      */
@@ -131,6 +132,8 @@ class DebugController extends AbstractHttpController
 
     /**
      * Get resource CSS.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request Server request
      *
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Berlioz\HttpCore\Exception\NotFoundHttpException
@@ -179,6 +182,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}", name="_berlioz/console/home", requirements={"id":"\w+"})
      */
@@ -200,6 +204,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/performances", name="_berlioz/console/performances", requirements={"id":"\w+"})
      */
@@ -221,6 +226,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/phpinfo", name="_berlioz/console/phpinfo", requirements={"id":"\w+"})
      */
@@ -238,6 +244,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/activities", name="_berlioz/console/activities", requirements={"id":"\w+"})
      */
@@ -257,6 +264,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/activities/{activity}", name="_berlioz/console/activity", requirements={"id":"\w+",
      *                                                "activity": "\d+"})
@@ -284,6 +292,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/php-errors", name="_berlioz/console/php-errors", requirements={"id":"\w+"})
      */
@@ -298,11 +307,37 @@ class DebugController extends AbstractHttpController
     }
 
     /**
+     * Php error.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
+     * @throws \Berlioz\Core\Exception\BerliozException
+     * @route("/_console/{id}/php-errors/{error}", name="_berlioz/console/php-error", requirements={"id":"\w+",
+     *                                             "error": "\d+"})
+     */
+    public function phpError(ServerRequestInterface $request)
+    {
+        $report = $this->getDebugReport($request->getAttribute('id'));
+        $phpErrors = $report->getPhpError()->getPhpErrors();
+
+        if ($phpError = $phpErrors[$request->getAttribute('error')] ?? null) {
+            return $this->render('@Berlioz-HttpCore/Twig/Debug/activity.html.twig',
+                                 ['report' => $report,
+                                  'error'  => $phpError]);
+        } else {
+            throw new NotFoundHttpException('Detail of PHP error not found');
+        }
+    }
+
+    /**
      * Used classes.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/used-classes", name="_berlioz/console/used-classes", requirements={"id":"\w+"})
      */
@@ -349,6 +384,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/config", name="_berlioz/console/config", requirements={"id":"\w+"})
      */
@@ -368,6 +404,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/{section}", name="_berlioz/console/section", requirements={"id":"\w+", "section":
      *                                    "[\w\-_]+"})

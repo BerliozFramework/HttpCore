@@ -116,11 +116,11 @@ $(function () {
             .removeClass('text-primary');
         });
 
-  // Activities
-  $('[data-toggle="activity"][data-target]')
+  // Detail
+  $('[data-toggle="detail"][data-type][data-target]')
     .on('click',
         function () {
-          let modal = $('#activityDetail.modal');
+          let modal = $('#' + $(this).data('type') + 'Detail').filter('.modal');
           if (modal.length === 1) {
             $.ajax({
                      "url": $(this).data('target'),
