@@ -2,7 +2,7 @@
 
 {% block main %}
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1>Activities ({{ timeLine.activities|length }})</h1>
+    <h1>Activities ({{ timeLine|length }})</h1>
   </div>
 
   <p>
@@ -86,7 +86,7 @@
           <td>{{ activity.group|default('--') }}</td>
           <td>{{ (activity.duration * 1000)|round(6) }}ms</td>
           <td class="text-right">
-            <button class="btn btn-secondary" data-toggle="activity" data-target="{{ path('_berlioz/console/activity', {"id": report.uniqid, "activity": loop.index0}) }}">
+            <button class="btn btn-secondary" data-toggle="detail" data-type="activity" data-target="{{ path('_berlioz/console/activity', {"id": report.uniqid, "activity": loop.index0}) }}">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>

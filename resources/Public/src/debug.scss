@@ -134,6 +134,12 @@
       color: #999;
     }
 
+    &.text-danger {
+      .feather {
+        color: $danger !important;
+      }
+    }
+
     &:hover .feather,
     &.active .feather {
       color: inherit;
