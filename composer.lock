@@ -53,12 +53,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Core.git",
-                "reference": "1cd29bc5c8f049c24f5952e04f1404d5ab27d67b"
+                "reference": "ca2c5c2976db91d0069af69990b89f81c48ed678"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/1cd29bc5c8f049c24f5952e04f1404d5ab27d67b",
-                "reference": "1cd29bc5c8f049c24f5952e04f1404d5ab27d67b",
+                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/ca2c5c2976db91d0069af69990b89f81c48ed678",
+                "reference": "ca2c5c2976db91d0069af69990b89f81c48ed678",
                 "shasum": ""
             },
             "require": {
@@ -96,7 +96,7 @@
             ],
             "description": "Berlioz Framework Core",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-07-16T16:50:14+00:00"
+            "time": "2018-07-24T13:17:31+00:00"
         },
         {
             "name": "berlioz/flash-bag",
@@ -144,12 +144,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Form.git",
-                "reference": "42499fdad0417eca2e7d2ca4321ab58411bf4e50"
+                "reference": "6609b50ffa97806a87d5adaf80219158bfe4665f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Form/zipball/42499fdad0417eca2e7d2ca4321ab58411bf4e50",
-                "reference": "42499fdad0417eca2e7d2ca4321ab58411bf4e50",
+                "url": "https://api.github.com/repos/BerliozFramework/Form/zipball/6609b50ffa97806a87d5adaf80219158bfe4665f",
+                "reference": "6609b50ffa97806a87d5adaf80219158bfe4665f",
                 "shasum": ""
             },
             "require": {
@@ -180,7 +180,7 @@
             ],
             "description": "Berlioz Form",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-07-13T15:29:02+00:00"
+            "time": "2018-07-24T09:43:53+00:00"
         },
         {
             "name": "berlioz/http-message",
