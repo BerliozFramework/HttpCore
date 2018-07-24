@@ -17,6 +17,7 @@ use Berlioz\Core\App\AbstractApp;
 use Berlioz\Core\Config;
 use Berlioz\Core\Debug;
 use Berlioz\Http\Message\Response;
+use Berlioz\Http\Message\Stream;
 use Berlioz\HttpCore\Controller\DebugController;
 use Berlioz\HttpCore\Debug\Router as DebugRouter;
 use Berlioz\HttpCore\Exception\HttpException;
@@ -172,16 +173,54 @@ class HttpApp extends AbstractApp
 
                     // Create instance of controller and invoke method
                     try {
+                        $response = new Response;
                         $controllerActivity = (new Debug\Activity('Controller'))->start();
 
+                        // Create instance of controller
                         $controller = $this->getServiceContainer()->newInstanceOf($routeContext['_class'],
-                                                                                  ['request' => $serverRequest]);
-                        $response = $this->getServiceContainer()->invokeMethod($controller,
-                                                                               $routeContext['_method'],
-                                                                               ['request' => $serverRequest]);
+                                                                                  ['request'  => $serverRequest,
+                                                                                   'response' => $response]);
 
-                        if (!$response instanceof ResponseInterface) {
-                            $response = new Response($response);
+                        // Call _b_pre() method?
+                        if (method_exists($controller, '_b_pre')) {
+                            // Call main method
+                            $preResponse = $this->getServiceContainer()->invokeMethod($controller,
+                                                                                      '_b_pre',
+                                                                                      ['request'  => $serverRequest,
+                                                                                       'response' => $response]);
+
+                            if ($preResponse instanceof ResponseInterface) {
+                                $response = $preResponse;
+                            }
+                        }
+
+                        // Call main method only if response code is between 200 and 299
+                        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+                            $mainResponse = $this->getServiceContainer()->invokeMethod($controller,
+                                                                                       $routeContext['_method'],
+                                                                                       ['request'  => $serverRequest,
+                                                                                        'response' => $response]);
+
+                            if (!$mainResponse instanceof ResponseInterface) {
+                                $stream = new Stream;
+                                $stream->write($mainResponse);
+                                $response = $response->withBody($stream);
+                            } else {
+                                $response = $mainResponse;
+                            }
+                        }
+
+                        // Call _b_post() method?
+                        if (method_exists($controller, '_b_post')) {
+                            // Call main method
+                            $postResponse = $this->getServiceContainer()->invokeMethod($controller,
+                                                                                       '_b_post',
+                                                                                       ['request'  => $serverRequest,
+                                                                                        'response' => $response]);
+
+                            if ($postResponse instanceof ResponseInterface) {
+                                $response = $postResponse;
+                            }
                         }
                     } finally {
                         $this->getDebug()->getTimeLine()->addActivity($controllerActivity->end());
@@ -266,8 +305,7 @@ class HttpApp extends AbstractApp
         // Headers
         if (!headers_sent()) {
             // Remove headers and add main header
-            header_remove();
-            header('HTTP/' . $response->getProtocolVersion() . ' ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase(), false);
+            header('HTTP/' . $response->getProtocolVersion() . ' ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase(), true);
 
             // Headers
             foreach ($response->getHeaders() as $name => $values) {
