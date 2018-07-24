@@ -26,6 +26,7 @@ abstract class AbstractHttpController extends \Berlioz\Core\Controller\AbstractC
      *
      * @return \Berlioz\Router\RouterInterface|null
      * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Berlioz\Config\Exception\ConfigException
      */
     public function getRouter(): ?RouterInterface
     {
@@ -58,6 +59,7 @@ abstract class AbstractHttpController extends \Berlioz\Core\Controller\AbstractC
      * @param \Psr\Http\Message\ResponseInterface $response         Response
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Berlioz\Config\Exception\ConfigException
      */
     public function reload(?array $queryParams = [], bool $mergeQueryParams = false, ?ResponseInterface $response = null): ResponseInterface
     {
@@ -107,6 +109,7 @@ abstract class AbstractHttpController extends \Berlioz\Core\Controller\AbstractC
      * @return static
      * @throws \Psr\Container\ContainerExceptionInterface
      * @see \Berlioz\FlashBag\FlashBag FlashBag class whose manage all flash messages
+     * @throws \Berlioz\Config\Exception\ConfigException
      */
     protected function addFlash($type, $message): AbstractHttpController
     {
