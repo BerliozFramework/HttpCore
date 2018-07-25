@@ -265,7 +265,7 @@ class HttpApp extends AbstractApp
                                                     $this->getConfig()->get('berlioz.http.errors.default'));
 
             // Check validity of error handler
-            if (empty($errorHandler) || !class_exists($errorHandler) || !$errorHandler instanceof HttpErrorHandler) {
+            if (empty($errorHandler) || !class_exists($errorHandler) || !is_a($errorHandler, HttpErrorHandler::class, true)) {
                 $errorHandler = DefaultHttpErrorHandler::class;
             }
 
