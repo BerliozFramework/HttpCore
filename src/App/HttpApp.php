@@ -275,19 +275,24 @@ class HttpApp extends AbstractApp
                                                                    'handle',
                                                                    ['request' => $this->getRouter()->getServerRequest(),
                                                                     'e'       => $e]);
-        } catch (\Throwable $e) {
-            $str = "<html>" .
-                   "<body>" .
-                   "<h1>Internal Server Error</h1>";
-            if ($this->getConfig()->get('berlioz.debug', false)) {
-                $str .= "<pre>{$e}</pre>";
-            } else {
-                $str .= "<p>Looks like we're having some server issues.</p>";
-            }
-            $str .= "</body>" .
-                    "</html>";
+        } catch (\Throwable $throwable) {
+            try {
+                $handler = new DefaultHttpErrorHandler($this);
+                $response = $handler->handle($this->getRouter()->getServerRequest(), $e);
+            } catch (\Throwable $throwable) {
+                $str = "<html>" .
+                       "<body>" .
+                       "<h1>Internal Server Error</h1>";
+                if ($this->getConfig()->get('berlioz.debug', false)) {
+                    $str .= "<pre>{$e}</pre>";
+                } else {
+                    $str .= "<p>Looks like we're having some server issues.</p>";
+                }
+                $str .= "</body>" .
+                        "</html>";
 
-            $response = new Response($str, 500);
+                $response = new Response($str, 500);
+            }
         }
 
         return $response;
