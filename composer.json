@@ -23,6 +23,8 @@
   },
   "require": {
     "php": ">=7.1",
+    "ext-json": "*",
+    "ext-zlib": "*",
     "berlioz/core": "@dev",
     "berlioz/form": "dev-refactoring",
     "berlioz/http-message": "@dev",
