@@ -10,6 +10,8 @@
  * file that was distributed with this source code, to the root.
  */
 
+declare(strict_types=1);
+
 namespace Berlioz\HttpCore\Exception;
 
 class ServiceUnavailableHttpException extends HttpException

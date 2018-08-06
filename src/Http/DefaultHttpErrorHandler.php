@@ -10,6 +10,8 @@
  * file that was distributed with this source code, to the root.
  */
 
+declare(strict_types=1);
+
 namespace Berlioz\HttpCore\Http;
 
 use Berlioz\Http\Message\Response;
@@ -22,6 +24,7 @@ class DefaultHttpErrorHandler extends AbstractHttpController implements HttpErro
 {
     /**
      * @inheritdoc
+     * @throws \Berlioz\Config\Exception\ConfigException
      */
     public function handle(?ServerRequestInterface $request, HttpException $e): ResponseInterface
     {
