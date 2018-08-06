@@ -10,6 +10,8 @@
  * file that was distributed with this source code, to the root.
  */
 
+declare(strict_types=1);
+
 namespace Berlioz\HttpCore\App;
 
 use Berlioz\Config\ConfigInterface;
@@ -67,7 +69,7 @@ class HttpApp extends AbstractApp
 
             // Search website config and add
             $domain = $_SERVER['HTTP_HOST'] ?? null;
-            $configDirectory = implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'etc']);
+            $configDirectory = implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config']);
 
             if ((!is_null($domain) && file_exists($configFile = sprintf('%s%sconfig.%s.json', $configDirectory, DIRECTORY_SEPARATOR, $domain))) ||
                 (file_exists($configFile = sprintf('%s%sconfig.json', $configDirectory, DIRECTORY_SEPARATOR)))) {
@@ -107,7 +109,7 @@ class HttpApp extends AbstractApp
             } // Read controllers in configuration
             else {
                 // Get controllers from PHP file
-                $controllers = @include (implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'etc', 'controllers.php'])) ?? [];
+                $controllers = @include (implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config', 'controllers.php'])) ?? [];
                 $controllers[] = DebugController::class;
 
                 if (!empty($controllers)) {
