@@ -35,11 +35,11 @@
     "twig/twig": "~2.4"
   },
   "require-dev": {
-    "phpfastcache/phpfastcache": "~6.1",
+    "phpfastcache/phpfastcache": "~7.0",
     "phpunit/phpunit": "~7.2"
   },
   "suggest": {
-    "phpfastcache/phpfastcache": "~6.1"
+    "phpfastcache/phpfastcache": "~7.0"
   },
   "provide": {
     "psr/container-implementation": "~1.0",
