@@ -12,18 +12,20 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\Exception;
+namespace Berlioz\HttpCore\Exception\Http;
 
-class InternalServerErrorHttpException extends HttpException
+use Berlioz\HttpCore\Exception\HttpException;
+
+class NotImplementedHttpException extends HttpException
 {
     /**
-     * InternalServerErrorHttpException constructor.
+     * NotImplementedHttpException constructor.
      *
      * @param null|string     $message
      * @param null|\Throwable $previous
      */
     public function __construct(?string $message = null, ?\Throwable $previous = null)
     {
-        parent::__construct(500, $message, $previous);
+        parent::__construct(501, $message, $previous);
     }
 }
