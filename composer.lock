@@ -53,12 +53,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Core.git",
-                "reference": "353054e2baa61288aad37bed9e168a9f639c7d34"
+                "reference": "1b66ce148a570dd2efdec192f0e3a8998f61144c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/353054e2baa61288aad37bed9e168a9f639c7d34",
-                "reference": "353054e2baa61288aad37bed9e168a9f639c7d34",
+                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/1b66ce148a570dd2efdec192f0e3a8998f61144c",
+                "reference": "1b66ce148a570dd2efdec192f0e3a8998f61144c",
                 "shasum": ""
             },
             "require": {
@@ -98,7 +98,7 @@
             ],
             "description": "Berlioz Framework Core",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-08-06T16:00:47+00:00"
+            "time": "2018-08-07T10:31:53+00:00"
         },
         {
             "name": "berlioz/flash-bag",
@@ -1639,16 +1639,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.3.0",
+            "version": "7.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "0b6b29faf95c03fd7867e866438b78d5692b6f03"
+                "reference": "f9b14c17860eccb440a0352a117a81eb754cff5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0b6b29faf95c03fd7867e866438b78d5692b6f03",
-                "reference": "0b6b29faf95c03fd7867e866438b78d5692b6f03",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/f9b14c17860eccb440a0352a117a81eb754cff5a",
+                "reference": "f9b14c17860eccb440a0352a117a81eb754cff5a",
                 "shasum": ""
             },
             "require": {
@@ -1719,7 +1719,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-08-03T06:02:45+00:00"
+            "time": "2018-08-07T06:44:28+00:00"
         },
         {
             "name": "psr/cache",

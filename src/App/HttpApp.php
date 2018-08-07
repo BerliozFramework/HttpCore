@@ -18,13 +18,17 @@ use Berlioz\Config\ConfigInterface;
 use Berlioz\Core\App\AbstractApp;
 use Berlioz\Core\Config;
 use Berlioz\Core\Debug;
+use Berlioz\Core\Exception\BerliozException;
+use Berlioz\Core\Exception\CacheException;
+use Berlioz\Core\Exception\ConfigException;
 use Berlioz\Http\Message\Response;
 use Berlioz\Http\Message\Stream;
 use Berlioz\HttpCore\Controller\DebugController;
 use Berlioz\HttpCore\Debug\Router as DebugRouter;
 use Berlioz\HttpCore\Exception\HttpException;
-use Berlioz\HttpCore\Exception\InternalServerErrorHttpException;
-use Berlioz\HttpCore\Exception\NotFoundHttpException;
+use Berlioz\HttpCore\Exception\Http\InternalServerErrorHttpException;
+use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
+use Berlioz\HttpCore\Exception\RoutingException;
 use Berlioz\HttpCore\Http\DefaultHttpErrorHandler;
 use Berlioz\HttpCore\Http\HttpErrorHandler;
 use Berlioz\Router\RouteGenerator;
@@ -42,6 +46,9 @@ class HttpApp extends AbstractApp
     /** @var \Berlioz\Router\RouteInterface|null Current route */
     private $route;
 
+    /**
+     * HttpApp destructor.
+     */
     public function __destruct()
     {
         if ($this->getDebug()->isEnabled()) {
@@ -55,82 +62,92 @@ class HttpApp extends AbstractApp
      * Get configuration.
      *
      * @return \Berlioz\Config\ConfigInterface
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function getConfig(): ConfigInterface
     {
-        if (!$this->hasConfig()) {
-            $configActivity = (new Debug\Activity('Config (initialization)', 'Berlioz'))->start();
+        try {
+            if (!$this->hasConfig()) {
+                $configActivity = (new Debug\Activity('Config (initialization)', 'Berlioz'))->start();
 
-            // Create configuration
-            $config = new Config(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', 'resources', 'config.default.json']), true);
-            $config->setVariable('berlioz.directories.http-core', implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..']));
+                // Create configuration
+                $config = new Config(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', 'resources', 'config.default.json']), true);
+                $config->setVariable('berlioz.directories.http-core', implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..']));
 
-            // Search website config and add
-            $domain = $_SERVER['HTTP_HOST'] ?? null;
-            $configDirectory = implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config']);
+                // Search website config and add
+                $domain = $_SERVER['HTTP_HOST'] ?? null;
+                $configDirectory = implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config']);
 
-            if ((!is_null($domain) && file_exists($configFile = sprintf('%s%sconfig.%s.json', $configDirectory, DIRECTORY_SEPARATOR, $domain))) ||
-                (file_exists($configFile = sprintf('%s%sconfig.json', $configDirectory, DIRECTORY_SEPARATOR)))) {
-                $config->extendsJson($configFile, true, false);
+                if ((!is_null($domain) && file_exists($configFile = sprintf('%s%sconfig.%s.json', $configDirectory, DIRECTORY_SEPARATOR, $domain))) ||
+                    (file_exists($configFile = sprintf('%s%sconfig.json', $configDirectory, DIRECTORY_SEPARATOR)))) {
+                    $config->extendsJson($configFile, true, false);
+                }
+
+                $this->getDebug()->getTimeLine()->addActivity($configActivity->end());
+
+                // Set config to parent
+                $this->setConfig($config);
             }
 
-            $this->getDebug()->getTimeLine()->addActivity($configActivity->end());
-
-            // Set config to parent
-            $this->setConfig($config);
+            return parent::getConfig();
+        } catch (BerliozException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            throw new ConfigException('Configuration error', 0, $e);
         }
-
-        return parent::getConfig();
     }
 
     /**
      * Initialize router.
      *
      * @return \Berlioz\Router\RouterInterface
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
-     * @throws \Berlioz\Router\Exception\RoutingException
-     * @throws \Psr\SimpleCache\CacheException
      */
     public function getRouter(): RouterInterface
     {
-        if (!$this->routerInitialized) {
-            $routerActivity = (new Debug\Activity('Router (initialization)', 'Berlioz'))->start();
+        try {
+            if (!$this->routerInitialized) {
+                $routerActivity = (new Debug\Activity('Router (initialization)', 'Berlioz'))->start();
 
-            $serviceCacheExists = $this->getServiceContainer()->has(CacheInterface::class);
-            /** @var \Berlioz\Router\Router $router */
-            $router = $this->getServiceContainer()->get(RouterInterface::class);
+                $serviceCacheExists = $this->getServiceContainer()->has(CacheInterface::class);
+                /** @var \Berlioz\Router\Router $router */
+                $router = $this->getServiceContainer()->get(RouterInterface::class);
 
-            // Get from cache
-            if ($serviceCacheExists && ($routeSet = $this->getServiceContainer()->get(CacheInterface::class)->get(self::CACHE_ROUTER_KEY)) instanceof RouteSetInterface) {
-                $router->setRouteSet($routeSet);
-            } // Read controllers in configuration
-            else {
-                // Get controllers from PHP file
-                $controllers = @include (implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config', 'controllers.php'])) ?? [];
-                $controllers[] = DebugController::class;
+                // Get from cache
+                if ($serviceCacheExists && ($routeSet = $this->getServiceContainer()->get(CacheInterface::class)->get(self::CACHE_ROUTER_KEY)) instanceof RouteSetInterface) {
+                    $router->setRouteSet($routeSet);
+                } // Read controllers in configuration
+                else {
+                    // Get controllers from PHP file
+                    $controllers = @include (implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config', 'controllers.php'])) ?? [];
+                    $controllers[] = DebugController::class;
 
-                if (!empty($controllers)) {
-                    $routeGenerator = new RouteGenerator;
-                    foreach ($controllers as $controller) {
-                        $router->getRouteSet()->merge($routeGenerator->fromClass($controller));
+                    if (!empty($controllers)) {
+                        $routeGenerator = new RouteGenerator;
+                        foreach ($controllers as $controller) {
+                            $router->getRouteSet()->merge($routeGenerator->fromClass($controller));
+                        }
+                    }
+
+                    if ($serviceCacheExists) {
+                        $this->getServiceContainer()->get(CacheInterface::class)->set(self::CACHE_ROUTER_KEY, $router->getRouteSet());
                     }
                 }
 
-                if ($serviceCacheExists) {
-                    $this->getServiceContainer()->get(CacheInterface::class)->set(self::CACHE_ROUTER_KEY, $router->getRouteSet());
-                }
+                $this->routerInitialized = true;
+                $this->getDebug()->getTimeLine()->addActivity($routerActivity->end());
+
+                return $router;
             }
 
-            $this->routerInitialized = true;
-            $this->getDebug()->getTimeLine()->addActivity($routerActivity->end());
-
-            return $router;
+            return $this->getServiceContainer()->get(RouterInterface::class);
+        } catch (\Psr\SimpleCache\CacheException $e) {
+            throw new CacheException('Cache error', 0, $e);
+        } catch (BerliozException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            throw new RoutingException('Routing error', 0, $e);
         }
-
-        return $this->getServiceContainer()->get(RouterInterface::class);
     }
 
     /**
@@ -147,9 +164,6 @@ class HttpApp extends AbstractApp
      * Handle application.
      *
      * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Berlioz\Config\Exception\ConfigException
-     * @throws \Berlioz\Core\Exception\BerliozException
-     * @throws \Psr\SimpleCache\CacheException
      */
     public function handle(): ResponseInterface
     {
@@ -255,9 +269,6 @@ class HttpApp extends AbstractApp
      * @param \Berlioz\HttpCore\Exception\HttpException $e
      *
      * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Berlioz\Config\Exception\ConfigException
-     * @throws \Berlioz\Core\Exception\BerliozException
-     * @throws \Psr\SimpleCache\CacheException
      */
     private function httpErrorHandler(HttpException $e): ResponseInterface
     {
@@ -285,11 +296,19 @@ class HttpApp extends AbstractApp
                 $str = "<html>" .
                        "<body>" .
                        "<h1>Internal Server Error</h1>";
-                if ($this->getConfig()->get('berlioz.debug', false)) {
-                    $str .= "<pre>{$e}</pre>";
-                } else {
+
+                try {
+                    $debug = false;
+                    if ($debug = $this->getConfig()->get('berlioz.debug', false)) {
+                        $str .= "<pre>{$e}</pre>";
+                    }
+                } catch (\Throwable $throwable) {
+                }
+
+                if (!$debug) {
                     $str .= "<p>Looks like we're having some server issues.</p>";
                 }
+
                 $str .= "</body>" .
                         "</html>";
 
