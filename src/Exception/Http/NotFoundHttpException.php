@@ -12,18 +12,20 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\Exception;
+namespace Berlioz\HttpCore\Exception\Http;
 
-class ConflictHttpException extends HttpException
+use Berlioz\HttpCore\Exception\HttpException;
+
+class NotFoundHttpException extends HttpException
 {
     /**
-     * ConflictHttpException constructor.
+     * NotFoundHttpException constructor.
      *
      * @param null|string     $message
      * @param null|\Throwable $previous
      */
     public function __construct(?string $message = null, ?\Throwable $previous = null)
     {
-        parent::__construct(409, $message, $previous);
+        parent::__construct(404, $message, $previous);
     }
 }

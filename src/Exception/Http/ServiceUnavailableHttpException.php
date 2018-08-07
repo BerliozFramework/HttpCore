@@ -12,18 +12,20 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\Exception;
+namespace Berlioz\HttpCore\Exception\Http;
 
-class NotImplementedHttpException extends HttpException
+use Berlioz\HttpCore\Exception\HttpException;
+
+class ServiceUnavailableHttpException extends HttpException
 {
     /**
-     * NotImplementedHttpException constructor.
+     * ServiceUnavailableHttpException constructor.
      *
      * @param null|string     $message
      * @param null|\Throwable $previous
      */
     public function __construct(?string $message = null, ?\Throwable $previous = null)
     {
-        parent::__construct(501, $message, $previous);
+        parent::__construct(503, $message, $previous);
     }
 }
