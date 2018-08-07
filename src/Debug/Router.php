@@ -18,7 +18,6 @@ use Berlioz\Core\Debug\AbstractSection;
 use Berlioz\HttpCore\App\HttpApp;
 use Berlioz\HttpCore\App\HttpAppAwareInterface;
 use Berlioz\HttpCore\App\HttpAppAwareTrait;
-use Psr\SimpleCache\CacheException;
 
 class Router extends AbstractSection implements HttpAppAwareInterface, Section
 {
@@ -89,7 +88,6 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
         if (is_null($this->serverRequest) && $this->hasApp()) {
             try {
                 $this->serverRequest = $this->getApp()->getRouter()->getServerRequest();
-            } catch (CacheException $e) {
             } catch (\Throwable $e) {
             }
         }

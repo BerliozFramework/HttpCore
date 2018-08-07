@@ -109,7 +109,7 @@ class TwigExtension extends \Twig_Extension implements HttpAppAwareInterface
      * @param array  $parameters
      *
      * @return string
-     * @throws \Berlioz\Config\Exception\ConfigException
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function functionPath(string $name, array $parameters = []): string
     {

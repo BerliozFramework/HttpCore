@@ -49,7 +49,6 @@ class AppProfile
      * Get configuration.
      *
      * @return \Berlioz\Config\ConfigInterface
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function getConfig(): ConfigInterface
@@ -61,6 +60,7 @@ class AppProfile
      * Get flash bag.
      *
      * @return \Berlioz\FlashBag\FlashBag
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function getFlashBag(): FlashBag
     {
@@ -70,6 +70,12 @@ class AppProfile
         return $flashBag;
     }
 
+    /**
+     * Get server request.
+     *
+     * @return \Psr\Http\Message\ServerRequestInterface
+     * @throws \Berlioz\Core\Exception\BerliozException
+     */
     public function getRequest(): ServerRequestInterface
     {
         /** @var \Berlioz\Router\RouterInterface $router */

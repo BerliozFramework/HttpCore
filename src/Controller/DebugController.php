@@ -18,7 +18,7 @@ use Berlioz\Core\Debug;
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Message\Response;
 use Berlioz\HttpCore\Debug\Section;
-use Berlioz\HttpCore\Exception\NotFoundHttpException;
+use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
 use Psr\Http\Message\ServerRequestInterface;
 
 class DebugController extends AbstractHttpController
@@ -82,7 +82,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\HttpCore\Exception\NotFoundHttpException
+     * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
      * @route("/_console/dist/toolbar.{type}", name="_berlioz/console/toolbar-dist", priority=1, requirements={"type":
      *                                         "js|css|caller\.js"}, defaults={"type": "caller.js"})
      */
@@ -116,7 +116,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/toolbar", name="_berlioz/console/toolbar", requirements={"id":"\w+"})
      */
@@ -138,7 +137,7 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request Server request
      *
      * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Berlioz\HttpCore\Exception\NotFoundHttpException
+     * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
      * @route("/_console/dist/debug.{type}", name="_berlioz/console/console-dist", priority=1, requirements={"type":
      *                                         "js|css|css.map"})
      */
@@ -184,7 +183,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}", name="_berlioz/console/home", requirements={"id":"\w+"})
      */
@@ -206,7 +204,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/performances", name="_berlioz/console/performances", requirements={"id":"\w+"})
      */
@@ -228,7 +225,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/phpinfo", name="_berlioz/console/phpinfo", requirements={"id":"\w+"})
      */
@@ -246,7 +242,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/activities", name="_berlioz/console/activities", requirements={"id":"\w+"})
      */
@@ -266,7 +261,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/activities/{activity}", name="_berlioz/console/activity", requirements={"id":"\w+",
      *                                                "activity": "\d+"})
@@ -294,7 +288,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/php-errors", name="_berlioz/console/php-errors", requirements={"id":"\w+"})
      */
@@ -314,7 +307,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/php-errors/{error}", name="_berlioz/console/php-error", requirements={"id":"\w+",
      *                                             "error": "\d+"})
@@ -339,7 +331,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/used-classes", name="_berlioz/console/used-classes", requirements={"id":"\w+"})
      */
@@ -386,7 +377,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/config", name="_berlioz/console/config", requirements={"id":"\w+"})
      */
@@ -406,7 +396,6 @@ class DebugController extends AbstractHttpController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @route("/_console/{id}/{section}", name="_berlioz/console/section", requirements={"id":"\w+", "section":
      *                                    "[\w\-_]+"})

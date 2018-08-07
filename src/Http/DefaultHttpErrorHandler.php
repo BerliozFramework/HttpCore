@@ -24,7 +24,7 @@ class DefaultHttpErrorHandler extends AbstractHttpController implements HttpErro
 {
     /**
      * @inheritdoc
-     * @throws \Berlioz\Config\Exception\ConfigException
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function handle(?ServerRequestInterface $request, HttpException $e): ResponseInterface
     {
