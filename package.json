@@ -1,5 +1,5 @@
 {
-  "name": "Berlioz.HttpCore",
+  "name": "berlioz.httpcore",
   "version": "1.0.0",
   "description": "Berlioz Framework HTTP Core",
   "main": "main.js",
