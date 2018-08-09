@@ -113,7 +113,7 @@ class TwigExtension extends \Twig_Extension implements HttpAppAwareInterface
      */
     public function functionPath(string $name, array $parameters = []): string
     {
-        return $this->getApp()->getServiceContainer()->get('router')->generate($name, $parameters);
+        return $this->getApp()->getServiceContainer()->get('router')->generate($name, $parameters) ?? '';
     }
 
     /**
