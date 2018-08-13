@@ -77,6 +77,7 @@ class HttpApp extends AbstractApp
                 // Search website config and add
                 $domain = $_SERVER['HTTP_HOST'] ?? null;
                 $configDirectory = implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config']);
+                $config->setVariable('berlioz.directories.config', $configDirectory);
 
                 if ((!is_null($domain) && file_exists($configFile = sprintf('%s%sconfig.%s.json', $configDirectory, DIRECTORY_SEPARATOR, $domain))) ||
                     (file_exists($configFile = sprintf('%s%sconfig.json', $configDirectory, DIRECTORY_SEPARATOR)))) {
@@ -193,17 +194,21 @@ class HttpApp extends AbstractApp
                         $controllerActivity = (new Debug\Activity('Controller'))->start();
 
                         // Create instance of controller
-                        $controller = $this->getServiceContainer()->newInstanceOf($routeContext['_class'],
-                                                                                  ['request'  => $serverRequest,
-                                                                                   'response' => $response]);
+                        $controller = $this->getServiceContainer()
+                                           ->getInstantiator()
+                                           ->newInstanceOf($routeContext['_class'],
+                                                           ['request'  => $serverRequest,
+                                                            'response' => $response]);
 
                         // Call _b_pre() method?
                         if (method_exists($controller, '_b_pre')) {
                             // Call main method
-                            $preResponse = $this->getServiceContainer()->invokeMethod($controller,
-                                                                                      '_b_pre',
-                                                                                      ['request'  => $serverRequest,
-                                                                                       'response' => $response]);
+                            $preResponse = $this->getServiceContainer()
+                                                ->getInstantiator()
+                                                ->invokeMethod($controller,
+                                                               '_b_pre',
+                                                               ['request'  => $serverRequest,
+                                                                'response' => $response]);
 
                             if ($preResponse instanceof ResponseInterface) {
                                 $response = $preResponse;
@@ -212,10 +217,12 @@ class HttpApp extends AbstractApp
 
                         // Call main method only if response code is between 200 and 299
                         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-                            $mainResponse = $this->getServiceContainer()->invokeMethod($controller,
-                                                                                       $routeContext['_method'],
-                                                                                       ['request'  => $serverRequest,
-                                                                                        'response' => $response]);
+                            $mainResponse = $this->getServiceContainer()
+                                                 ->getInstantiator()
+                                                 ->invokeMethod($controller,
+                                                                $routeContext['_method'],
+                                                                ['request'  => $serverRequest,
+                                                                 'response' => $response]);
 
                             if (!$mainResponse instanceof ResponseInterface) {
                                 $stream = new Stream;
@@ -229,10 +236,12 @@ class HttpApp extends AbstractApp
                         // Call _b_post() method?
                         if (method_exists($controller, '_b_post')) {
                             // Call main method
-                            $postResponse = $this->getServiceContainer()->invokeMethod($controller,
-                                                                                       '_b_post',
-                                                                                       ['request'  => $serverRequest,
-                                                                                        'response' => $response]);
+                            $postResponse = $this->getServiceContainer()
+                                                 ->getInstantiator()
+                                                 ->invokeMethod($controller,
+                                                                '_b_post',
+                                                                ['request'  => $serverRequest,
+                                                                 'response' => $response]);
 
                             if ($postResponse instanceof ResponseInterface) {
                                 $response = $postResponse;
@@ -283,11 +292,15 @@ class HttpApp extends AbstractApp
             }
 
             // Invoke method of error handler
-            $handler = $this->getServiceContainer()->newInstanceOf($errorHandler);
-            $response = $this->getServiceContainer()->invokeMethod($handler,
-                                                                   'handle',
-                                                                   ['request' => $this->getRouter()->getServerRequest(),
-                                                                    'e'       => $e]);
+            $handler = $this->getServiceContainer()
+                            ->getInstantiator()
+                            ->newInstanceOf($errorHandler);
+            $response = $this->getServiceContainer()
+                             ->getInstantiator()
+                             ->invokeMethod($handler,
+                                            'handle',
+                                            ['request' => $this->getRouter()->getServerRequest(),
+                                             'e'       => $e]);
         } catch (\Throwable $throwable) {
             try {
                 $handler = new DefaultHttpErrorHandler($this);

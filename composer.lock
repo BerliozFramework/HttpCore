@@ -53,12 +53,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Core.git",
-                "reference": "1b66ce148a570dd2efdec192f0e3a8998f61144c"
+                "reference": "51a06f94bc018276410c2c5228105d93ecb1878c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/1b66ce148a570dd2efdec192f0e3a8998f61144c",
-                "reference": "1b66ce148a570dd2efdec192f0e3a8998f61144c",
+                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/51a06f94bc018276410c2c5228105d93ecb1878c",
+                "reference": "51a06f94bc018276410c2c5228105d93ecb1878c",
                 "shasum": ""
             },
             "require": {
@@ -98,7 +98,7 @@
             ],
             "description": "Berlioz Framework Core",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-08-07T10:31:53+00:00"
+            "time": "2018-08-13T13:47:05+00:00"
         },
         {
             "name": "berlioz/flash-bag",
@@ -146,12 +146,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Form.git",
-                "reference": "93b80a2a79562957e4683484a7054cb688eba6b7"
+                "reference": "cb38939d923d1a700a15fa2de477ef28a9472a07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Form/zipball/93b80a2a79562957e4683484a7054cb688eba6b7",
-                "reference": "93b80a2a79562957e4683484a7054cb688eba6b7",
+                "url": "https://api.github.com/repos/BerliozFramework/Form/zipball/cb38939d923d1a700a15fa2de477ef28a9472a07",
+                "reference": "cb38939d923d1a700a15fa2de477ef28a9472a07",
                 "shasum": ""
             },
             "require": {
@@ -182,7 +182,7 @@
             ],
             "description": "Berlioz Form",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-07-31T09:45:52+00:00"
+            "time": "2018-08-10T08:07:47+00:00"
         },
         {
             "name": "berlioz/http-message",
@@ -317,12 +317,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/ServiceContainer.git",
-                "reference": "5d3df9b2bce460cc78435045bceb2d7d0c56dee0"
+                "reference": "84bf722d3ce8bd67c93cf9ec6d720abce813ec83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/ServiceContainer/zipball/5d3df9b2bce460cc78435045bceb2d7d0c56dee0",
-                "reference": "5d3df9b2bce460cc78435045bceb2d7d0c56dee0",
+                "url": "https://api.github.com/repos/BerliozFramework/ServiceContainer/zipball/84bf722d3ce8bd67c93cf9ec6d720abce813ec83",
+                "reference": "84bf722d3ce8bd67c93cf9ec6d720abce813ec83",
                 "shasum": ""
             },
             "require": {
@@ -330,6 +330,7 @@
                 "psr/container": "1.0.0"
             },
             "require-dev": {
+                "ext-json": "*",
                 "phpunit/phpunit": "~6.5"
             },
             "type": "library",
@@ -350,7 +351,7 @@
             ],
             "description": "Berlioz Service Container",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-06-11T17:02:12+00:00"
+            "time": "2018-08-13T13:38:57+00:00"
         },
         {
             "name": "berlioz/twig-package",
@@ -358,17 +359,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/TwigPackage.git",
-                "reference": "f986ff525a49088143c26d51d0a7406a6bbd7d50"
+                "reference": "329a2c1c0dc605501d717a4ef613ab453d1dfb57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/TwigPackage/zipball/f986ff525a49088143c26d51d0a7406a6bbd7d50",
-                "reference": "f986ff525a49088143c26d51d0a7406a6bbd7d50",
+                "url": "https://api.github.com/repos/BerliozFramework/TwigPackage/zipball/329a2c1c0dc605501d717a4ef613ab453d1dfb57",
+                "reference": "329a2c1c0dc605501d717a4ef613ab453d1dfb57",
                 "shasum": ""
             },
             "require": {
                 "berlioz/core": "@dev",
                 "berlioz/utils": "@dev",
+                "ext-json": "*",
                 "php": ">=7.1",
                 "psr/log": "~1.0",
                 "twig/twig": "~2.4"
@@ -394,7 +396,7 @@
             ],
             "description": "Twig package for Berlioz Framework",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-07-09T15:57:13+00:00"
+            "time": "2018-08-13T13:52:16+00:00"
         },
         {
             "name": "berlioz/utils",
