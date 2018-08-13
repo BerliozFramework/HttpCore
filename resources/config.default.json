@@ -50,7 +50,6 @@
           "debug": true
         },
         "extensions": [
-          "Berlioz\\HttpCore\\Twig\\TwigExtension",
           "Berlioz\\Form\\TwigExtension"
         ]
       },
