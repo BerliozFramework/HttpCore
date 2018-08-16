@@ -14,13 +14,11 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\App;
 
-use Berlioz\Config\ConfigInterface;
 use Berlioz\Core\App\AbstractApp;
 use Berlioz\Core\Config;
 use Berlioz\Core\Debug;
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Core\Exception\CacheException;
-use Berlioz\Core\Exception\ConfigException;
 use Berlioz\Http\Message\Response;
 use Berlioz\Http\Message\Stream;
 use Berlioz\HttpCore\Controller\DebugController;
@@ -58,45 +56,28 @@ class HttpApp extends AbstractApp
         parent::__destruct();
     }
 
+    //////////////
+    /// CONFIG ///
+    //////////////
+
     /**
-     * Get configuration.
-     *
-     * @return \Berlioz\Config\ConfigInterface
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @inheritdoc
      */
-    public function getConfig(): ConfigInterface
+    public function getConfig(): ?Config
     {
-        try {
-            if (!$this->hasConfig()) {
-                $configActivity = (new Debug\Activity('Config (initialization)', 'Berlioz'))->start();
-
-                // Create configuration
-                $config = new Config(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', 'resources', 'config.default.json']), true);
-                $config->setVariable('berlioz.directories.http-core', implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..']));
-
-                // Search website config and add
-                $domain = $_SERVER['HTTP_HOST'] ?? null;
-                $configDirectory = implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config']);
-                $config->setVariable('berlioz.directories.config', $configDirectory);
-
-                if ((!is_null($domain) && file_exists($configFile = sprintf('%s%sconfig.%s.json', $configDirectory, DIRECTORY_SEPARATOR, $domain))) ||
-                    (file_exists($configFile = sprintf('%s%sconfig.json', $configDirectory, DIRECTORY_SEPARATOR)))) {
-                    $config->extendsJson($configFile, true, false);
-                }
-
-                $this->getDebug()->getTimeLine()->addActivity($configActivity->end());
-
-                // Set config to parent
-                $this->setConfig($config);
-            }
-
-            return parent::getConfig();
-        } catch (BerliozException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            throw new ConfigException('Configuration error', 0, $e);
+        if (!$this->isConfigInitialized()) {
+            parent::getConfig()->extendsJson(implode(DIRECTORY_SEPARATOR,
+                                                     [__DIR__, '..', '..', 'resources', 'config.default.json']),
+                                             true,
+                                             true);
         }
+
+        return parent::getConfig();
     }
+
+    //////////////
+    /// ROUTER ///
+    //////////////
 
     /**
      * Initialize router.
@@ -120,7 +101,7 @@ class HttpApp extends AbstractApp
                 } // Read controllers in configuration
                 else {
                     // Get controllers from PHP file
-                    $controllers = @include (implode(DIRECTORY_SEPARATOR, [$this->getAppDir(), 'config', 'controllers.php'])) ?? [];
+                    $controllers = $this->getConfig()->get('controllers', []);
                     $controllers[] = DebugController::class;
 
                     if (!empty($controllers)) {
