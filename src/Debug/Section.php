@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\Debug;
 
-interface Section
+interface Section extends \Berlioz\Core\Debug\Section
 {
     /**
      * Get template name.
