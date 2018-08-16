@@ -148,25 +148,27 @@
             <span>Additional sections</span>
           </h6>
           <ul class="nav flex-column mb-2">
-            {% for reportSection in report.sections %}
-              <li class="nav-item">
-                <a class="nav-link{% if app.route.name starts with '_berlioz/console/section' and section.sectionId == reportSection.sectionId %} active{% endif %}" href="{{ path('_berlioz/console/section', {"id": report.uniqid, "section": reportSection.sectionId}) }}">
-                  {% if block("menu", reportSection.templateName) is defined %}
-                    {{ block("menu", reportSection.templateName) }}
-                  {% else %}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polyline points="12 16 16 12 12 8"></polyline>
-                      <line x1="8" y1="12" x2="16" y2="12"></line>
-                    </svg>
-                    {{ reportSection.sectionName }}
-                  {% endif %}
-                  {% if app.route.name starts with '_berlioz/console/section' and section.sectionId == reportSection.sectionId %}
-                    <span class="sr-only">(current)</span>
-                  {% endif %}
-                </a>
-              </li>
-            {% endfor %}
+            {% with {selectedSection: section.sectionId} %}
+              {% for section in report.sections %}
+                <li class="nav-item">
+                  <a class="nav-link{% if app.route.name starts with '_berlioz/console/section' and section.sectionId == selectedSection %} active{% endif %}" href="{{ path('_berlioz/console/section', {"id": report.uniqid, "section": section.sectionId}) }}">
+                    {% if block("menu", section.templateName) is defined %}
+                      {{ block("menu", section.templateName) }}
+                    {% else %}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 16 16 12 12 8"></polyline>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                      </svg>
+                      {{ section.sectionName }}
+                    {% endif %}
+                    {% if app.route.name starts with '_berlioz/console/section' and section.sectionId == selectedSection %}
+                      <span class="sr-only">(current)</span>
+                    {% endif %}
+                  </a>
+                </li>
+              {% endfor %}
+            {% endwith %}
           </ul>
         {% endif %}
       </div>
