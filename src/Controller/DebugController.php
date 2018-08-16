@@ -271,12 +271,15 @@ class DebugController extends AbstractHttpController
         $timeLine = $report->getTimeLine();
 
         if ($activity = $timeLine->getActivities()[$request->getAttribute('activity')] ?? null) {
+            $activityDetail = $activity->getDetail();
+            $activityResult = $activity->getResult();
+
             return $this->render('@Berlioz-HttpCore/Twig/Debug/activity.html.twig',
                                  ['report'         => $report,
                                   'timeLine'       => $timeLine,
                                   'activity'       => $activity,
-                                  'activityDetail' => var_export($activity->getDetail(), true),
-                                  'activityResult' => var_export($activity->getResult(), true)]);
+                                  'activityDetail' => is_scalar($activityDetail) ? $activityDetail : var_export($activityDetail, true),
+                                  'activityResult' => is_scalar($activityResult) ? $activityResult : var_export($activityResult, true)]);
         } else {
             throw new NotFoundHttpException('Detail of activity not found');
         }
@@ -405,7 +408,7 @@ class DebugController extends AbstractHttpController
         $report = $this->getDebugReport($request->getAttribute('id'));
         $reportSection = $report->getSection($request->getAttribute('section'));
 
-        if ($reportSection instanceof Section) {
+        if ($reportSection instanceof Section || method_exists($reportSection, 'getTemplateName')) {
             return $this->render($reportSection->getTemplateName(),
                                  ['report'  => $report,
                                   'section' => $reportSection]);

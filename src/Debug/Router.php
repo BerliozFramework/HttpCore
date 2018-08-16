@@ -32,25 +32,9 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
         $this->setApp($app);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
-    {
-        return serialize(['serverRequest' => $this->getServerRequest(),
-                          'route'         => $this->getRoute()]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function unserialize($serialized)
-    {
-        $unserialized = unserialize($serialized);
-
-        $this->serverRequest = $unserialized['serverRequest'] ?? null;
-        $this->route = $unserialized['route'] ?? null;
-    }
+    /////////////////////////
+    /// SECTION INTERFACE ///
+    /////////////////////////
 
     /**
      * @inheritdoc
@@ -58,6 +42,18 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
     public function __toString(): string
     {
         return var_export($this, true);
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Berlioz\Core\Exception\BerliozException
+     */
+    public function saveReport()
+    {
+        if ($this->hasApp()) {
+            $this->serverRequest = $this->getApp()->getRouter()->getServerRequest();
+            $this->route = $this->getApp()->getRoute();
+        }
     }
 
     /**
@@ -79,19 +75,36 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
     }
 
     /**
+     * @inheritdoc
+     */
+    public function serialize()
+    {
+        return serialize(['serverRequest' => $this->getServerRequest(),
+                          'route'         => $this->getRoute()]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function unserialize($serialized)
+    {
+        $unserialized = unserialize($serialized);
+
+        $this->serverRequest = $unserialized['serverRequest'] ?? null;
+        $this->route = $unserialized['route'] ?? null;
+    }
+
+    ////////////////////
+    /// USER DEFINED ///
+    ////////////////////
+
+    /**
      * Get server request.
      *
      * @return \Psr\Http\Message\ServerRequestInterface|null
      */
     public function getServerRequest(): ?\Psr\Http\Message\ServerRequestInterface
     {
-        if (is_null($this->serverRequest) && $this->hasApp()) {
-            try {
-                $this->serverRequest = $this->getApp()->getRouter()->getServerRequest();
-            } catch (\Throwable $e) {
-            }
-        }
-
         return $this->serverRequest;
     }
 
@@ -102,10 +115,6 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
      */
     public function getRoute(): ?\Berlioz\Router\RouteInterface
     {
-        if (is_null($this->route) && $this->hasApp()) {
-            $this->route = $this->getApp()->getRoute();
-        }
-
         return $this->route;
     }
 }
