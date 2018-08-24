@@ -34,6 +34,7 @@ use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
 use Berlioz\Router\RouteSetInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\SimpleCache\CacheInterface;
 
 class HttpApp extends AbstractApp
@@ -145,15 +146,14 @@ class HttpApp extends AbstractApp
     /**
      * Handle application.
      *
+     * @param \Psr\Http\Message\ServerRequestInterface $serverRequest Server request
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function handle(): ResponseInterface
+    public function handle(?ServerRequestInterface $serverRequest = null): ResponseInterface
     {
         try {
             $router = $this->getRouter();
-
-            /** @var \Psr\Http\Message\ServerRequestInterface|null $serverRequest */
-            $serverRequest = null;
 
             // Handle router
             $routerActivity = (new Debug\Activity('Router (handle)', 'Berlioz'))->start();
