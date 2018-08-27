@@ -35,9 +35,10 @@ use Berlioz\Router\RouterInterface;
 use Berlioz\Router\RouteSetInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\SimpleCache\CacheInterface;
 
-class HttpApp extends AbstractApp
+class HttpApp extends AbstractApp implements RequestHandlerInterface
 {
     const CACHE_ROUTER_KEY = '_BERLIOZ_ROUTER';
     /** @var bool Router initialized? */
