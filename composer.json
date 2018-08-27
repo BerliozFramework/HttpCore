@@ -26,12 +26,13 @@
     "ext-json": "*",
     "ext-zlib": "*",
     "berlioz/core": "@dev",
+    "berlioz/flash-bag": "^1.0",
     "berlioz/form": "dev-refactoring",
     "berlioz/http-message": "@dev",
     "berlioz/router": "@dev",
-    "berlioz/utils": "@dev",
-    "berlioz/flash-bag": "^1.0",
     "berlioz/twig-package": "@dev",
+    "berlioz/utils": "@dev",
+    "psr/http-server-handler": "^1.0.0",
     "twig/twig": "^2.4"
   },
   "require-dev": {
@@ -44,6 +45,7 @@
   "provide": {
     "psr/container-implementation": "^1.0",
     "psr/http-message-implementation": "^1.0",
+    "psr/http-server-handler": "^1.0",
     "psr/log-implementation": "^1.0",
     "psr/simple-cache-implementation": "^1.0"
   },
