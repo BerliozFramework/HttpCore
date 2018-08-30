@@ -144,6 +144,10 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         return $this->route;
     }
 
+    ///////////////
+    /// HANDLER ///
+    ///////////////
+
     /**
      * Handle application.
      *
