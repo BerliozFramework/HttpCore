@@ -12,12 +12,10 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\Twig;
+namespace Berlioz\HttpCore\App;
 
 use Berlioz\Config\ConfigInterface;
 use Berlioz\FlashBag\FlashBag;
-use Berlioz\HttpCore\App\HttpApp;
-use Berlioz\HttpCore\App\HttpAppAwareTrait;
 use Berlioz\Router\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

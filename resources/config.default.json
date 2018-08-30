@@ -16,7 +16,7 @@
       "templating": "Berlioz\\Core\\Package\\TemplateEngine"
     },
     "AppProfile": {
-      "class": "Berlioz\\HttpCore\\Twig\\AppProfile"
+      "class": "Berlioz\\HttpCore\\App\\AppProfile"
     },
     "phpDocFactory": {
       "class": "Berlioz\\PhpDoc\\PhpDocFactory"
