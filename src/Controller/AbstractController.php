@@ -14,15 +14,53 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\Controller;
 
+use Berlioz\Core\Exception\ContainerException;
+use Berlioz\Core\Package\TemplateEngine;
 use Berlioz\Http\Message\Response;
+use Berlioz\HttpCore\App\HttpAppAwareInterface;
+use Berlioz\HttpCore\App\HttpAppAwareTrait;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
 use Berlioz\HttpCore\App\HttpApp;
-use PHPUnit\Framework\MockObject\RuntimeException;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class AbstractHttpController extends \Berlioz\Core\Controller\AbstractController
+abstract class AbstractController implements HttpAppAwareInterface
 {
+    use HttpAppAwareTrait;
+
+    /**
+     * AbstractController constructor.
+     *
+     * @param \Berlioz\HttpCore\App\HttpApp $app
+     */
+    public function __construct(HttpApp $app)
+    {
+        $this->setApp($app);
+    }
+
+    /**
+     * __sleep() magic method.
+     *
+     * @throws \RuntimeException because unable to serialize a Controller object
+     */
+    public function __sleep(): array
+    {
+        throw new \RuntimeException('Unable to serialize a Controller object');
+    }
+
+    /**
+     * Get service.
+     *
+     * @param string $id
+     *
+     * @return mixed
+     * @throws \Berlioz\Core\Exception\BerliozException
+     */
+    protected function getService(string $id)
+    {
+        return $this->getApp()->getServiceContainer()->get($id);
+    }
+
     /**
      * Get router.
      *
@@ -32,7 +70,27 @@ abstract class AbstractHttpController extends \Berlioz\Core\Controller\AbstractC
     public function getRouter(): ?RouterInterface
     {
         /** @var \Berlioz\Router\RouterInterface $router */
-        return $this->getApp()->getServiceContainer()->get(RouterInterface::class);
+        return $this->getService(RouterInterface::class);
+    }
+
+    /**
+     * Do render of templates.
+     *
+     * @param string  $name      Filename of template
+     * @param mixed[] $variables Variables for template
+     *
+     * @return string Output content
+     * @throws \Berlioz\Core\Exception\BerliozException
+     */
+    protected function render(string $name, array $variables = []): string
+    {
+        $templateEngine = $this->getService('templating');
+
+        if (!($templateEngine instanceof TemplateEngine)) {
+            throw new ContainerException(sprintf('Service "templating" must be implements %s interface', TemplateEngine::class));
+        }
+
+        return $templateEngine->render($name, $variables);
     }
 
     /**
@@ -42,12 +100,7 @@ abstract class AbstractHttpController extends \Berlioz\Core\Controller\AbstractC
      */
     public function getRoute(): ?RouteInterface
     {
-        if (($app = $this->getApp()) instanceof HttpApp) {
-            /** @var \Berlioz\HttpCore\App\HttpApp $app */
-            return $app->getRoute();
-        } else {
-            throw new RuntimeException(sprintf('App of controller is not a "%s" class', HttpApp::class));
-        }
+        return $this->getApp()->getRoute();
     }
 
     /**
@@ -111,10 +164,10 @@ abstract class AbstractHttpController extends \Berlioz\Core\Controller\AbstractC
      * @throws \Berlioz\Core\Exception\BerliozException
      * @see \Berlioz\FlashBag\FlashBag FlashBag class whose manage all flash messages
      */
-    protected function addFlash($type, $message): AbstractHttpController
+    protected function addFlash($type, $message): AbstractController
     {
         /** @var \Berlioz\FlashBag\FlashBag $flashBag */
-        $flashBag = $this->getApp()->getServiceContainer()->get('flashbag');
+        $flashBag = $this->getService('flashbag');
         $flashBag->add($type, $message);
 
         return $this;

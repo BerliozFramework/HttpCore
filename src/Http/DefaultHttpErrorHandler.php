@@ -15,12 +15,12 @@ declare(strict_types=1);
 namespace Berlioz\HttpCore\Http;
 
 use Berlioz\Http\Message\Response;
-use Berlioz\HttpCore\Controller\AbstractHttpController;
+use Berlioz\HttpCore\Controller\AbstractController;
 use Berlioz\HttpCore\Exception\HttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class DefaultHttpErrorHandler extends AbstractHttpController implements HttpErrorHandler
+class DefaultHttpErrorHandler extends AbstractController implements HttpErrorHandler
 {
     /**
      * @inheritdoc

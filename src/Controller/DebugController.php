@@ -17,11 +17,12 @@ namespace Berlioz\HttpCore\Controller;
 use Berlioz\Core\Debug;
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Message\Response;
+use Berlioz\HttpCore\App\HttpApp;
 use Berlioz\HttpCore\Debug\Section;
 use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
 use Psr\Http\Message\ServerRequestInterface;
 
-class DebugController extends AbstractHttpController
+class DebugController extends AbstractController
 {
     /** @var string Resource string */
     private $resourceDist;
@@ -31,9 +32,9 @@ class DebugController extends AbstractHttpController
     /**
      * DebugController constructor.
      *
-     * @param \Berlioz\Core\App\AbstractApp $app
+     * @param \Berlioz\HttpCore\App\HttpApp $app
      */
-    public function __construct(\Berlioz\Core\App\AbstractApp $app)
+    public function __construct(HttpApp $app)
     {
         parent::__construct($app);
 
