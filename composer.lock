@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dbb65f3ab31fd6973b13bcd331beece8",
+    "content-hash": "3ea512847ba2d3b1aefe82bfc75924aa",
     "packages": [
         {
             "name": "berlioz/config",
@@ -54,12 +54,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Core.git",
-                "reference": "0c48c1fb108ca03f708318cf789af321da979894"
+                "reference": "ce30add4f8333c086792aac632dd22e8a433ccc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/0c48c1fb108ca03f708318cf789af321da979894",
-                "reference": "0c48c1fb108ca03f708318cf789af321da979894",
+                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/ce30add4f8333c086792aac632dd22e8a433ccc6",
+                "reference": "ce30add4f8333c086792aac632dd22e8a433ccc6",
                 "shasum": ""
             },
             "require": {
@@ -100,7 +100,7 @@
             ],
             "description": "Berlioz Framework Core",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-08-16T10:13:44+00:00"
+            "time": "2018-09-07T09:43:54+00:00"
         },
         {
             "name": "berlioz/flash-bag",
@@ -148,12 +148,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Form.git",
-                "reference": "4630c9ff1bddad839a3eed19a87c58617d1c9456"
+                "reference": "e1b9e370ded08ffa2c49bff7ed85aca57c6b12ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Form/zipball/4630c9ff1bddad839a3eed19a87c58617d1c9456",
-                "reference": "4630c9ff1bddad839a3eed19a87c58617d1c9456",
+                "url": "https://api.github.com/repos/BerliozFramework/Form/zipball/e1b9e370ded08ffa2c49bff7ed85aca57c6b12ed",
+                "reference": "e1b9e370ded08ffa2c49bff7ed85aca57c6b12ed",
                 "shasum": ""
             },
             "require": {
@@ -184,7 +184,7 @@
             ],
             "description": "Berlioz Form",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-08-23T14:56:06+00:00"
+            "time": "2018-09-03T14:53:14+00:00"
         },
         {
             "name": "berlioz/http-message",
@@ -324,12 +324,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/ServiceContainer.git",
-                "reference": "679a78f3240a0666ac3bb92f239bafcd03c6aab0"
+                "reference": "3e9289f5a52de3304129a9b73283faa5ef406f15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/ServiceContainer/zipball/679a78f3240a0666ac3bb92f239bafcd03c6aab0",
-                "reference": "679a78f3240a0666ac3bb92f239bafcd03c6aab0",
+                "url": "https://api.github.com/repos/BerliozFramework/ServiceContainer/zipball/3e9289f5a52de3304129a9b73283faa5ef406f15",
+                "reference": "3e9289f5a52de3304129a9b73283faa5ef406f15",
                 "shasum": ""
             },
             "require": {
@@ -358,7 +358,7 @@
             ],
             "description": "Berlioz Service Container",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-08-23T14:20:41+00:00"
+            "time": "2018-09-03T15:03:15+00:00"
         },
         {
             "name": "berlioz/twig-package",
@@ -411,12 +411,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Utils.git",
-                "reference": "6c7aa3903587d02439c07a9f536c0b8e4228db3a"
+                "reference": "d3af785da60bfb2bf7ec896d1fcd1ba805aa5860"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Utils/zipball/6c7aa3903587d02439c07a9f536c0b8e4228db3a",
-                "reference": "6c7aa3903587d02439c07a9f536c0b8e4228db3a",
+                "url": "https://api.github.com/repos/BerliozFramework/Utils/zipball/d3af785da60bfb2bf7ec896d1fcd1ba805aa5860",
+                "reference": "d3af785da60bfb2bf7ec896d1fcd1ba805aa5860",
                 "shasum": ""
             },
             "require": {
@@ -447,7 +447,7 @@
             ],
             "description": "Additional functions for PHP",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-08-22T09:16:10+00:00"
+            "time": "2018-09-06T16:13:09+00:00"
         },
         {
             "name": "psr/container",
@@ -1292,16 +1292,16 @@
         },
         {
             "name": "phpfastcache/phpfastcache",
-            "version": "7.0.2",
+            "version": "7.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPSocialNetwork/phpfastcache.git",
-                "reference": "949146e0a83d8d30871d18e16dd1021407c9b17c"
+                "reference": "2b53685853ff7662faf8b314c22ee62801323e2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPSocialNetwork/phpfastcache/zipball/949146e0a83d8d30871d18e16dd1021407c9b17c",
-                "reference": "949146e0a83d8d30871d18e16dd1021407c9b17c",
+                "url": "https://api.github.com/repos/PHPSocialNetwork/phpfastcache/zipball/2b53685853ff7662faf8b314c22ee62801323e2e",
+                "reference": "2b53685853ff7662faf8b314c22ee62801323e2e",
                 "shasum": ""
             },
             "require": {
@@ -1388,7 +1388,7 @@
                 "zend memory cache",
                 "zend server"
             ],
-            "time": "2018-07-23T19:06:45+00:00"
+            "time": "2018-09-05T20:45:26+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -1704,16 +1704,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.3.2",
+            "version": "7.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "34705f81bddc3f505b9599a2ef96e2b4315ba9b8"
+                "reference": "0356331bf62896dc56e3a15030b23b73f38b2935"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/34705f81bddc3f505b9599a2ef96e2b4315ba9b8",
-                "reference": "34705f81bddc3f505b9599a2ef96e2b4315ba9b8",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0356331bf62896dc56e3a15030b23b73f38b2935",
+                "reference": "0356331bf62896dc56e3a15030b23b73f38b2935",
                 "shasum": ""
             },
             "require": {
@@ -1784,7 +1784,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-08-22T06:39:21+00:00"
+            "time": "2018-09-05T09:58:53+00:00"
         },
         {
             "name": "psr/cache",
@@ -2505,6 +2505,6 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "7.1.0"
+        "php": "7.1"
     }
 }

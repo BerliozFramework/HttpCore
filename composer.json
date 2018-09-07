@@ -37,7 +37,7 @@
   },
   "require-dev": {
     "phpfastcache/phpfastcache": "^7.0",
-    "phpunit/phpunit": "^7.2"
+    "phpunit/phpunit": "^7.3"
   },
   "suggest": {
     "phpfastcache/phpfastcache": "^7.0"
@@ -51,7 +51,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.1.0"
+      "php": "7.1"
     },
     "optimize-autoloader": true,
     "sort-packages": true
