@@ -329,12 +329,17 @@
         },
         {
             "name": "berlioz/service-container",
-            "version": "dev-feature/refacto",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BerliozFramework/ServiceContainer.git",
+                "reference": "5afe389b6d48490f598a8b386c0b29008f75c836"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../Berlioz2/ServiceContainer",
-                "reference": "d32b1f4dfbe43e518707f04917f0985470eb48e0",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/BerliozFramework/ServiceContainer/zipball/5afe389b6d48490f598a8b386c0b29008f75c836",
+                "reference": "5afe389b6d48490f598a8b386c0b29008f75c836",
+                "shasum": ""
             },
             "require": {
                 "php": "^7.1",
@@ -345,7 +350,7 @@
             },
             "require-dev": {
                 "ext-json": "*",
-                "phpunit/phpunit": "^7.4"
+                "phpunit/phpunit": "^7.5"
             },
             "type": "library",
             "autoload": {
@@ -353,22 +358,19 @@
                     "Berlioz\\ServiceContainer\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Berlioz\\ServiceContainer\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
                     "name": "Ronan Giron",
-                    "email": "ronan.giron@berlioz-framework.com"
+                    "email": "ronan@getberlioz.com"
                 }
             ],
             "description": "Berlioz Service Container",
-            "homepage": "http://www.berlioz-framework.com"
+            "homepage": "http://getberlioz.com",
+            "time": "2018-12-28T15:30:29+00:00"
         },
         {
             "name": "berlioz/twig-package",
