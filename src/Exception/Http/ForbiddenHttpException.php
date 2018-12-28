@@ -16,6 +16,11 @@ namespace Berlioz\HttpCore\Exception\Http;
 
 use Berlioz\HttpCore\Exception\HttpException;
 
+/**
+ * Class ForbiddenHttpException.
+ *
+ * @package Berlioz\HttpCore\Exception\Http
+ */
 class ForbiddenHttpException extends HttpException
 {
     /**

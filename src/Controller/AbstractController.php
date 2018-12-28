@@ -14,19 +14,28 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\Controller;
 
-use Berlioz\Core\Exception\ContainerException;
-use Berlioz\Core\Package\TemplateEngine;
+use Berlioz\Core\CoreAwareInterface;
+use Berlioz\Core\CoreAwareTrait;
 use Berlioz\Http\Message\Response;
 use Berlioz\HttpCore\App\HttpAppAwareInterface;
 use Berlioz\HttpCore\App\HttpAppAwareTrait;
+use Berlioz\Package\Twig\Controller\RenderingControllerInterface;
+use Berlioz\Package\Twig\Controller\RenderingControllerTrait;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
 use Berlioz\HttpCore\App\HttpApp;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class AbstractController implements HttpAppAwareInterface
+/**
+ * Class AbstractController.
+ *
+ * @package Berlioz\HttpCore\Controller
+ */
+abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInterface, RenderingControllerInterface
 {
+    use CoreAwareTrait;
     use HttpAppAwareTrait;
+    use RenderingControllerTrait;
 
     /**
      * AbstractController constructor.
@@ -36,6 +45,7 @@ abstract class AbstractController implements HttpAppAwareInterface
     public function __construct(HttpApp $app)
     {
         $this->setApp($app);
+        $this->setCore($app->getCore());
     }
 
     /**
@@ -56,9 +66,9 @@ abstract class AbstractController implements HttpAppAwareInterface
      * @return mixed
      * @throws \Berlioz\Core\Exception\BerliozException
      */
-    protected function getService(string $id)
+    public function getService(string $id)
     {
-        return $this->getApp()->getServiceContainer()->get($id);
+        return $this->getApp()->getService($id);
     }
 
     /**
@@ -71,26 +81,6 @@ abstract class AbstractController implements HttpAppAwareInterface
     {
         /** @var \Berlioz\Router\RouterInterface $router */
         return $this->getService(RouterInterface::class);
-    }
-
-    /**
-     * Do render of templates.
-     *
-     * @param string  $name      Filename of template
-     * @param mixed[] $variables Variables for template
-     *
-     * @return string Output content
-     * @throws \Berlioz\Core\Exception\BerliozException
-     */
-    protected function render(string $name, array $variables = []): string
-    {
-        $templateEngine = $this->getService('templating');
-
-        if (!($templateEngine instanceof TemplateEngine)) {
-            throw new ContainerException(sprintf('Service "templating" must be implements %s interface', TemplateEngine::class));
-        }
-
-        return $templateEngine->render($name, $variables);
     }
 
     /**

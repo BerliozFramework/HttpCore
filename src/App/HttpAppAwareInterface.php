@@ -14,6 +14,11 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\App;
 
+/**
+ * Interface HttpAppAwareInterface.
+ *
+ * @package Berlioz\HttpCore\App
+ */
 interface HttpAppAwareInterface
 {
     /**

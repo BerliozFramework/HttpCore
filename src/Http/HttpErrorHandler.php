@@ -18,6 +18,11 @@ use Berlioz\HttpCore\Exception\HttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Interface HttpErrorHandler.
+ *
+ * @package Berlioz\HttpCore\Http
+ */
 interface HttpErrorHandler
 {
     /**

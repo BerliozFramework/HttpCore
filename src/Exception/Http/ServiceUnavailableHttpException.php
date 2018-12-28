@@ -16,6 +16,11 @@ namespace Berlioz\HttpCore\Exception\Http;
 
 use Berlioz\HttpCore\Exception\HttpException;
 
+/**
+ * Class ServiceUnavailableHttpException.
+ *
+ * @package Berlioz\HttpCore\Exception\Http
+ */
 class ServiceUnavailableHttpException extends HttpException
 {
     /**

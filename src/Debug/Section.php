@@ -14,6 +14,11 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\Debug;
 
+/**
+ * Interface Section.
+ *
+ * @package Berlioz\HttpCore\Debug
+ */
 interface Section extends \Berlioz\Core\Debug\Section
 {
     /**

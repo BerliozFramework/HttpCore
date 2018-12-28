@@ -14,22 +14,36 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\Debug;
 
+use Berlioz\Core\Core;
+use Berlioz\Core\CoreAwareInterface;
+use Berlioz\Core\CoreAwareTrait;
 use Berlioz\Core\Debug\AbstractSection;
 use Berlioz\HttpCore\App\HttpApp;
-use Berlioz\HttpCore\App\HttpAppAwareInterface;
-use Berlioz\HttpCore\App\HttpAppAwareTrait;
+use Berlioz\Router\RouterInterface;
 
-class Router extends AbstractSection implements HttpAppAwareInterface, Section
+/**
+ * Class Router.
+ *
+ * @package Berlioz\HttpCore\Debug
+ */
+class Router extends AbstractSection implements CoreAwareInterface, Section
 {
-    use HttpAppAwareTrait;
+    use CoreAwareTrait;
     /** @var \Psr\Http\Message\ServerRequestInterface Server request */
     protected $serverRequest;
     /** @var \Berlioz\Router\RouteInterface Route */
     protected $route;
+    /** @var \Berlioz\Router\RouteSetInterface Route set */
+    protected $routeSet;
 
-    public function __construct(HttpApp $app)
+    /**
+     * Debug Router constructor.
+     *
+     * @param \Berlioz\Core\Core $core
+     */
+    public function __construct(Core $core)
     {
-        $this->setApp($app);
+        $this->setCore($core);
     }
 
     /////////////////////////
@@ -50,9 +64,23 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
      */
     public function saveReport()
     {
-        if ($this->hasApp()) {
-            $this->serverRequest = $this->getApp()->getRouter()->getServerRequest();
-            $this->route = $this->getApp()->getRoute();
+        if (is_null($this->getCore())) {
+            return;
+        }
+
+        if (!$this->getCore()->getServiceContainer()->has(RouterInterface::class)) {
+            return;
+        }
+
+        /** @var \Berlioz\Router\RouterInterface $router */
+        $router = $this->getCore()->getServiceContainer()->get(RouterInterface::class);
+        $this->serverRequest = $router->getServerRequest();
+        $this->routeSet = $router->getRouteSet();
+
+        if ($this->getCore()->getServiceContainer()->has(HttpApp::class)) {
+            /** @var \Berlioz\HttpCore\App\HttpApp $httpApp */
+            $httpApp = $this->getCore()->getServiceContainer()->get(HttpApp::class);
+            $this->route = $httpApp->getRoute();
         }
     }
 
@@ -80,7 +108,8 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
     public function serialize()
     {
         return serialize(['serverRequest' => $this->getServerRequest(),
-                          'route'         => $this->getRoute()]);
+                          'route'         => $this->getRoute(),
+                          'routeSet'      => $this->getRouteSet()]);
     }
 
     /**
@@ -92,6 +121,7 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
 
         $this->serverRequest = $unserialized['serverRequest'] ?? null;
         $this->route = $unserialized['route'] ?? null;
+        $this->routeSet = $unserialized['routeSet'] ?? null;
     }
 
     ////////////////////
@@ -116,5 +146,15 @@ class Router extends AbstractSection implements HttpAppAwareInterface, Section
     public function getRoute(): ?\Berlioz\Router\RouteInterface
     {
         return $this->route;
+    }
+
+    /**
+     * Get route set.
+     *
+     * @return \Berlioz\Router\RouteSetInterface|null
+     */
+    public function getRouteSet(): ?\Berlioz\Router\RouteSetInterface
+    {
+        return $this->routeSet;
     }
 }

@@ -20,11 +20,17 @@ use Berlioz\HttpCore\Exception\HttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Class DefaultHttpErrorHandler.
+ *
+ * @package Berlioz\HttpCore\Http
+ */
 class DefaultHttpErrorHandler extends AbstractController implements HttpErrorHandler
 {
     /**
      * @inheritdoc
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      */
     public function handle(?ServerRequestInterface $request, HttpException $e): ResponseInterface
     {

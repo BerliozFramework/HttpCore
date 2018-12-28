@@ -19,6 +19,11 @@ use Berlioz\FlashBag\FlashBag;
 use Berlioz\Router\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Class AppProfile.
+ *
+ * @package Berlioz\HttpCore\App
+ */
 class AppProfile
 {
     use HttpAppAwareTrait;
@@ -51,7 +56,7 @@ class AppProfile
      */
     public function getConfig(): ConfigInterface
     {
-        return $this->getApp()->getConfig();
+        return $this->getApp()->getCore()->getConfig();
     }
 
     /**
@@ -63,7 +68,7 @@ class AppProfile
     public function getFlashBag(): FlashBag
     {
         /** @var \Berlioz\FlashBag\FlashBag $flashBag */
-        $flashBag = $this->getApp()->getServiceContainer()->get('flashbag');
+        $flashBag = $this->getApp()->getCore()->getServiceContainer()->get('flashbag');
 
         return $flashBag;
     }
@@ -77,7 +82,7 @@ class AppProfile
     public function getRequest(): ServerRequestInterface
     {
         /** @var \Berlioz\Router\RouterInterface $router */
-        $router = $this->getApp()->getServiceContainer()->get('router');
+        $router = $this->getApp()->getCore()->getServiceContainer()->get('router');
 
         return $router->getServerRequest();
     }
@@ -102,26 +107,28 @@ class AppProfile
      */
     public function getLocale(): string
     {
-        return $this->getApp()->getLocale();
+        return $this->getApp()->getCore()->getLocale();
     }
 
     /**
      * Is debug enabled?
      *
      * @return bool
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function isDebugEnabled(): bool
     {
-        return $this->getApp()->getDebug()->isEnabled();
+        return $this->getApp()->getCore()->getDebug()->isEnabled();
     }
 
     /**
      * Get debug unique ID.
      *
      * @return string
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function getDebugUniqid(): string
     {
-        return $this->getApp()->getDebug()->getUniqid();
+        return $this->getApp()->getCore()->getDebug()->getUniqid();
     }
 }
