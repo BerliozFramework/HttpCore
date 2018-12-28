@@ -17,6 +17,11 @@ namespace Berlioz\HttpCore\Exception;
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Message\Response;
 
+/**
+ * Class HttpException.
+ *
+ * @package Berlioz\HttpCore\Exception
+ */
 class HttpException extends BerliozException
 {
     /**

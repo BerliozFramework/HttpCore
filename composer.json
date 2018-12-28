@@ -4,11 +4,11 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "license": "MIT",
-  "homepage": "http://www.berlioz-framework.com",
+  "homepage": "http://getberlioz.com",
   "authors": [
     {
       "name": "Ronan Giron",
-      "email": "ronan.giron@berlioz-framework.com"
+      "email": "ronan@getberlioz.com"
     }
   ],
   "autoload": {
@@ -23,24 +23,21 @@
   },
   "require": {
     "php": "^7.1",
+    "ext-intl": "*",
     "ext-json": "*",
     "ext-zlib": "*",
-    "berlioz/core": "@dev",
+    "berlioz/core": "dev-develop",
     "berlioz/flash-bag": "^1.0",
     "berlioz/form": "dev-refactoring",
-    "berlioz/http-message": "@dev",
-    "berlioz/router": "@dev",
-    "berlioz/twig-package": "@dev",
-    "berlioz/utils": "@dev",
+    "berlioz/http-message": "dev-develop",
+    "berlioz/router": "dev-develop",
+    "berlioz/twig-package": "dev-develop",
+    "berlioz/utils": "dev-develop",
     "psr/http-server-handler": "^1.0.0",
-    "twig/twig": "^2.4"
+    "twig/twig": "^2.6"
   },
   "require-dev": {
-    "phpfastcache/phpfastcache": "^7.0",
-    "phpunit/phpunit": "^7.3"
-  },
-  "suggest": {
-    "phpfastcache/phpfastcache": "^7.0"
+    "phpunit/phpunit": "^7.5"
   },
   "provide": {
     "psr/container-implementation": "^1.0",
@@ -50,10 +47,8 @@
     "psr/simple-cache-implementation": "^1.0"
   },
   "config": {
-    "platform": {
-      "php": "7.1"
-    },
-    "optimize-autoloader": true,
-    "sort-packages": true
+    "berlioz": {
+      "package": "Berlioz\\HttpCore\\HttpCorePackage"
+    }
   }
 }

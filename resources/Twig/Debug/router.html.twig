@@ -27,6 +27,9 @@
     <li class="nav-item">
       <a class="nav-link" id="profile-tab" data-toggle="tab" href="#server-request" role="tab" aria-controls="server-request" aria-selected="false">Server request</a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#routeset" role="tab" aria-controls="routeset" aria-selected="false">Route set</a>
+    </li>
   </ul>
   <div class="tab-content">
     <div class="tab-pane py-3 fade show active" id="route" role="tabpanel" aria-labelledby="route-tab">
@@ -44,7 +47,13 @@
             </tr>
             <tr>
               <th scope="row" class="text-nowrap">Allowed methods</th>
-              <td>{{ section.route.methods|join(', ') }}</td>
+              <td>
+                {% if section.route.methods is empty %}
+                  <em>ALL</em>
+                {% else %}
+                  {{ section.route.methods|join(', ') }}
+                {% endif %}
+              </td>
             </tr>
             <tr>
               <th scope="row" class="text-nowrap">Route found</th>
@@ -72,6 +81,37 @@
                       <tr>
                         <th scope="row">{{ name }}</th>
                         <td>{{ value }}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                {% endif %}
+              </td>
+            </tr>
+            <tr class="{% if section.route.context is empty %}bg-danger{% endif %}">
+              <th scope="row" class="text-nowrap">Options</th>
+              <td>
+                {% if section.route.options is empty %}
+                  <em>No option</em>
+                {% else %}
+                  <table class="table table-sm table-bordered mb-0">
+                    <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for name, value in section.route.options %}
+                      <tr>
+                        <th scope="row">{{ name }}</th>
+                        <td>
+                          {% if value is iterable %}
+                            <em>Array</em>
+                          {% else %}
+                            {{ value }}
+                          {% endif %}
+                        </td>
                       </tr>
                     {% endfor %}
                     </tbody>
@@ -110,7 +150,7 @@
               <th scope="row" class="text-nowrap">Attributes</th>
               <td>
                 {% if section.serverRequest.attributes is empty %}
-                  <em>No attributes!</em>
+                  <em>No attribute</em>
                 {% else %}
                   <table class="table table-sm table-bordered mb-0">
                     <thead>
@@ -183,6 +223,53 @@
                 {% endif %}
               </td>
             </tr>
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="tab-pane py-3 fade" id="routeset" role="tabpanel" aria-labelledby="routeset-tab">
+      {% if section.routeSet.routes is empty %}
+        <div class="alert alert-secondary" role="alert">
+          No route defined!
+        </div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table border-bottom">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Method</th>
+              <th>Path</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set routeFound = false %}
+            {%- for route in section.routeSet.routes %}
+              <tr class="
+                {%- spaceless -%}
+                  {% if section.route is not empty and routeFound is same as(false) %}
+                    {% if section.route.name == route.name %}
+                      {% set routeFound  = true %}
+                      bg-success text-white
+                    {% else %}
+                      bg-warning
+                    {% endif %}
+                  {% endif %}
+                {%- endspaceless -%}
+              ">
+                <th scope="row">{{ route.name }}</th>
+                <td>
+                  {% if section.route.methods is empty or section.route.methods == ['GET', 'HEAD', 'POST', 'OPTIONS', 'CONNECT', 'TRACE', 'PUT', 'DELETE'] %}
+                    <em>ALL</em>
+                  {% else %}
+                    {{ section.route.methods|join(', ') }}
+                  {% endif %}
+                </td>
+                <td>{{ route.route }}</td>
+              </tr>
+            {% endfor %}
             </tbody>
           </table>
         </div>

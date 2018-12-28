@@ -15,66 +15,53 @@ declare(strict_types=1);
 namespace Berlioz\HttpCore\App;
 
 use Berlioz\Core\App\AbstractApp;
-use Berlioz\Core\Config;
+use Berlioz\Core\Core;
 use Berlioz\Core\Debug;
-use Berlioz\Core\Exception\BerliozException;
-use Berlioz\Core\Exception\CacheException;
 use Berlioz\Http\Message\Response;
 use Berlioz\Http\Message\Stream;
-use Berlioz\HttpCore\Controller\DebugController;
 use Berlioz\HttpCore\Debug\Router as DebugRouter;
 use Berlioz\HttpCore\Exception\HttpException;
 use Berlioz\HttpCore\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
-use Berlioz\HttpCore\Exception\RoutingException;
 use Berlioz\HttpCore\Http\DefaultHttpErrorHandler;
 use Berlioz\HttpCore\Http\HttpErrorHandler;
-use Berlioz\Router\RouteGenerator;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
-use Berlioz\Router\RouteSetInterface;
+use Berlioz\ServiceContainer\Service;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\SimpleCache\CacheInterface;
 
+/**
+ * Class HttpApp.
+ *
+ * @package Berlioz\HttpCore\App
+ */
 class HttpApp extends AbstractApp implements RequestHandlerInterface
 {
-    const CACHE_ROUTER_KEY = '_BERLIOZ_ROUTER';
-    /** @var bool Router initialized? */
-    private $routerInitialized;
     /** @var \Berlioz\Router\RouteInterface|null Current route */
     private $route;
 
     /**
-     * HttpApp destructor.
+     * HttpApp constructor.
+     *
+     * @param \Berlioz\Core\Core|null $core
+     *
+     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Berlioz\ServiceContainer\Exception\ContainerException
      */
-    public function __destruct()
+    public function __construct(?Core $core = null)
     {
-        if ($this->getDebug()->isEnabled()) {
-            $this->getDebug()->addSection(new DebugRouter($this));
-        }
+        parent::__construct($core);
 
-        parent::__destruct();
-    }
+        // Add me to services
+        $this->getCore()->getServiceContainer()->add(new Service($this, 'app'));
 
-    //////////////
-    /// CONFIG ///
-    //////////////
-
-    /**
-     * @inheritdoc
-     */
-    public function getConfig(): ?Config
-    {
-        if (!$this->isConfigInitialized()) {
-            parent::getConfig()->extendsJson(implode(DIRECTORY_SEPARATOR,
-                                                     [__DIR__, '..', '..', 'resources', 'config.default.json']),
-                                             true,
-                                             true);
-        }
-
-        return parent::getConfig();
+        $this->getCore()->onTerminate(function (Core $core) {
+            if ($core->getDebug()->isEnabled()) {
+                $core->getDebug()->addSection(new DebugRouter($core));
+            }
+        });
     }
 
     //////////////
@@ -89,49 +76,9 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      */
     public function getRouter(): RouterInterface
     {
-        try {
-            if (!$this->routerInitialized) {
-                $routerActivity = (new Debug\Activity('Router (initialization)', 'Berlioz'))->start();
+        $router = $this->getCore()->getServiceContainer()->get(RouterInterface::class);
 
-                $serviceCacheExists = $this->getServiceContainer()->has(CacheInterface::class);
-                /** @var \Berlioz\Router\Router $router */
-                $router = $this->getServiceContainer()->get(RouterInterface::class);
-
-                // Get from cache
-                if ($serviceCacheExists && ($routeSet = $this->getServiceContainer()->get(CacheInterface::class)->get(self::CACHE_ROUTER_KEY)) instanceof RouteSetInterface) {
-                    $router->setRouteSet($routeSet);
-                } // Read controllers in configuration
-                else {
-                    // Get controllers from PHP file
-                    $controllers = $this->getConfig()->get('controllers', []);
-                    $controllers[] = DebugController::class;
-
-                    if (!empty($controllers)) {
-                        $routeGenerator = new RouteGenerator;
-                        foreach ($controllers as $controller) {
-                            $router->getRouteSet()->merge($routeGenerator->fromClass($controller));
-                        }
-                    }
-
-                    if ($serviceCacheExists) {
-                        $this->getServiceContainer()->get(CacheInterface::class)->set(self::CACHE_ROUTER_KEY, $router->getRouteSet());
-                    }
-                }
-
-                $this->routerInitialized = true;
-                $this->getDebug()->getTimeLine()->addActivity($routerActivity->end());
-
-                return $router;
-            }
-
-            return $this->getServiceContainer()->get(RouterInterface::class);
-        } catch (\Psr\SimpleCache\CacheException $e) {
-            throw new CacheException('Cache error', 0, $e);
-        } catch (BerliozException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            throw new RoutingException('Routing error', 0, $e);
-        }
+        return $router;
     }
 
     /**
@@ -154,6 +101,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      * @param \Psr\Http\Message\ServerRequestInterface $serverRequest Server request
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function handle(?ServerRequestInterface $serverRequest = null): ResponseInterface
     {
@@ -163,7 +111,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             // Handle router
             $routerActivity = (new Debug\Activity('Router (handle)', 'Berlioz'))->start();
             $this->route = $router->handle($serverRequest);
-            $this->getDebug()->getTimeLine()->addActivity($routerActivity->end());
+            $this->getCore()->getDebug()->getTimeLine()->addActivity($routerActivity->end());
 
             if (!is_null($this->route)) {
                 $routeContext = $this->route->getContext();
@@ -171,7 +119,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                 if (!empty($routeContext['_class']) && !empty($routeContext['_method'])) {
                     // Define default locale from request and route (attribute _locale)
                     if (!is_null($locale = $serverRequest->getAttribute('_locale'))) {
-                        $this->setLocale($locale);
+                        $this->getCore()->setLocale($locale);
                     }
 
                     // Create instance of controller and invoke method
@@ -180,7 +128,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                         $controllerActivity = (new Debug\Activity('Controller'))->start();
 
                         // Create instance of controller
-                        $controller = $this->getServiceContainer()
+                        $controller = $this->getCore()->getServiceContainer()
                                            ->getInstantiator()
                                            ->newInstanceOf($routeContext['_class'],
                                                            ['request'  => $serverRequest,
@@ -189,7 +137,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                         // Call _b_pre() method?
                         if (method_exists($controller, '_b_pre')) {
                             // Call main method
-                            $preResponse = $this->getServiceContainer()
+                            $preResponse = $this->getCore()->getServiceContainer()
                                                 ->getInstantiator()
                                                 ->invokeMethod($controller,
                                                                '_b_pre',
@@ -203,7 +151,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
 
                         // Call main method only if response code is between 200 and 299
                         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-                            $mainResponse = $this->getServiceContainer()
+                            $mainResponse = $this->getCore()->getServiceContainer()
                                                  ->getInstantiator()
                                                  ->invokeMethod($controller,
                                                                 $routeContext['_method'],
@@ -222,7 +170,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                         // Call _b_post() method?
                         if (method_exists($controller, '_b_post')) {
                             // Call main method
-                            $postResponse = $this->getServiceContainer()
+                            $postResponse = $this->getCore()->getServiceContainer()
                                                  ->getInstantiator()
                                                  ->invokeMethod($controller,
                                                                 '_b_post',
@@ -234,7 +182,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                             }
                         }
                     } finally {
-                        $this->getDebug()->getTimeLine()->addActivity($controllerActivity->end());
+                        $this->getCore()->getDebug()->getTimeLine()->addActivity($controllerActivity->end());
                     }
                 } else {
                     throw new InternalServerErrorHttpException;
@@ -251,8 +199,8 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         }
 
         // Debug?
-        if ($this->getDebug()->isEnabled()) {
-            $response = $response->withAddedHeader('X-Berlioz-Debug', $this->getDebug()->getUniqid());
+        if ($this->getCore()->getDebug()->isEnabled()) {
+            $response = $response->withAddedHeader('X-Berlioz-Debug', $this->getCore()->getDebug()->getUniqid());
         }
 
         return $response;
@@ -269,8 +217,12 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     {
         try {
             // Get error handler in configuration
-            $errorHandler = $this->getConfig()->get(sprintf('berlioz.http.errors.%s', $e->getCode()),
-                                                    $this->getConfig()->get('berlioz.http.errors.default'));
+            $errorHandler = $this->getCore()
+                                 ->getConfig()
+                                 ->get(sprintf('berlioz.http.errors.%s', $e->getCode()),
+                                       $this->getCore()
+                                            ->getConfig()
+                                            ->get('berlioz.http.errors.default'));
 
             // Check validity of error handler
             if (empty($errorHandler) || !class_exists($errorHandler) || !is_a($errorHandler, HttpErrorHandler::class, true)) {
@@ -278,10 +230,10 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             }
 
             // Invoke method of error handler
-            $handler = $this->getServiceContainer()
+            $handler = $this->getCore()->getServiceContainer()
                             ->getInstantiator()
                             ->newInstanceOf($errorHandler);
-            $response = $this->getServiceContainer()
+            $response = $this->getCore()->getServiceContainer()
                              ->getInstantiator()
                              ->invokeMethod($handler,
                                             'handle',
@@ -292,13 +244,13 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                 $handler = new DefaultHttpErrorHandler($this);
                 $response = $handler->handle($this->getRouter()->getServerRequest(), $e);
             } catch (\Throwable $throwable) {
-                $str = "<html>" .
+                $str = "<html lang='en'>" .
                        "<body>" .
                        "<h1>Internal Server Error</h1>";
 
                 try {
                     $debug = false;
-                    if ($debug = $this->getConfig()->get('berlioz.debug', false)) {
+                    if ($debug = $this->getCore()->getConfig()->get('berlioz.debug', false)) {
                         $str .= "<pre>{$e}</pre>";
                     }
                 } catch (\Throwable $throwable) {
@@ -322,6 +274,8 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      * Print ResponseInterface object.
      *
      * @param \Psr\Http\Message\ResponseInterface $response
+     *
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function printResponse(ResponseInterface $response)
     {
@@ -346,6 +300,6 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         print $response->getBody();
 
         // Debug
-        $this->getDebug()->getTimeLine()->addActivity($printActivity->end());
+        $this->getCore()->getDebug()->getTimeLine()->addActivity($printActivity->end());
     }
 }

@@ -20,10 +20,19 @@ use Berlioz\Http\Message\Response;
 use Berlioz\HttpCore\App\HttpApp;
 use Berlioz\HttpCore\Debug\Section;
 use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
+use Berlioz\Package\Twig\Controller\RenderingControllerInterface;
+use Berlioz\Package\Twig\Controller\RenderingControllerTrait;
 use Psr\Http\Message\ServerRequestInterface;
 
-class DebugController extends AbstractController
+/**
+ * Class DebugController.
+ *
+ * @package Berlioz\HttpCore\Controller
+ * @route(priority=-1000)
+ */
+class DebugController extends AbstractController implements RenderingControllerInterface
 {
+    use RenderingControllerTrait;
     /** @var string Resource string */
     private $resourceDist;
     /** @var \Berlioz\Core\Debug[] $debug */
@@ -33,12 +42,14 @@ class DebugController extends AbstractController
      * DebugController constructor.
      *
      * @param \Berlioz\HttpCore\App\HttpApp $app
+     *
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function __construct(HttpApp $app)
     {
         parent::__construct($app);
 
-        $this->getApp()->getDebug()->setEnabled(false);
+        $this->getApp()->getCore()->getDebug()->setEnabled(false);
         $this->resourceDist = implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', 'resources', 'Public', 'dist']);
     }
 
@@ -54,7 +65,7 @@ class DebugController extends AbstractController
     {
         if (is_null($this->debug)) {
             try {
-                if (!empty($debugDirectory = $this->getApp()->getConfig()->get('berlioz.directories.debug')) &&
+                if (!empty($debugDirectory = $this->getApp()->getCore()->getConfig()->get('berlioz.directories.debug')) &&
                     file_exists($debugFile = $debugDirectory . DIRECTORY_SEPARATOR . basename($id) . '.debug')) {
 
                     if (empty($this->debug[$id] = unserialize(gzinflate(file_get_contents($debugFile))))) {
@@ -84,8 +95,9 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
-     * @route("/_console/dist/toolbar.{type}", name="_berlioz/console/toolbar-dist", priority=1, requirements={"type":
-     *                                         "js|css|caller\.js"}, defaults={"type": "caller.js"})
+     * @route("/_console/dist/toolbar.{type}", name="_berlioz/console/toolbar-dist", priority=-999,
+     *                                         requirements={"type": "js|css|caller\.js"}, defaults={"type":
+     *                                         "caller.js"})
      */
     public function toolbarDist(ServerRequestInterface $request)
     {
@@ -118,6 +130,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/toolbar", name="_berlioz/console/toolbar", requirements={"id":"\w+"})
      */
     public function toolbar(ServerRequestInterface $request)
@@ -139,7 +152,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
-     * @route("/_console/dist/debug.{type}", name="_berlioz/console/console-dist", priority=1, requirements={"type":
+     * @route("/_console/dist/debug.{type}", name="_berlioz/console/console-dist", priority=-999, requirements={"type":
      *                                         "js|css|css.map"})
      */
     public function consoleDist(ServerRequestInterface $request)
@@ -185,6 +198,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}", name="_berlioz/console/home", requirements={"id":"\w+"})
      */
     public function dashboard(ServerRequestInterface $request)
@@ -206,6 +220,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/performances", name="_berlioz/console/performances", requirements={"id":"\w+"})
      */
     public function performances(ServerRequestInterface $request)
@@ -227,6 +242,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/phpinfo", name="_berlioz/console/phpinfo", requirements={"id":"\w+"})
      */
     public function phpInfo(ServerRequestInterface $request)
@@ -244,6 +260,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/activities", name="_berlioz/console/activities", requirements={"id":"\w+"})
      */
     public function activities(ServerRequestInterface $request)
@@ -263,6 +280,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/activities/{activity}", name="_berlioz/console/activity", requirements={"id":"\w+",
      *                                                "activity": "\d+"})
      */
@@ -293,6 +311,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/php-errors", name="_berlioz/console/php-errors", requirements={"id":"\w+"})
      */
     public function phpErrors(ServerRequestInterface $request)
@@ -312,6 +331,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/php-errors/{error}", name="_berlioz/console/php-error", requirements={"id":"\w+",
      *                                             "error": "\d+"})
      */
@@ -336,6 +356,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/used-classes", name="_berlioz/console/used-classes", requirements={"id":"\w+"})
      */
     public function usedClasses(ServerRequestInterface $request)
@@ -382,6 +403,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/config", name="_berlioz/console/config", requirements={"id":"\w+"})
      */
     public function configuration(ServerRequestInterface $request)
@@ -401,6 +423,7 @@ class DebugController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig_Error
      * @route("/_console/{id}/{section}", name="_berlioz/console/section", requirements={"id":"\w+", "section":
      *                                    "[\w\-_]+"})
      */

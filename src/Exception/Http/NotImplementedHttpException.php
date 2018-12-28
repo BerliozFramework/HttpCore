@@ -16,6 +16,11 @@ namespace Berlioz\HttpCore\Exception\Http;
 
 use Berlioz\HttpCore\Exception\HttpException;
 
+/**
+ * Class NotImplementedHttpException.
+ *
+ * @package Berlioz\HttpCore\Exception\Http
+ */
 class NotImplementedHttpException extends HttpException
 {
     /**

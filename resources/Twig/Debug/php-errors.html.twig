@@ -9,73 +9,75 @@
     It's a snapshot of PHP errors occurred at the moment of request.
   </p>
 
-  <div class="table-responsive">
-    <table class="table table-striped table-sm">
-      <thead>
-      <tr>
-        <th>Type</th>
-        <th>Message</th>
-        <th>File</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for error in phpErrors %}
+  {% if phpErrors is empty %}
+    <div class="alert alert-success" role="alert">
+      <strong>Great!</strong> No PHP error reported
+    </div>
+  {% else %}
+    <div class="table-responsive">
+      <table class="table table-striped table-sm">
+        <thead>
         <tr>
-          <th>
-            {% if error.errno == constant('E_ERROR') %}
-              E_ERROR
-            {% elseif error.errno == constant('E_WARNING') %}
-              E_WARNING
-            {% elseif error.errno == constant('E_PARSE') %}
-              E_PARSE
-            {% elseif error.errno == constant('E_NOTICE') %}
-              E_NOTICE
-            {% elseif error.errno == constant('E_CORE_ERROR') %}
-              E_CORE_ERROR
-            {% elseif error.errno == constant('E_CORE_WARNING') %}
-              E_CORE_WARNING
-            {% elseif error.errno == constant('E_COMPILE_ERROR') %}
-              E_COMPILE_ERROR
-            {% elseif error.errno == constant('E_COMPILE_WARNING') %}
-              E_COMPILE_WARNING
-            {% elseif error.errno == constant('E_USER_ERROR') %}
-              E_USER_ERROR
-            {% elseif error.errno == constant('E_USER_WARNING') %}
-              E_USER_WARNING
-            {% elseif error.errno == constant('E_USER_NOTICE') %}
-              E_USER_NOTICE
-            {% elseif error.errno == constant('E_STRICT') %}
-              E_STRICT
-            {% elseif error.errno == constant('E_RECOVERABLE_ERROR') %}
-              E_RECOVERABLE_ERROR
-            {% elseif error.errno == constant('E_DEPRECATED') %}
-              E_DEPRECATED
-            {% elseif error.errno == constant('E_USER_DEPRECATED') %}
-              E_USER_DEPRECATED
-            {% else %}
-              E_UNKNOWN
-            {% endif %}
-          </th>
-          <td>{{ error.message }}</td>
-          <td>{{ error.file }}{% if error.line is not empty %}:{{ error.line }}{% endif %}</td>
-          <td class="text-right">
-            <button class="btn btn-secondary" data-toggle="detail" data-type="error" data-target="{{ path('_berlioz/console/php-error', {"id": report.uniqid, "error": loop.index0}) }}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </button>
-          </td>
+          <th>Type</th>
+          <th>Message</th>
+          <th>File</th>
+          <th></th>
         </tr>
-      {% else %}
-        <tr>
-          <td colspan="4" class="text-center"><em>No PHP error reported</em></td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+        {% for error in phpErrors %}
+          <tr>
+            <th>
+              {% if error.errno == constant('E_ERROR') %}
+                E_ERROR
+              {% elseif error.errno == constant('E_WARNING') %}
+                E_WARNING
+              {% elseif error.errno == constant('E_PARSE') %}
+                E_PARSE
+              {% elseif error.errno == constant('E_NOTICE') %}
+                E_NOTICE
+              {% elseif error.errno == constant('E_CORE_ERROR') %}
+                E_CORE_ERROR
+              {% elseif error.errno == constant('E_CORE_WARNING') %}
+                E_CORE_WARNING
+              {% elseif error.errno == constant('E_COMPILE_ERROR') %}
+                E_COMPILE_ERROR
+              {% elseif error.errno == constant('E_COMPILE_WARNING') %}
+                E_COMPILE_WARNING
+              {% elseif error.errno == constant('E_USER_ERROR') %}
+                E_USER_ERROR
+              {% elseif error.errno == constant('E_USER_WARNING') %}
+                E_USER_WARNING
+              {% elseif error.errno == constant('E_USER_NOTICE') %}
+                E_USER_NOTICE
+              {% elseif error.errno == constant('E_STRICT') %}
+                E_STRICT
+              {% elseif error.errno == constant('E_RECOVERABLE_ERROR') %}
+                E_RECOVERABLE_ERROR
+              {% elseif error.errno == constant('E_DEPRECATED') %}
+                E_DEPRECATED
+              {% elseif error.errno == constant('E_USER_DEPRECATED') %}
+                E_USER_DEPRECATED
+              {% else %}
+                E_UNKNOWN
+              {% endif %}
+            </th>
+            <td>{{ error.message }}</td>
+            <td>{{ error.file }}{% if error.line is not empty %}:{{ error.line }}{% endif %}</td>
+            <td class="text-right">
+              <button class="btn btn-secondary" data-toggle="detail" data-type="error" data-target="{{ path('_berlioz/console/php-error', {"id": report.uniqid, "error": loop.index0}) }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
 
   <!-- Modal -->
   <div class="modal fade" id="errorDetail" tabindex="-1" role="dialog" aria-labelledby="errorDetailTitle" aria-hidden="true">

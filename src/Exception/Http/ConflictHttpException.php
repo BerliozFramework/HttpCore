@@ -16,6 +16,11 @@ namespace Berlioz\HttpCore\Exception\Http;
 
 use Berlioz\HttpCore\Exception\HttpException;
 
+/**
+ * Class ConflictHttpException.
+ *
+ * @package Berlioz\HttpCore\Exception\Http
+ */
 class ConflictHttpException extends HttpException
 {
     /**

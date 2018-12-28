@@ -9,49 +9,24 @@
       }
     }
   },
-  "services": {
-    "_constraints": {
-      "flashbag": "Berlioz\\FlashBag\\FlashBag",
-      "router": "Berlioz\\Router\\Router",
-      "templating": "Berlioz\\Core\\Package\\TemplateEngine"
+  "controllers": [
+    "Berlioz\\HttpCore\\Controller\\DebugController"
+  ],
+  "twig": {
+    "paths": {
+      "__main__": "%berlioz.directories.templates%",
+      "Berlioz-HttpCore": "%berlioz.directories.vendor%/berlioz/http-core/resources",
+      "Berlioz-Form": "%berlioz.directories.vendor%/berlioz/form/resources"
     },
-    "AppProfile": {
-      "class": "Berlioz\\HttpCore\\App\\AppProfile"
+    "options": {
+      "cache": "%berlioz.directories.cache%/twig",
+      "debug": true
     },
-    "phpDocFactory": {
-      "class": "Berlioz\\PhpDoc\\PhpDocFactory"
-    },
-    "router": {
-      "class": "Berlioz\\Router\\Router"
-    },
-    "flashbag": {
-      "class": "Berlioz\\FlashBag\\FlashBag"
-    },
-    "templating": {
-      "class": "Berlioz\\Package\\Twig\\Twig",
-      "arguments": {
-        "paths": {
-          "__main__": "%berlioz.directories.templates%",
-          "Berlioz-HttpCore": "%berlioz.directories.vendor%/berlioz/http-core/resources",
-          "Berlioz-Form": "%berlioz.directories.vendor%/berlioz/form/resources"
-        },
-        "options": {
-          "cache": "%berlioz.directories.cache%/twig",
-          "debug": true
-        },
-        "extensions": [
-          "Berlioz\\Form\\TwigExtension"
-        ]
-      },
-      "calls": [
-        {
-          "method": "addGlobal",
-          "arguments": {
-            "name": "app",
-            "value": "@AppProfile"
-          }
-        }
-      ]
+    "extensions": [
+      "Berlioz\\Form\\TwigExtension"
+    ],
+    "globals": {
+      "app": "@AppProfile"
     }
   }
 }
