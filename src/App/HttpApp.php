@@ -27,7 +27,6 @@ use Berlioz\HttpCore\Http\DefaultHttpErrorHandler;
 use Berlioz\HttpCore\Http\HttpErrorHandler;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
-use Berlioz\ServiceContainer\Service;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -53,9 +52,6 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     public function __construct(?Core $core = null)
     {
         parent::__construct($core);
-
-        // Add me to services
-        $this->getCore()->getServiceContainer()->add(new Service($this, 'app'));
 
         $this->getCore()->onTerminate(function (Core $core) {
             if ($core->getDebug()->isEnabled()) {
