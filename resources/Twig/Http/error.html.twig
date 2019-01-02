@@ -137,7 +137,7 @@
         You may want to head back to the homepage.<br/>
         If you think something is broken, report a problem.
       </p>
-      {% if not app.config.hasDebugEnabled %}
+      {% if app.isDebugEnabled %}
         <pre class="debug">{{ exception }}</pre>
       {% endif %}
     </div>
