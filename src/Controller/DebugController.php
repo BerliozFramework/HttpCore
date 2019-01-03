@@ -95,7 +95,7 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @return \Psr\Http\Message\ResponseInterface|string
      * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
-     * @route("/_console/dist/toolbar.{type}", name="_berlioz/console/toolbar-dist", priority=999,
+     * @route("/_console/dist/toolbar.{type}", name="_berlioz/console/toolbar-dist", priority=1001,
      *                                         requirements={"type": "js|css|caller\.js"}, defaults={"type":
      *                                         "caller.js"})
      */
@@ -152,7 +152,7 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
-     * @route("/_console/dist/debug.{type}", name="_berlioz/console/console-dist", priority=999, requirements={"type":
+     * @route("/_console/dist/debug.{type}", name="_berlioz/console/console-dist", priority=1001, requirements={"type":
      *                                         "js|css|css.map"})
      */
     public function consoleDist(ServerRequestInterface $request)
