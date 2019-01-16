@@ -242,6 +242,7 @@
               <th>Name</th>
               <th>Method</th>
               <th>Path</th>
+              <th>Priority</th>
             </tr>
             </thead>
             <tbody>
@@ -259,15 +260,16 @@
                   {% endif %}
                 {%- endspaceless -%}
               ">
-                <th scope="row">{{ route.name }}</th>
-                <td>
+                <th class="align-middle" scope="row">{{ route.name }}</th>
+                <td class="align-middle">
                   {% if section.route.methods is empty or section.route.methods == ['GET', 'HEAD', 'POST', 'OPTIONS', 'CONNECT', 'TRACE', 'PUT', 'DELETE'] %}
                     <em>ALL</em>
                   {% else %}
                     {{ section.route.methods|join(', ') }}
                   {% endif %}
                 </td>
-                <td>{{ route.route }}</td>
+                <td class="align-middle">{{ route.route }}</td>
+                <td class="align-middle">{{ route.options.priority|default('-1') }}</td>
               </tr>
             {% endfor %}
             </tbody>
