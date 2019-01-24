@@ -3,6 +3,10 @@
     "directories": {
       "templates": "%berlioz.directories.app%/templates"
     },
+    "assets": {
+      "manifest": "%berlioz.directories.app%/public/assets/manifest.json",
+      "entrypoints": "%berlioz.directories.app%/public/assets/entrypoints.json"
+    },
     "http": {
       "errors": {
         "default": "Berlioz\\HttpCore\\Http\\DefaultHttpErrorHandler"
@@ -20,7 +24,7 @@
     },
     "options": {
       "cache": "%berlioz.directories.cache%/twig",
-      "debug": true
+      "debug": "%berlioz.debug%"
     },
     "extensions": [
       "Berlioz\\Form\\TwigExtension"
