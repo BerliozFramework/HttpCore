@@ -1,6 +1,6 @@
 {% if app.isDebugEnabled -%}
   {% spaceless %}
-    <script type="text/javascript">var berlioz_debug_report = '{{ app.debugUniqid }}';</script>
-    <script type="text/javascript" src="{{ path('_berlioz/console/toolbar-dist', {"type": "caller.js"}) }}"></script>
+    <script>var berlioz_debug_report = '{{ app.debugUniqid }}';</script>
+    <script async src="{{ path('_berlioz/console/toolbar-dist', {"type": "caller.js"}) }}"></script>
   {% endspaceless %}
 {%- endif %}
