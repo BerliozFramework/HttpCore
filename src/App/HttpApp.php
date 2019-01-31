@@ -109,82 +109,84 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             $this->route = $router->handle($serverRequest);
             $this->getCore()->getDebug()->getTimeLine()->addActivity($routerActivity->end());
 
-            if (!is_null($this->route)) {
-                $routeContext = $this->route->getContext();
-
-                if (!empty($routeContext['_class']) && !empty($routeContext['_method'])) {
-                    // Define default locale from request and route (attribute _locale)
-                    if (!is_null($locale = $serverRequest->getAttribute('_locale'))) {
-                        $this->getCore()->setLocale($locale);
-                    }
-
-                    // Create instance of controller and invoke method
-                    try {
-                        $response = new Response;
-                        $controllerActivity = (new Debug\Activity('Controller'))->start();
-
-                        // Create instance of controller
-                        $controller = $this->getCore()->getServiceContainer()
-                                           ->getInstantiator()
-                                           ->newInstanceOf($routeContext['_class'],
-                                                           ['request'  => $serverRequest,
-                                                            'response' => $response]);
-
-                        // Call _b_pre() method?
-                        if (method_exists($controller, '_b_pre')) {
-                            // Call main method
-                            $preResponse = $this->getCore()->getServiceContainer()
-                                                ->getInstantiator()
-                                                ->invokeMethod($controller,
-                                                               '_b_pre',
-                                                               ['request'  => $serverRequest,
-                                                                'response' => $response]);
-
-                            if ($preResponse instanceof ResponseInterface) {
-                                $response = $preResponse;
-                            }
-                        }
-
-                        // Call main method only if response code is between 200 and 299
-                        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-                            $mainResponse = $this->getCore()->getServiceContainer()
-                                                 ->getInstantiator()
-                                                 ->invokeMethod($controller,
-                                                                $routeContext['_method'],
-                                                                ['request'  => $serverRequest,
-                                                                 'response' => $response]);
-
-                            if (!$mainResponse instanceof ResponseInterface) {
-                                $stream = new Stream;
-                                $stream->write($mainResponse);
-                                $response = $response->withBody($stream);
-                            } else {
-                                $response = $mainResponse;
-                            }
-                        }
-
-                        // Call _b_post() method?
-                        if (method_exists($controller, '_b_post')) {
-                            // Call main method
-                            $postResponse = $this->getCore()->getServiceContainer()
-                                                 ->getInstantiator()
-                                                 ->invokeMethod($controller,
-                                                                '_b_post',
-                                                                ['request'  => $serverRequest,
-                                                                 'response' => $response]);
-
-                            if ($postResponse instanceof ResponseInterface) {
-                                $response = $postResponse;
-                            }
-                        }
-                    } finally {
-                        $this->getCore()->getDebug()->getTimeLine()->addActivity($controllerActivity->end());
-                    }
-                } else {
-                    throw new InternalServerErrorHttpException;
-                }
-            } else {
+            // No route?
+            if (is_null($this->route)) {
                 throw new NotFoundHttpException;
+            }
+
+            $routeContext = $this->route->getContext();
+
+            // No controller?
+            if (empty($routeContext['_class']) || empty($routeContext['_method'])) {
+                throw new InternalServerErrorHttpException;
+            }
+
+            // Define default locale from request and route (attribute _locale)
+            if (!is_null($locale = $serverRequest->getAttribute('_locale'))) {
+                $this->getCore()->setLocale($locale);
+            }
+
+            // Create instance of controller and invoke method
+            try {
+                $response = new Response;
+                $controllerActivity = (new Debug\Activity('Controller'))->start();
+
+                // Create instance of controller
+                $controller = $this->getCore()->getServiceContainer()
+                                   ->getInstantiator()
+                                   ->newInstanceOf($routeContext['_class'],
+                                                   ['request'  => $serverRequest,
+                                                    'response' => $response]);
+
+                // Call _b_pre() method?
+                if (method_exists($controller, '_b_pre')) {
+                    // Call main method
+                    $preResponse = $this->getCore()->getServiceContainer()
+                                        ->getInstantiator()
+                                        ->invokeMethod($controller,
+                                                       '_b_pre',
+                                                       ['request'  => $serverRequest,
+                                                        'response' => $response]);
+
+                    if ($preResponse instanceof ResponseInterface) {
+                        $response = $preResponse;
+                    }
+                }
+
+                // Call main method only if response code is between 200 and 299
+                if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+                    $mainResponse = $this->getCore()->getServiceContainer()
+                                         ->getInstantiator()
+                                         ->invokeMethod($controller,
+                                                        $routeContext['_method'],
+                                                        ['request'  => $serverRequest,
+                                                         'response' => $response]);
+
+                    if (!$mainResponse instanceof ResponseInterface) {
+                        $stream = new Stream;
+                        $stream->write($mainResponse);
+                        $response = $response->withBody($stream);
+                    } else {
+                        $response = $mainResponse;
+                    }
+                }
+
+                // Call _b_post() method?
+                if (method_exists($controller, '_b_post')) {
+                    // Call main method
+                    $postResponse = $this->getCore()->getServiceContainer()
+                                         ->getInstantiator()
+                                         ->invokeMethod($controller,
+                                                        '_b_post',
+                                                        ['request'  => $serverRequest,
+                                                         'response' => $response]);
+
+                    if ($postResponse instanceof ResponseInterface) {
+                        $response = $postResponse;
+                    }
+                }
+            } finally {
+                $this->getCore()->getDebug()->getTimeLine()->addActivity($controllerActivity->end());
             }
         } catch (\Throwable $e) {
             if (!($e instanceof HttpException)) {
