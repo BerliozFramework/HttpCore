@@ -218,7 +218,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
 
         foreach ($redirections as $origin => $redirection) {
             $matches = [];
-            if (preg_match(sprintf('#%s#i', $origin), $uri->getPath(), $matches) >= 1) {
+            if (!(preg_match(sprintf('#%s#i', $origin), $uri->getPath(), $matches) >= 1)) {
                 continue;
             }
 
