@@ -217,18 +217,31 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         $redirections = $this->getCore()->getConfig()->get('berlioz.http.redirections', []);
 
         foreach ($redirections as $origin => $redirection) {
-            if (preg_match(sprintf('#%s#i', $origin), $uri->getPath()) !== 1) {
+            $matches = [];
+            if (preg_match(sprintf('#%s#i', $origin), $uri->getPath(), $matches) >= 1) {
                 continue;
             }
 
             if (is_array($redirection)) {
-                return new Response(null,
-                                    intval($redirection['type'] ?? 301),
-                                    ['Location' => (string) $redirection['url']]);
+                $redirectionType = intval($redirection['type'] ?? 301);
+                $redirectionUrl = (string) $redirection['url'];
+            } else {
+                $redirectionType = 301;
+                $redirectionUrl = (string) $redirection;
             }
 
-            return new Response(null, 301,
-                                ['Location' => (string) $redirection]);
+            // Replacement
+            $replacementKeys = array_keys($matches);
+            $replacementValues = array_values($matches);
+            $replacementKeys =
+                array_map(
+                    function ($value) {
+                        return sprintf('$%s', $value);
+                    },
+                    $replacementKeys);
+            $redirectionUrl = str_replace($replacementKeys, $replacementValues, $redirectionUrl);
+
+            return new Response(null, $redirectionType, ['Location' => $redirectionUrl]);
         }
 
         return null;
