@@ -29,6 +29,7 @@ use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -97,7 +98,6 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      * @param \Psr\Http\Message\ServerRequestInterface $serverRequest Server request
      *
      * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function handle(?ServerRequestInterface $serverRequest = null): ResponseInterface
     {
@@ -111,7 +111,11 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
 
             // No route?
             if (is_null($this->route)) {
-                throw new NotFoundHttpException;
+                if (is_null($response = $this->httpRedirection($serverRequest->getUri()))) {
+                    throw new NotFoundHttpException;
+                }
+
+                return $response;
             }
 
             $routeContext = $this->route->getContext();
@@ -196,12 +200,38 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             $response = $this->httpErrorHandler($e);
         }
 
-        // Debug?
-        if ($this->getCore()->getDebug()->isEnabled()) {
-            $response = $response->withAddedHeader('X-Berlioz-Debug', $this->getCore()->getDebug()->getUniqid());
+        return $response;
+    }
+
+    /**
+     * HTTP redirection.
+     *
+     * @param \Psr\Http\Message\UriInterface $uri
+     *
+     * @return \Psr\Http\Message\ResponseInterface|null
+     * @throws \Berlioz\Config\Exception\ConfigException
+     * @throws \Berlioz\Core\Exception\BerliozException
+     */
+    public function httpRedirection(UriInterface $uri): ?ResponseInterface
+    {
+        $redirections = $this->getCore()->getConfig()->get('berlioz.http.redirections', []);
+
+        foreach ($redirections as $origin => $redirection) {
+            if (preg_match(sprintf('#%s#i', $origin), $uri->getPath()) !== 1) {
+                continue;
+            }
+
+            if (is_array($redirection)) {
+                return new Response(null,
+                                    intval($redirection['type'] ?? 301),
+                                    ['Location' => (string) $redirection['url']]);
+            }
+
+            return new Response(null, 301,
+                                ['Location' => (string) $redirection]);
         }
 
-        return $response;
+        return null;
     }
 
     /**
@@ -278,6 +308,11 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     public function printResponse(ResponseInterface $response)
     {
         $printActivity = (new Debug\Activity('Print response', 'Berlioz'))->start();
+
+        // Debug?
+        if ($this->getCore()->getDebug()->isEnabled()) {
+            $response = $response->withAddedHeader('X-Berlioz-Debug', $this->getCore()->getDebug()->getUniqid());
+        }
 
         // Headers
         if (!headers_sent()) {
