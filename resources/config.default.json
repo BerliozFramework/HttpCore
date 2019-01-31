@@ -10,7 +10,8 @@
     "http": {
       "errors": {
         "default": "Berlioz\\HttpCore\\Http\\DefaultHttpErrorHandler"
-      }
+      },
+      "redirections": {}
     }
   },
   "controllers": [
