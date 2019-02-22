@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9383ce2416b3a22e5394688ee947893b",
+    "content-hash": "b7d8fdd4cebe67ffda066e2b993a66ab",
     "packages": [
         {
             "name": "berlioz/config",
@@ -12,21 +12,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Config.git",
-                "reference": "d64ecd54f870993176012c2297035ab7dc183e43"
+                "reference": "b157bd1731287361950413b22197132bd27a7e23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Config/zipball/d64ecd54f870993176012c2297035ab7dc183e43",
-                "reference": "d64ecd54f870993176012c2297035ab7dc183e43",
+                "url": "https://api.github.com/repos/BerliozFramework/Config/zipball/b157bd1731287361950413b22197132bd27a7e23",
+                "reference": "b157bd1731287361950413b22197132bd27a7e23",
                 "shasum": ""
             },
             "require": {
-                "berlioz/utils": "dev-develop",
+                "berlioz/helpers": "@dev",
                 "ext-json": "*",
                 "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.2"
+                "phpunit/phpunit": "^7.5"
             },
             "type": "library",
             "autoload": {
@@ -46,7 +46,7 @@
             ],
             "description": "Berlioz Configuration",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-09-26T12:54:12+00:00"
+            "time": "2019-02-22T15:34:14+00:00"
         },
         {
             "name": "berlioz/core",
@@ -54,18 +54,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/Core.git",
-                "reference": "517085c1349fdee935f4286ac85bc1ef2abc82f9"
+                "reference": "a21244ac4ea70a1f27f8185b49008eae3a7ac341"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/517085c1349fdee935f4286ac85bc1ef2abc82f9",
-                "reference": "517085c1349fdee935f4286ac85bc1ef2abc82f9",
+                "url": "https://api.github.com/repos/BerliozFramework/Core/zipball/a21244ac4ea70a1f27f8185b49008eae3a7ac341",
+                "reference": "a21244ac4ea70a1f27f8185b49008eae3a7ac341",
                 "shasum": ""
             },
             "require": {
                 "berlioz/config": "@dev",
+                "berlioz/helpers": "@dev",
                 "berlioz/service-container": "@dev",
-                "berlioz/utils": "@dev",
                 "ext-intl": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
@@ -86,7 +86,10 @@
             "autoload": {
                 "psr-4": {
                     "Berlioz\\Core\\": "src/"
-                }
+                },
+                "exclude-from-classmap": [
+                    "/tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -100,7 +103,7 @@
             ],
             "description": "Berlioz Framework Core",
             "homepage": "http://getberlioz.com",
-            "time": "2018-12-28T16:16:50+00:00"
+            "time": "2019-02-22T15:38:44+00:00"
         },
         {
             "name": "berlioz/flash-bag",
@@ -143,34 +146,38 @@
             "time": "2018-06-29T16:43:20+00:00"
         },
         {
-            "name": "berlioz/form",
-            "version": "dev-refactoring",
+            "name": "berlioz/helpers",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/BerliozFramework/Form.git",
-                "reference": "c479749c8054ebfd99c60e6591427b9618aacf77"
+                "url": "https://github.com/BerliozFramework/Helpers.git",
+                "reference": "227cea4983ff49844f190c0d7fa953eb0e62252b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Form/zipball/c479749c8054ebfd99c60e6591427b9618aacf77",
-                "reference": "c479749c8054ebfd99c60e6591427b9618aacf77",
+                "url": "https://api.github.com/repos/BerliozFramework/Helpers/zipball/227cea4983ff49844f190c0d7fa953eb0e62252b",
+                "reference": "227cea4983ff49844f190c0d7fa953eb0e62252b",
                 "shasum": ""
             },
             "require": {
-                "berlioz/utils": "@dev",
-                "php": ">=7.1",
-                "psr/http-message": "~1.0.0"
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "php": "^7.1"
+            },
+            "conflict": {
+                "berlioz/utils": "*"
             },
             "require-dev": {
-                "berlioz/http-message": "@dev",
-                "phpunit/phpunit": "~7.2",
-                "twig/twig": "~2.4"
+                "phpunit/phpunit": "^7.5"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Berlioz\\Form\\": "src/"
-                }
+                    "Berlioz\\Helpers\\": "src/"
+                },
+                "files": [
+                    "src/bootstrap.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -179,12 +186,12 @@
             "authors": [
                 {
                     "name": "Ronan Giron",
-                    "email": "ronan.giron@berlioz-framework.com"
+                    "email": "ronan@getberlioz.com"
                 }
             ],
-            "description": "Berlioz Form",
-            "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-10-15T15:03:26+00:00"
+            "description": "Helpers for Berlioz Framework",
+            "homepage": "http://getberlioz.com",
+            "time": "2019-02-22T15:58:46+00:00"
         },
         {
             "name": "berlioz/http-message",
@@ -241,12 +248,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/PhpDoc.git",
-                "reference": "60a1fc6d4bc68576a04ddc25707da79b6d14dead"
+                "reference": "60d97996f83ab4776b942a2cc0f891ca3df640a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/PhpDoc/zipball/60a1fc6d4bc68576a04ddc25707da79b6d14dead",
-                "reference": "60a1fc6d4bc68576a04ddc25707da79b6d14dead",
+                "url": "https://api.github.com/repos/BerliozFramework/PhpDoc/zipball/60d97996f83ab4776b942a2cc0f891ca3df640a0",
+                "reference": "60d97996f83ab4776b942a2cc0f891ca3df640a0",
                 "shasum": ""
             },
             "require": {
@@ -277,7 +284,7 @@
             ],
             "description": "Berlioz PhpDoc",
             "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-11-15T15:46:26+00:00"
+            "time": "2019-01-16T11:24:29+00:00"
         },
         {
             "name": "berlioz/router",
@@ -333,12 +340,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/ServiceContainer.git",
-                "reference": "8db51868f3814a19fd6820efc8d9eb825aa3c3e2"
+                "reference": "84a751fe98dc5ec300f789952f7ac08a88cfc282"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/ServiceContainer/zipball/8db51868f3814a19fd6820efc8d9eb825aa3c3e2",
-                "reference": "8db51868f3814a19fd6820efc8d9eb825aa3c3e2",
+                "url": "https://api.github.com/repos/BerliozFramework/ServiceContainer/zipball/84a751fe98dc5ec300f789952f7ac08a88cfc282",
+                "reference": "84a751fe98dc5ec300f789952f7ac08a88cfc282",
                 "shasum": ""
             },
             "require": {
@@ -370,7 +377,7 @@
             ],
             "description": "Berlioz Service Container",
             "homepage": "http://getberlioz.com",
-            "time": "2018-12-28T16:09:08+00:00"
+            "time": "2018-12-28T17:33:07+00:00"
         },
         {
             "name": "berlioz/twig-package",
@@ -378,17 +385,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BerliozFramework/TwigPackage.git",
-                "reference": "f7954b1bf9d7a2a5f8997ba375c4baf7c402a135"
+                "reference": "dab212a4df92e6699fd1f13424e3daf87a48c043"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/TwigPackage/zipball/f7954b1bf9d7a2a5f8997ba375c4baf7c402a135",
-                "reference": "f7954b1bf9d7a2a5f8997ba375c4baf7c402a135",
+                "url": "https://api.github.com/repos/BerliozFramework/TwigPackage/zipball/dab212a4df92e6699fd1f13424e3daf87a48c043",
+                "reference": "dab212a4df92e6699fd1f13424e3daf87a48c043",
                 "shasum": ""
             },
             "require": {
-                "berlioz/core": "dev-develop",
-                "berlioz/utils": "dev-develop",
+                "berlioz/core": "@dev",
+                "berlioz/helpers": "@dev",
+                "ext-intl": "*",
                 "ext-json": "*",
                 "php": "^7.1",
                 "psr/log": "^1.0",
@@ -415,57 +423,7 @@
             ],
             "description": "Twig package for Berlioz Framework",
             "homepage": "http://getberlioz.com",
-            "time": "2018-12-28T15:45:56+00:00"
-        },
-        {
-            "name": "berlioz/utils",
-            "version": "dev-develop",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/BerliozFramework/Utils.git",
-                "reference": "3cbfa1c9aa5a6b048adf70198e2e835be19a2d75"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/BerliozFramework/Utils/zipball/3cbfa1c9aa5a6b048adf70198e2e835be19a2d75",
-                "reference": "3cbfa1c9aa5a6b048adf70198e2e835be19a2d75",
-                "shasum": ""
-            },
-            "require": {
-                "ext-gd": "*",
-                "ext-iconv": "*",
-                "ext-intl": "*",
-                "ext-mbstring": "*",
-                "php": ">=7.1"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^7.4"
-            },
-            "suggest": {
-                "ext-gd": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Berlioz\\Utils\\": "src/"
-                },
-                "files": [
-                    "src/functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ronan Giron",
-                    "email": "ronan.giron@berlioz-framework.com"
-                }
-            ],
-            "description": "Additional functions for PHP",
-            "homepage": "http://www.berlioz-framework.com",
-            "time": "2018-12-13T09:46:28+00:00"
+            "time": "2019-02-22T16:08:50+00:00"
         },
         {
             "name": "psr/container",
@@ -885,16 +843,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.6.0",
+            "version": "v2.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "a11dd39f5b6589e14f0ff3b36675d06047c589b1"
+                "reference": "7d7342c8a4059fefb9b8d07db0cc14007021f9b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/a11dd39f5b6589e14f0ff3b36675d06047c589b1",
-                "reference": "a11dd39f5b6589e14f0ff3b36675d06047c589b1",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/7d7342c8a4059fefb9b8d07db0cc14007021f9b7",
+                "reference": "7d7342c8a4059fefb9b8d07db0cc14007021f9b7",
                 "shasum": ""
             },
             "require": {
@@ -948,7 +906,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-12-16T10:36:48+00:00"
+            "time": "2019-01-14T15:00:48+00:00"
         }
     ],
     "packages-dev": [
@@ -1527,16 +1485,16 @@
         },
         {
             "name": "phpunit/php-timer",
-            "version": "2.0.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-timer.git",
-                "reference": "8b8454ea6958c3dee38453d3bd571e023108c91f"
+                "reference": "8b389aebe1b8b0578430bda0c7c95a829608e059"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/8b8454ea6958c3dee38453d3bd571e023108c91f",
-                "reference": "8b8454ea6958c3dee38453d3bd571e023108c91f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/8b389aebe1b8b0578430bda0c7c95a829608e059",
+                "reference": "8b389aebe1b8b0578430bda0c7c95a829608e059",
                 "shasum": ""
             },
             "require": {
@@ -1548,7 +1506,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "2.1-dev"
                 }
             },
             "autoload": {
@@ -1572,7 +1530,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2018-02-01T13:07:23+00:00"
+            "time": "2019-02-20T10:12:59+00:00"
         },
         {
             "name": "phpunit/php-token-stream",
@@ -1625,16 +1583,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.1",
+            "version": "7.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c23d78776ad415d5506e0679723cb461d71f488f"
+                "reference": "09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c23d78776ad415d5506e0679723cb461d71f488f",
-                "reference": "c23d78776ad415d5506e0679723cb461d71f488f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9",
+                "reference": "09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9",
                 "shasum": ""
             },
             "require": {
@@ -1705,7 +1663,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-12-12T07:20:32+00:00"
+            "time": "2019-02-18T09:24:50+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -1818,23 +1776,23 @@
         },
         {
             "name": "sebastian/diff",
-            "version": "3.0.1",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "366541b989927187c4ca70490a35615d3fef2dce"
+                "reference": "720fcc7e9b5cf384ea68d9d930d480907a0c1a29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/366541b989927187c4ca70490a35615d3fef2dce",
-                "reference": "366541b989927187c4ca70490a35615d3fef2dce",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/720fcc7e9b5cf384ea68d9d930d480907a0c1a29",
+                "reference": "720fcc7e9b5cf384ea68d9d930d480907a0c1a29",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.0",
+                "phpunit/phpunit": "^7.5 || ^8.0",
                 "symfony/process": "^2 || ^3.3 || ^4"
             },
             "type": "library",
@@ -1870,32 +1828,35 @@
                 "unidiff",
                 "unified diff"
             ],
-            "time": "2018-06-10T07:54:39+00:00"
+            "time": "2019-02-04T06:01:07+00:00"
         },
         {
             "name": "sebastian/environment",
-            "version": "4.0.1",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f"
+                "reference": "6fda8ce1974b62b14935adc02a9ed38252eca656"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/febd209a219cea7b56ad799b30ebbea34b71eb8f",
-                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/6fda8ce1974b62b14935adc02a9ed38252eca656",
+                "reference": "6fda8ce1974b62b14935adc02a9ed38252eca656",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.4"
+                "phpunit/phpunit": "^7.5"
+            },
+            "suggest": {
+                "ext-posix": "*"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.0-dev"
+                    "dev-master": "4.1-dev"
                 }
             },
             "autoload": {
@@ -1920,7 +1881,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2018-11-25T09:31:21+00:00"
+            "time": "2019-02-01T05:27:49+00:00"
         },
         {
             "name": "sebastian/exporter",
@@ -2366,11 +2327,9 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "berlioz/core": 20,
-        "berlioz/form": 20,
         "berlioz/http-message": 20,
         "berlioz/router": 20,
-        "berlioz/twig-package": 20,
-        "berlioz/utils": 20
+        "berlioz/twig-package": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

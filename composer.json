@@ -28,13 +28,10 @@
     "ext-zlib": "*",
     "berlioz/core": "dev-develop",
     "berlioz/flash-bag": "^1.0",
-    "berlioz/form": "dev-refactoring",
     "berlioz/http-message": "dev-develop",
     "berlioz/router": "dev-develop",
     "berlioz/twig-package": "dev-develop",
-    "berlioz/utils": "dev-develop",
-    "psr/http-server-handler": "^1.0.0",
-    "twig/twig": "^2.6"
+    "psr/http-server-handler": "^1.0.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^7.5"
