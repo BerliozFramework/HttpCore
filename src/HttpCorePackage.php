@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore;
 
+use Berlioz\Config\ExtendedJsonConfig;
 use Berlioz\Core\Core;
 use Berlioz\Core\Debug;
 use Berlioz\Core\Exception\BerliozException;
@@ -36,39 +37,42 @@ use Psr\SimpleCache\CacheException;
  */
 class HttpCorePackage extends AbstractPackage implements PackageInterface
 {
+    ///////////////
+    /// PACKAGE ///
+    ///////////////
+
+    /**
+     * @inheritdoc
+     * @throws \Berlioz\Config\Exception\ConfigException
+     */
+    public static function config()
+    {
+        return new ExtendedJsonConfig(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'resources', 'config.default.json']), true);
+    }
+
     /**
      * @inheritdoc
      * @throws \Berlioz\ServiceContainer\Exception\ContainerException
      * @throws \Berlioz\Core\Exception\BerliozException
      */
-    public function register()
+    public static function register(Core $core): void
     {
-        // Merge configuration
-        $this->mergeConfig(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'resources', 'config.default.json']));
-
         // Create AppProfile service
         $appProfileService = new Service(AppProfile::class, 'AppProfile');
-        $this->addService($appProfileService);
+        self::addService($core, $appProfileService);
 
         // Create phpDoc service
         $phpDocService = new Service(PhpDocFactory::class, 'phpDocFactory');
-        $this->addService($phpDocService);
+        self::addService($core, $phpDocService);
 
         // Create router service
         $routerService = new Service(RouterInterface::class, 'router');
         $routerService->setFactory(HttpCorePackage::class . '::routerFactory');
-        $this->addService($routerService);
+        self::addService($core, $routerService);
 
         // Create FlashBag service
         $flashBagService = new Service(FlashBag::class, 'flashbag');
-        $this->addService($flashBagService);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function init()
-    {
+        self::addService($core, $flashBagService);
     }
 
     /////////////////
