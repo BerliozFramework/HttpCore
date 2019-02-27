@@ -8,8 +8,7 @@
 
   <title>Berlioz Debug Toolbar</title>
 
-  <!-- Bootstrap core CSS -->
-  <link href="{{ path('_berlioz/console/toolbar-dist', {"type": "css"}) }}" rel="stylesheet">
+  {{ entrypoints('debug-toolbar', 'css', {}, entrypoints) }}
 </head>
 
 <body>
@@ -38,6 +37,6 @@
   <div id="logo-shadow"></div>
 </div>
 
-<script type="text/javascript" src="{{ path('_berlioz/console/toolbar-dist', {"type": "js"}) }}"></script>
+{{ entrypoints('debug-toolbar', 'js', {}, entrypoints) }}
 </body>
 </html>
