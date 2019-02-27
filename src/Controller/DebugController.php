@@ -14,14 +14,20 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\Controller;
 
+use Berlioz\Core\Asset\EntryPoints;
+use Berlioz\Core\Asset\Manifest;
 use Berlioz\Core\Debug;
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Message\Response;
+use Berlioz\Http\Message\ServerRequest;
+use Berlioz\Http\Message\Stream;
 use Berlioz\HttpCore\App\HttpApp;
 use Berlioz\HttpCore\Debug\Section;
+use Berlioz\HttpCore\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
 use Berlioz\Package\Twig\Controller\RenderingControllerInterface;
 use Berlioz\Package\Twig\Controller\RenderingControllerTrait;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -84,43 +90,94 @@ class DebugController extends AbstractController implements RenderingControllerI
         return $this->debug[$id];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function render(string $name, array $variables = []): string
+    {
+        $variables = array_merge(['entrypoints' => new EntryPoints($this->resourceDist . DIRECTORY_SEPARATOR . 'entrypoints.json')],
+                                 $variables);
+
+        return parent::render($name, $variables);
+    }
+
+    //////////////////
+    /// DIST FILES ///
+    //////////////////
+
+    /**
+     * Dist files.
+     *
+     * @param \Berlioz\Http\Message\ServerRequest $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
+     * @route('/_console/dist/{type}/{file}', requirements={"type": "js|css", "file":
+     *                                        "[\\w\\-]+\\.\\w{8}\\.\\w{2,3}(\\.map)?"})
+     */
+    public function distFiles(ServerRequest $request): ResponseInterface
+    {
+        $fileName = implode(DIRECTORY_SEPARATOR,
+                            [$this->resourceDist,
+                             $request->getAttribute('type'),
+                             basename($request->getAttribute('file'))]);
+
+        if (!file_exists($fileName)) {
+            throw new NotFoundHttpException('Asset not found');
+        }
+
+        $body = new Stream();
+        $body->write(file_get_contents($fileName));
+        $response = new Response($body);
+
+        // Content-Type
+        switch ($request->getAttribute('type')) {
+            case 'js':
+                $response = $response->withHeader('Content-Type', 'application/javascript');
+                break;
+            case 'css':
+                $response = $response->withHeader('Content-Type', 'text/css');
+                break;
+        }
+        if (substr($request->getAttribute('file'), -4) == '.map') {
+            $response = $response->withHeader('Content-Type', 'application/javascript');
+        }
+
+        // Content-Length
+        $response = $response->withHeader('Content-Length', $body->getSize());
+
+        return $response;
+    }
+
     ///////////////
     /// Toolbar ///
     ///////////////
 
     /**
-     * Toolbar dist.
+     * Dist caller.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     *
-     * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
-     * @route("/_console/dist/toolbar.{type}", name="_berlioz/console/toolbar-dist", priority=1001,
-     *                                         requirements={"type": "js|css|caller\.js"}, defaults={"type":
-     *                                         "caller.js"})
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Berlioz\Core\Exception\AssetException
+     * @throws \Berlioz\HttpCore\Exception\Http\InternalServerErrorHttpException
+     * @route('/_console/dist/toolbar.js', name='_berlioz/console/toolbar-dist')
      */
-    public function toolbarDist(ServerRequestInterface $request)
+    public function distCaller(): ResponseInterface
     {
-        switch ($request->getAttribute('type')) {
-            case 'css':
-                return new Response(file_get_contents(implode(DIRECTORY_SEPARATOR, [$this->resourceDist, 'css', 'debug-toolbar.css'])),
-                                    200,
-                                    ['Content-Type' => 'text/css']);
-            case 'css.map':
-                return new Response(file_get_contents(implode(DIRECTORY_SEPARATOR, [$this->resourceDist, 'css.map', 'debug-toolbar.css.map'])),
-                                    200,
-                                    ['Content-Type' => 'application/json']);
-            case 'js':
-                return new Response(file_get_contents(implode(DIRECTORY_SEPARATOR, [$this->resourceDist, 'js', 'debug-toolbar.js'])),
-                                    200,
-                                    ['Content-Type' => 'text/javascript']);
-            case 'caller.js':
-                return new Response(file_get_contents(implode(DIRECTORY_SEPARATOR, [$this->resourceDist, 'js', 'debug-caller.js'])),
-                                    200,
-                                    ['Content-Type' => 'text/javascript']);
-            default:
-                throw new NotFoundHttpException;
+        $manifest = new Manifest($this->resourceDist . DIRECTORY_SEPARATOR . 'manifest.json');
+        $fileName = $this->resourceDist . substr($manifest->get('/debug-caller.js'), strlen('/_console/dist'));
+
+        if (!file_exists($fileName)) {
+            throw new InternalServerErrorHttpException('Toolbar caller not found');
         }
+
+        $body = new Stream();
+        $body->write(file_get_contents($fileName));
+        $response = new Response($body,
+                                 200,
+                                 ['Content-Type'   => ['application/javascript'],
+                                  'Content-Length' => [$body->getSize()]]);
+
+        return $response;
     }
 
     /**
@@ -144,36 +201,6 @@ class DebugController extends AbstractController implements RenderingControllerI
     ///////////////
     /// Console ///
     ///////////////
-
-    /**
-     * Get resource CSS.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request Server request
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
-     * @route("/_console/dist/debug.{type}", name="_berlioz/console/console-dist", priority=1001, requirements={"type":
-     *                                         "js|css|css.map"})
-     */
-    public function consoleDist(ServerRequestInterface $request)
-    {
-        switch ($request->getAttribute('type')) {
-            case 'css':
-                return new Response(file_get_contents(implode(DIRECTORY_SEPARATOR, [$this->resourceDist, 'css', 'debug.css'])),
-                                    200,
-                                    ['Content-Type' => 'text/css']);
-            case 'css.map':
-                return new Response(file_get_contents(implode(DIRECTORY_SEPARATOR, [$this->resourceDist, 'css', 'debug.css.map'])),
-                                    200,
-                                    ['Content-Type' => 'application/json']);
-            case 'js':
-                return new Response(file_get_contents(implode(DIRECTORY_SEPARATOR, [$this->resourceDist, 'js', 'debug.js'])),
-                                    200,
-                                    ['Content-Type' => 'text/javascript']);
-            default:
-                throw new NotFoundHttpException;
-        }
-    }
 
     /**
      * PHP info.

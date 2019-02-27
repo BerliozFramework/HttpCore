@@ -9,18 +9,18 @@
  * file that was distributed with this source code, to the root.
  */
 
-import 'jquery';
-import './debug-toolbar.scss';
+import jQuery from 'jquery'
+import './debug-toolbar.scss'
 
-function toggleBerliozConsole() {
-  if ((window.parent && window.parent.toggleBerliozConsole) !== undefined) {
-    window.parent.toggleBerliozConsole();
+jQuery(($) => {
+  const toggleBerliozConsole = () => {
+    if ((window.parent && window.parent.toggleBerliozConsole) !== undefined) {
+      window.parent.toggleBerliozConsole()
+    }
   }
-}
 
-$(function () {
   $('#toolbar-content, #toolbar #logo')
     .click(function () {
-      toggleBerliozConsole();
-    });
-});
+      toggleBerliozConsole()
+    })
+})

@@ -8,8 +8,7 @@
 
   <title>Berlioz Debug Console / Report #{{ report.uniqid }}</title>
 
-  <!-- Bootstrap core CSS -->
-  <link href="{{ path('_berlioz/console/console-dist', {"type": "css"}) }}" rel="stylesheet">
+  {{ entrypoints('debug', 'css', {}, entrypoints) }}
 </head>
 
 <body class="console">
@@ -180,7 +179,7 @@
   </div>
 </div>
 
-<script type="text/javascript" src="{{ path('_berlioz/console/console-dist', {"type": "js"}) }}"></script>
+{{ entrypoints('debug', 'js', {}, entrypoints) }}
 {% block inlineJscripts %}{% endblock %}
 </body>
 </html>

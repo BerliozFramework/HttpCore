@@ -1,9 +1,8 @@
 {
-  "debug-caller.js": "js/debug-caller.js",
-  "debug-toolbar.css": "css/debug-toolbar.css",
-  "debug-toolbar.css.map": "css/debug-toolbar.css.map",
-  "debug-toolbar.js": "js/debug-toolbar.js",
-  "debug.css": "css/debug.css",
-  "debug.css.map": "css/debug.css.map",
-  "debug.js": "js/debug.js"
+  "/vendor.js": "/_console/dist/js/vendor.88f741a4.js",
+  "/debug.css": "/_console/dist/css/debug.13b122c0.css",
+  "/debug.js": "/_console/dist/js/debug.d8b30667.js",
+  "/debug-caller.js": "/_console/dist/js/debug-caller.65e50623.js",
+  "/debug-toolbar.css": "/_console/dist/css/debug-toolbar.13b122c0.css",
+  "/debug-toolbar.js": "/_console/dist/js/debug-toolbar.b2b9f6af.js"
 }
