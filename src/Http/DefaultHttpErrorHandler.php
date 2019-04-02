@@ -30,7 +30,7 @@ class DefaultHttpErrorHandler extends AbstractController implements HttpErrorHan
     /**
      * @inheritdoc
      * @throws \Berlioz\Core\Exception\BerliozException
-     * @throws \Twig_Error
+     * @throws \Twig\Error\Error
      */
     public function handle(?ServerRequestInterface $request, HttpException $e): ResponseInterface
     {
