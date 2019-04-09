@@ -15,6 +15,9 @@ declare(strict_types=1);
 namespace Berlioz\HttpCore\App;
 
 use Berlioz\Config\ConfigInterface;
+use Berlioz\Core\Core;
+use Berlioz\Core\CoreAwareInterface;
+use Berlioz\Core\CoreAwareTrait;
 use Berlioz\FlashBag\FlashBag;
 use Berlioz\Router\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,18 +27,24 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @package Berlioz\HttpCore\App
  */
-class AppProfile
+class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
 {
+    use CoreAwareTrait;
     use HttpAppAwareTrait;
 
     /**
      * AppProfile constructor.
      *
-     * @param \Berlioz\HttpCore\App\HttpApp $app
+     * @param \Berlioz\Core\Core                 $core
+     * @param \Berlioz\HttpCore\App\HttpApp|null $app
      */
-    public function __construct(HttpApp $app)
+    public function __construct(Core $core, ?HttpApp $app)
     {
-        $this->setApp($app);
+        $this->setCore($core);
+
+        if (!is_null($app)) {
+            $this->setApp($app);
+        }
     }
 
     /**
@@ -52,11 +61,10 @@ class AppProfile
      * Get configuration.
      *
      * @return \Berlioz\Config\ConfigInterface
-     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function getConfig(): ConfigInterface
     {
-        return $this->getApp()->getCore()->getConfig();
+        return $this->getCore()->getConfig();
     }
 
     /**
@@ -68,7 +76,7 @@ class AppProfile
     public function getFlashBag(): FlashBag
     {
         /** @var \Berlioz\FlashBag\FlashBag $flashBag */
-        $flashBag = $this->getApp()->getCore()->getServiceContainer()->get('flashbag');
+        $flashBag = $this->getCore()->getServiceContainer()->get('flashbag');
 
         return $flashBag;
     }
@@ -82,7 +90,7 @@ class AppProfile
     public function getRequest(): ServerRequestInterface
     {
         /** @var \Berlioz\Router\RouterInterface $router */
-        $router = $this->getApp()->getCore()->getServiceContainer()->get('router');
+        $router = $this->getCore()->getServiceContainer()->get('router');
 
         return $router->getServerRequest();
     }
@@ -94,6 +102,10 @@ class AppProfile
      */
     public function getRoute(): ?RouteInterface
     {
+        if (is_null($this->getApp())) {
+            return null;
+        }
+
         /** @var \Berlioz\Router\RouteInterface $route */
         $route = $this->getApp()->getRoute();
 
@@ -107,7 +119,7 @@ class AppProfile
      */
     public function getLocale(): string
     {
-        return $this->getApp()->getCore()->getLocale();
+        return $this->getCore()->getLocale();
     }
 
     /**
@@ -118,7 +130,7 @@ class AppProfile
      */
     public function isDebugEnabled(): bool
     {
-        return $this->getApp()->getCore()->getDebug()->isEnabled();
+        return $this->getCore()->getDebug()->isEnabled();
     }
 
     /**
@@ -129,6 +141,6 @@ class AppProfile
      */
     public function getDebugUniqid(): string
     {
-        return $this->getApp()->getCore()->getDebug()->getUniqid();
+        return $this->getCore()->getDebug()->getUniqid();
     }
 }
