@@ -231,15 +231,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             }
 
             // Replacement
-            $replacementKeys = array_keys($matches);
-            $replacementValues = array_values($matches);
-            $replacementKeys =
-                array_map(
-                    function ($value) {
-                        return sprintf('$%s', $value);
-                    },
-                    $replacementKeys);
-            $redirectionUrl = str_replace($replacementKeys, $replacementValues, $redirectionUrl);
+            $redirectionUrl = preg_replace(sprintf('#%s#i', $origin), $redirectionUrl, $uri->getPath());
 
             return new Response(null, $redirectionType, ['Location' => $redirectionUrl]);
         }
