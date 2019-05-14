@@ -1,6 +1,6 @@
 {% if app.isDebugEnabled -%}
-  {% filter spaceless %}
+  {% apply spaceless %}
     <script>var berlioz_debug_report = '{{ app.debugUniqid }}';</script>
     <script async src="{{ path('_berlioz/console/toolbar-dist') }}"></script>
-  {% endfilter %}
+  {% endapply %}
 {%- endif %}
