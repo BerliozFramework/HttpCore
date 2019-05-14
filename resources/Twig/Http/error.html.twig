@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  {% filter spaceless %}
+  {% apply spaceless %}
     <title>
       {% if exception.code < 500 %}
         Oops, the page you're looking for doesn't exist
@@ -10,7 +10,7 @@
       {% endif %}
       - {{ exception.code }} error
     </title>
-  {% endfilter %}
+  {% endapply %}
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" media="screen" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600"/>
   <style type="text/css">
