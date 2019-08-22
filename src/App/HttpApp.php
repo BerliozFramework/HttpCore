@@ -145,15 +145,18 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                 // Call _b_pre() method?
                 if (method_exists($controller, '_b_pre')) {
                     // Call main method
-                    $preResponse = $this->getCore()->getServiceContainer()
-                                        ->getInstantiator()
-                                        ->invokeMethod($controller,
-                                                       '_b_pre',
-                                                       ['request'  => $serverRequest,
-                                                        'response' => $response]);
+                    $preResult = $this->getCore()->getServiceContainer()
+                                      ->getInstantiator()
+                                      ->invokeMethod($controller,
+                                                     '_b_pre',
+                                                     ['request'  => $serverRequest,
+                                                      'response' => $response]);
 
-                    if ($preResponse instanceof ResponseInterface) {
-                        $response = $preResponse;
+                    if ($preResult instanceof ServerRequestInterface) {
+                        $serverRequest = $preResult;
+                    }
+                    if ($preResult instanceof ResponseInterface) {
+                        $response = $preResult;
                     }
                 }
 
