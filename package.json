@@ -21,7 +21,7 @@
   "homepage": "https://github.com/BerliozFramework/HttpCore#readme",
   "dependencies": {
     "bootstrap": "^4.3.1",
-    "highlight.js": "^9.15.9",
+    "highlight.js": "^9.15.10",
     "jquery": "^3.4.1"
   },
   "devDependencies": {
@@ -40,12 +40,12 @@
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-loader": "^3.0.0",
     "resolve-url-loader": "^3.1.0",
-    "sass-loader": "^7.2.0",
+    "sass-loader": "^7.3.1",
     "simple-progress-webpack-plugin": "^1.1.2",
     "style-loader": "^1.0.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "url-loader": "^2.1.0",
-    "webpack": "^4.39.1",
+    "webpack": "^4.39.3",
     "webpack-cli": "^3.3.6",
     "webpack-manifest-plugin": "^2.0.4",
     "webpack-notifier": "^1.8.0"
