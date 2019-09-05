@@ -98,6 +98,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      * @param \Psr\Http\Message\ServerRequestInterface $serverRequest Server request
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function handle(?ServerRequestInterface $serverRequest = null): ResponseInterface
     {
@@ -196,6 +197,8 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                 $this->getCore()->getDebug()->getTimeLine()->addActivity($controllerActivity->end());
             }
         } catch (\Throwable $e) {
+            $this->getCore()->getDebug()->setExceptionThrown($e);
+
             if (!($e instanceof HttpException)) {
                 $e = new InternalServerErrorHttpException(null, $e);
             }

@@ -332,6 +332,26 @@ class DebugController extends AbstractController implements RenderingControllerI
     }
 
     /**
+     * Exception.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig\Error\Error
+     * @route("/_console/{id}/exception", name="_berlioz/console/exception", requirements={"id":"\w+"})
+     */
+    public function exception(ServerRequestInterface $request)
+    {
+        $report = $this->getDebugReport($request->getAttribute('id'));
+        $exception = $report->getExceptionThrown();
+
+        return $this->render('@Berlioz-HttpCore/Twig/Debug/exception.html.twig',
+                             ['report'    => $report,
+                              'exception' => $exception]);
+    }
+
+    /**
      * PHP errors.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
