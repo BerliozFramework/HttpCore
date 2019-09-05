@@ -1,0 +1,21 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1>Exception</h1>
+    </div>
+
+    <p>
+        It's a snapshot of exception thrown at the moment of request.
+    </p>
+
+    {% if exception is empty %}
+        <div class="alert alert-success" role="alert">
+            <strong>Great!</strong> No exception thrown
+        </div>
+    {% else %}
+        <pre>
+            <code class="hljs plaintext">{{ exception }}</code>
+        </pre>
+    {% endif %}
+{% endblock %}
