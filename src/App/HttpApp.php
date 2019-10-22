@@ -27,6 +27,7 @@ use Berlioz\HttpCore\Http\DefaultHttpErrorHandler;
 use Berlioz\HttpCore\Http\HttpErrorHandler;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
+use Berlioz\ServiceContainer\Service;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -130,6 +131,9 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             if (!is_null($locale = $serverRequest->getAttribute('_locale'))) {
                 $this->getCore()->setLocale($locale);
             }
+
+            // Add server request to the service container
+            $this->getCore()->getServiceContainer()->add(new Service($serverRequest));
 
             // Create instance of controller and invoke method
             try {
