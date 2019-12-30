@@ -71,9 +71,12 @@ class DebugController extends AbstractController implements RenderingControllerI
     {
         if (is_null($this->debug)) {
             try {
-                if (!empty($debugDirectory = $this->getApp()->getCore()->getConfig()->get('berlioz.directories.debug')) &&
+                if (!empty(
+                    $debugDirectory = $this->getApp()->getCore()->getConfig()->get(
+                        'berlioz.directories.debug'
+                    )
+                    ) &&
                     file_exists($debugFile = $debugDirectory . DIRECTORY_SEPARATOR . basename($id) . '.debug')) {
-
                     if (empty($this->debug[$id] = unserialize(gzinflate(file_get_contents($debugFile))))) {
                         throw new BerliozException(sprintf('Debug report "%s" corrupted', $id));
                     }
@@ -95,8 +98,10 @@ class DebugController extends AbstractController implements RenderingControllerI
      */
     public function render(string $name, array $variables = []): string
     {
-        $variables = array_merge(['entrypoints' => new EntryPoints($this->resourceDist . DIRECTORY_SEPARATOR . 'entrypoints.json')],
-                                 $variables);
+        $variables = array_merge(
+            ['entrypoints' => new EntryPoints($this->resourceDist . DIRECTORY_SEPARATOR . 'entrypoints.json')],
+            $variables
+        );
 
         return parent::render($name, $variables);
     }
@@ -117,10 +122,14 @@ class DebugController extends AbstractController implements RenderingControllerI
      */
     public function distFiles(ServerRequest $request): ResponseInterface
     {
-        $fileName = implode(DIRECTORY_SEPARATOR,
-                            [$this->resourceDist,
-                             $request->getAttribute('type'),
-                             basename($request->getAttribute('file'))]);
+        $fileName = implode(
+            DIRECTORY_SEPARATOR,
+            [
+                $this->resourceDist,
+                $request->getAttribute('type'),
+                basename($request->getAttribute('file')),
+            ]
+        );
 
         if (!file_exists($fileName)) {
             throw new NotFoundHttpException('Asset not found');
@@ -172,10 +181,14 @@ class DebugController extends AbstractController implements RenderingControllerI
 
         $body = new Stream();
         $body->write(file_get_contents($fileName));
-        $response = new Response($body,
-                                 200,
-                                 ['Content-Type'   => ['application/javascript'],
-                                  'Content-Length' => [$body->getSize()]]);
+        $response = new Response(
+            $body,
+            200,
+            [
+                'Content-Type' => ['application/javascript'],
+                'Content-Length' => [$body->getSize()],
+            ]
+        );
 
         return $response;
     }
@@ -194,8 +207,10 @@ class DebugController extends AbstractController implements RenderingControllerI
     {
         $report = $this->getDebugReport($request->getAttribute('id'));
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/_toolbar.html.twig',
-                             ['report' => $report]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/_toolbar.html.twig',
+            ['report' => $report]
+        );
     }
 
     ///////////////
@@ -234,10 +249,14 @@ class DebugController extends AbstractController implements RenderingControllerI
         $system = $report->getSystemInfo();
         $php = $report->getPhpInfo();
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/dashboard.html.twig',
-                             ['report' => $report,
-                              'system' => $system,
-                              'php'    => $php]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/dashboard.html.twig',
+            [
+                'report' => $report,
+                'system' => $system,
+                'php' => $php,
+            ]
+        );
     }
 
     /**
@@ -256,10 +275,14 @@ class DebugController extends AbstractController implements RenderingControllerI
         $timeLine = $report->getTimeLine();
         $performances = $report->getPerformancesInfo();
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/performances.html.twig',
-                             ['report'       => $report,
-                              'timeLine'     => $timeLine,
-                              'performances' => $performances]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/performances.html.twig',
+            [
+                'report' => $report,
+                'timeLine' => $timeLine,
+                'performances' => $performances,
+            ]
+        );
     }
 
     /**
@@ -276,8 +299,10 @@ class DebugController extends AbstractController implements RenderingControllerI
     {
         $report = $this->getDebugReport($request->getAttribute('id'));
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/phpinfo.html.twig',
-                             ['report' => $report]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/phpinfo.html.twig',
+            ['report' => $report]
+        );
     }
 
     /**
@@ -295,9 +320,13 @@ class DebugController extends AbstractController implements RenderingControllerI
         $report = $this->getDebugReport($request->getAttribute('id'));
         $timeLine = $report->getTimeLine();
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/activities.html.twig',
-                             ['report'   => $report,
-                              'timeLine' => $timeLine]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/activities.html.twig',
+            [
+                'report' => $report,
+                'timeLine' => $timeLine,
+            ]
+        );
     }
 
     /**
@@ -320,12 +349,22 @@ class DebugController extends AbstractController implements RenderingControllerI
             $activityDetail = $activity->getDetail();
             $activityResult = $activity->getResult();
 
-            return $this->render('@Berlioz-HttpCore/Twig/Debug/activity.html.twig',
-                                 ['report'         => $report,
-                                  'timeLine'       => $timeLine,
-                                  'activity'       => $activity,
-                                  'activityDetail' => is_scalar($activityDetail) ? $activityDetail : var_export($activityDetail, true),
-                                  'activityResult' => is_scalar($activityResult) ? $activityResult : var_export($activityResult, true)]);
+            return $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/activity.html.twig',
+                [
+                    'report' => $report,
+                    'timeLine' => $timeLine,
+                    'activity' => $activity,
+                    'activityDetail' => is_scalar($activityDetail) ? $activityDetail : var_export(
+                        $activityDetail,
+                        true
+                    ),
+                    'activityResult' => is_scalar($activityResult) ? $activityResult : var_export(
+                        $activityResult,
+                        true
+                    ),
+                ]
+            );
         } else {
             throw new NotFoundHttpException('Detail of activity not found');
         }
@@ -346,9 +385,13 @@ class DebugController extends AbstractController implements RenderingControllerI
         $report = $this->getDebugReport($request->getAttribute('id'));
         $exception = $report->getExceptionThrown();
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/exception.html.twig',
-                             ['report'    => $report,
-                              'exception' => $exception]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/exception.html.twig',
+            [
+                'report' => $report,
+                'exception' => $exception,
+            ]
+        );
     }
 
     /**
@@ -366,9 +409,13 @@ class DebugController extends AbstractController implements RenderingControllerI
         $report = $this->getDebugReport($request->getAttribute('id'));
         $phpErrors = $report->getPhpError()->getPhpErrors();
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/php-errors.html.twig',
-                             ['report'    => $report,
-                              'phpErrors' => $phpErrors]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/php-errors.html.twig',
+            [
+                'report' => $report,
+                'phpErrors' => $phpErrors,
+            ]
+        );
     }
 
     /**
@@ -388,9 +435,13 @@ class DebugController extends AbstractController implements RenderingControllerI
         $phpErrors = $report->getPhpError()->getPhpErrors();
 
         if ($phpError = $phpErrors[$request->getAttribute('error')] ?? null) {
-            return $this->render('@Berlioz-HttpCore/Twig/Debug/php-error.html.twig',
-                                 ['report' => $report,
-                                  'error'  => $phpError]);
+            return $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/php-error.html.twig',
+                [
+                    'report' => $report,
+                    'error' => $phpError,
+                ]
+            );
         } else {
             throw new NotFoundHttpException('Detail of PHP error not found');
         }
@@ -431,16 +482,79 @@ class DebugController extends AbstractController implements RenderingControllerI
                     }
                 }
 
-                return ['name' => $className,
-                        'type' => $type];
+                return [
+                    'name' => $className,
+                    'type' => $type,
+                ];
             },
-            $projectInfo['declared_classes']);
+            $projectInfo['declared_classes']
+        );
         $projectInfo['declared_classes'] = array_filter($projectInfo['declared_classes']);
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/used-classes.html.twig',
-                             ['report'    => $report,
-                              'classes'   => $projectInfo['declared_classes'],
-                              'nbClasses' => $nbClasses]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/used-classes.html.twig',
+            [
+                'report' => $report,
+                'classes' => $projectInfo['declared_classes'],
+                'nbClasses' => $nbClasses,
+            ]
+        );
+    }
+
+    /**
+     * Cache.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig\Error\Error
+     * @route("/_console/{id}/cache", name="_berlioz/console/cache", requirements={"id":"\w+"})
+     */
+    public function cache(ServerRequestInterface $request)
+    {
+        $requestQueryParams = $request->getQueryParams();
+        $report = $this->getDebugReport($request->getAttribute('id'));
+
+        // Clear
+        if ($clear = ($requestQueryParams['clear'] ?? null)) {
+            switch ($clear) {
+                case 'internal':
+                    $this->getCore()->getCacheManager()->clear();
+                    break;
+                case 'opcache':
+                    if (function_exists('opcache_reset')) {
+                        opcache_reset();
+                    }
+                    break;
+            }
+
+            return $this->redirect(
+                $this->getRouter()->generate(
+                    '_berlioz/console/cache',
+                    [
+                        'id' => $report->getUniqid(),
+                        'cleared' => $clear,
+                    ]
+                )
+            );
+        }
+
+        // OPcache
+        $opcache = false;
+        if (function_exists('opcache_get_status')) {
+            $opcache = opcache_get_status(true);
+        }
+
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/cache.html.twig',
+            [
+                'report' => $report,
+                'cacheManager' => $this->getCore()->getCacheManager(),
+                'opcache' => $opcache,
+                'cleared' => ($requestQueryParams['cleared'] ?? null),
+            ]
+        );
     }
 
     /**
@@ -458,9 +572,13 @@ class DebugController extends AbstractController implements RenderingControllerI
         $report = $this->getDebugReport($request->getAttribute('id'));
         $configuration = json_encode($report->getConfig(), JSON_PRETTY_PRINT);
 
-        return $this->render('@Berlioz-HttpCore/Twig/Debug/config.html.twig',
-                             ['report'        => $report,
-                              'configuration' => $configuration]);
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/config.html.twig',
+            [
+                'report' => $report,
+                'configuration' => $configuration,
+            ]
+        );
     }
 
     /**
@@ -480,13 +598,21 @@ class DebugController extends AbstractController implements RenderingControllerI
         $reportSection = $report->getSection($request->getAttribute('section'));
 
         if ($reportSection instanceof Section || method_exists($reportSection, 'getTemplateName')) {
-            return $this->render($reportSection->getTemplateName(),
-                                 ['report'  => $report,
-                                  'section' => $reportSection]);
+            return $this->render(
+                $reportSection->getTemplateName(),
+                [
+                    'report' => $report,
+                    'section' => $reportSection,
+                ]
+            );
         } else {
-            return $this->render('@Berlioz-HttpCore/Twig/Debug/section.html.twig',
-                                 ['report'  => $report,
-                                  'section' => $reportSection]);
+            return $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/section.html.twig',
+                [
+                    'report' => $report,
+                    'section' => $reportSection,
+                ]
+            );
         }
     }
 }
