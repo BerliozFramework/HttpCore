@@ -11,7 +11,7 @@
     {{ entrypoints('debug', 'css', {}, entrypoints) }}
 </head>
 
-<body class="console">
+<body class="console" data-report="{{ report.uniqid }}">
 <div id="loader-wrapper" style="display: none;">
     <div id="loader"></div>
     <svg id="loader-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
@@ -51,9 +51,12 @@
     <div class="row">
         <nav class="col-md-3 col-lg-2 bg-light sidebar collapse" id="sidebar" style="">
             <div class="sidebar-sticky">
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-muted">
-                    <span>Report #{{ report.uniqid }}</span>
-                </h6>
+                <div class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1">
+                    <label for="report_id">Report</label>
+                    <select id="report_id" class="custom-select">
+                        <option value="{{ report.uniqid }}">#{{ report.uniqid }}</option>
+                    </select>
+                </div>
                 <ul class="nav flex-column mb-2">
                     <li class="nav-item">
                         <a class="nav-link{% if app.route.name starts with '_berlioz/console/home' %} active{% endif %}" href="{{ path('_berlioz/console/home', {"id": report.uniqid}) }}">
@@ -170,7 +173,7 @@
                     </li>
                 </ul>
                 {% if report.sections|length > 0 %}
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-3 mb-1 text-muted">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-3 mb-1">
                         <span>Additional sections</span>
                     </h6>
                     <ul class="nav flex-column mb-2">
