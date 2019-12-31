@@ -13,14 +13,14 @@ import jQuery from 'jquery'
 import './debug-toolbar.scss'
 
 jQuery(($) => {
-  const toggleBerliozConsole = () => {
-    if ((window.parent && window.parent.toggleBerliozConsole) !== undefined) {
-      window.parent.toggleBerliozConsole()
-    }
-  }
+    const toggleBerliozConsole = () => {
+        if ((window.parent && window.parent.toggleBerliozConsole) !== undefined) {
+            window.parent.toggleBerliozConsole()
+        }
+    };
 
-  $('#toolbar-content, #toolbar #logo')
-    .click(function () {
-      toggleBerliozConsole()
-    })
-})
+    $('#toolbar-content, #toolbar #logo')
+        .click(function () {
+            toggleBerliozConsole()
+        });
+});

@@ -119,6 +119,42 @@
   .sidebar-heading {
     font-size: .75rem;
     text-transform: uppercase;
+    color: $text-muted;
+
+    * {
+      margin: 0;
+      font-weight: 500;
+      font-size: .75rem;
+      text-transform: uppercase;
+      color: $text-muted;
+    }
+
+    .custom-select {
+      height: 1.5rem;
+      padding: .1rem .25rem;
+      margin-left: .25rem;
+      border: none;
+      background-color: transparent;
+
+      &:hover {
+        border-color: $custom-select-focus-border-color;
+        @if $enable-shadows {
+          box-shadow: $custom-select-box-shadow, $custom-select-focus-box-shadow;
+        } @else {
+          box-shadow: $custom-select-focus-box-shadow;
+        }
+
+        &::-ms-value {
+          // For visual consistency with other platforms/browsers,
+          // suppress the default white text on blue background highlight given to
+          // the selected option text when the (still closed) <select> receives focus
+          // in IE and (under certain conditions) Edge.
+          // See https://github.com/twbs/bootstrap/issues/19398.
+          color: $input-color;
+          background-color: $input-bg;
+        }
+      }
+    }
   }
 
   .nav-link {

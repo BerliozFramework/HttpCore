@@ -15,72 +15,170 @@ import './debug.scss'
 import hljs from 'highlight.js/lib/highlight'
 import 'highlight.js/styles/github.css'
 
-hljs.registerLanguage('plaintext', require('highlight.js/lib/languages/plaintext'))
-hljs.registerLanguage('json', require('highlight.js/lib/languages/json'))
-hljs.registerLanguage('php', require('highlight.js/lib/languages/php'))
-hljs.registerLanguage('twig', require('highlight.js/lib/languages/twig'))
-hljs.registerLanguage('sql', require('highlight.js/lib/languages/sql'))
+const BERLIOZ_REPORTS_KEY = 'BERLIOZ_REPORTS';
 
-global.$ = global.jQuery = jQuery
+hljs.registerLanguage('plaintext', require('highlight.js/lib/languages/plaintext'));
+hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
+hljs.registerLanguage('php', require('highlight.js/lib/languages/php'));
+hljs.registerLanguage('twig', require('highlight.js/lib/languages/twig'));
+hljs.registerLanguage('sql', require('highlight.js/lib/languages/sql'));
+
+global.$ = global.jQuery = jQuery;
 
 jQuery(($) => {
+    /////////////////
+    /// HIGHLIGHT ///
+    /////////////////
+
     const highlight = (selector) => {
         $(selector)
             .each(function (i, block) {
                 hljs.highlightBlock(block)
             })
-    }
+    };
 
 
-    // Console buttons
+    ///////////////
+    /// WINDOWS ///
+    ///////////////
+
+    let parentWindow = (window.parent && window.parent !== window ? window.parent : null);
+    let openerWindow = (window.opener && window.opener !== window ? window.opener : null);
+
+
+    ///////////////////////
+    /// CONSOLE BUTTONS ///
+    ///////////////////////
+
     {
-        let hasWindowParent = (window.parent && window.parent.toggleBerliozConsole) !== undefined
-
         $('[data-dismiss="berlioz-console"]')
             .click(function () {
-                if (hasWindowParent) {
-                    window.parent.toggleBerliozConsole()
+                if (parentWindow && parentWindow.toggleBerliozConsole) {
+                    parentWindow.toggleBerliozConsole()
                 }
             })
-            .toggleClass('d-none', !hasWindowParent)
+            .toggleClass('d-none', !parentWindow);
 
         $('[data-toggle="berlioz-console-new-window"]')
             .click(function () {
-                window.open(window.location.href, '_blank')
-                window.parent.toggleBerliozConsole()
+                if (parentWindow && parentWindow.openBerliozConsoleInNewWindow) {
+                    parentWindow.openBerliozConsoleInNewWindow()
+                }
             })
-            .toggleClass('d-none', !hasWindowParent)
+            .toggleClass('d-none', !parentWindow)
     }
 
 
-    // Ajax
+    /////////////////////////
+    /// REPORTS & STORAGE ///
+    /////////////////////////
+
+    // Report list
+    $('#report_id')
+        .on('change',
+            function () {
+                window.location = window.location.toString().replace($('body').data('report'), this.value);
+            });
+
+    // Add report to storage
+    const refreshReports = window.refreshReports = (report) => {
+        let currentReport = $('body').data('report') || null;
+        let currentReportFound = false;
+        let $reportSelect = $('#report_id');
+        let reports = [];
+
+        if (parentWindow || openerWindow) {
+            reports = (parentWindow || openerWindow).berlioz_reports || [];
+        }
+
+        if (!parentWindow) {
+            let sessionReports = JSON.parse(window.sessionStorage.getItem(BERLIOZ_REPORTS_KEY)) || [];
+            sessionReports.push(...reports);
+
+            reports = [...new Set(sessionReports)];
+
+            window.sessionStorage.setItem(BERLIOZ_REPORTS_KEY, JSON.stringify(reports));
+        }
+
+        $reportSelect.empty();
+        reports.forEach((report) => {
+            let optionSelected = currentReport === report;
+
+            $reportSelect.prepend(
+                new Option(
+                    '#' + report,
+                    report,
+                    optionSelected,
+                    optionSelected
+                )
+            );
+
+            if (optionSelected) {
+                currentReportFound = true;
+            }
+        });
+
+        // Current report not found?
+        if (!currentReportFound) {
+            $reportSelect.prepend(
+                new Option(
+                    '#' + currentReport,
+                    currentReport,
+                    true,
+                    true
+                )
+            );
+        }
+    };
+    refreshReports();
+    window.setInterval(() => {
+        refreshReports();
+    }, 1000);
+
+
+    ////////////
+    /// AJAX ///
+    ////////////
+
     $(document).ajaxStart(function () {
         $('#loader-wrapper').show()
-    })
+    });
     $(document).ajaxStop(function () {
         $('#loader-wrapper').hide()
-    })
+    });
 
 
-    // Highlight
-    highlight('pre > code')
+    /////////////////
+    /// Highlight ///
+    /////////////////
+
+    highlight('pre > code');
 
 
-    // Iframes
+    ///////////////
+    /// Iframes ///
+    ///////////////
+
     $('iframe.iframe-h-auto')
         .on('load', function () {
             if ($(this).get(0).contentWindow) {
                 $(this).height($(this).get(0).contentWindow.document.body.scrollHeight + 100)
             }
         })
-        .trigger('load')
+        .trigger('load');
 
 
-    // Tooltips
-    $('[data-toggle="tooltip"]').tooltip()
+    ////////////////
+    /// Tooltips ///
+    ////////////////
+
+    $('[data-toggle="tooltip"]').tooltip();
 
 
-    // Time line
+    ////////////////
+    /// Timeline ///
+    ////////////////
+
     $('.timeline')
         .mousemove(function (e) {
             let
@@ -89,7 +187,7 @@ jQuery(($) => {
                 cursorX = e.pageX - timeLineX,
                 positionLeft = (cursorX * 100 / timeLineWidth),
                 finalPositionLeft = '',
-                finalPositionRight = ''
+                finalPositionRight = '';
 
             if (positionLeft <= 50) {
                 finalPositionLeft = positionLeft + '%'
@@ -103,41 +201,44 @@ jQuery(($) => {
                 .find('.cursor-value')
                 .text(Math.round((cursorX * $(this).data('duration') / timeLineWidth) * 1000 * 1000) / 1000)
         })
-        .mouseenter(function (e) {
+        .mouseenter(function () {
             $('.scales .scale.cursor', this).show()
         })
-        .mouseleave(function (e) {
+        .mouseleave(function () {
             $('.scales .scale.cursor', this).hide()
         })
         .on('click',
             '.activity[href]',
-            function (e) {
+            function () {
                 // Activities on time line
-                $('.activity.bg-primary', $(this).parents('.timeline')).removeClass('bg-primary')
-                $(this).addClass('bg-primary')
+                $('.activity.bg-primary', $(this).parents('.timeline')).removeClass('bg-primary');
+                $(this).addClass('bg-primary');
 
                 // Activities in list
                 $($(this).attr('href'))
                     .addClass('text-primary')
                     .siblings('tr.text-primary')
                     .removeClass('text-primary')
-            })
+            });
 
 
-    // Detail
+    ///////////////
+    /// DETAILS ///
+    ///////////////
+
     $('[data-toggle="detail"][data-type][data-target]')
         .on('click',
             function () {
-                let modal = $('#' + $(this).data('type') + 'Detail').filter('.modal')
+                let modal = $('#' + $(this).data('type') + 'Detail').filter('.modal');
                 if (modal.length === 1) {
                     $.ajax({
                         "url": $(this).data('target'),
                         "success": function (data) {
-                            $('.modal-body', modal).html(data)
-                            highlight($('.modal-body pre > code', modal))
+                            $('.modal-body', modal).html(data);
+                            highlight($('.modal-body pre > code', modal));
                             $(modal).modal('show')
                         }
                     })
                 }
             })
-})
+});
