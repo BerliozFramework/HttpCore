@@ -102,8 +102,7 @@ if (window.berlioz_debug_report) {
                     if (this.readyState !== 2) {
                         return;
                     }
-
-                    if (!this.getResponseHeader('X-Berlioz-Debug')) {
+                    if (this.getAllResponseHeaders().indexOf('X-Berlioz-Debug') === -1) {
                         return;
                     }
 
