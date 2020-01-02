@@ -29,7 +29,7 @@ interface HttpErrorHandler
      * Handle HTTP error.
      *
      * @param \Psr\Http\Message\ServerRequestInterface|null $request
-     * @param \Berlioz\HttpCore\Exception\HttpException     $e
+     * @param \Berlioz\HttpCore\Exception\HttpException $e
      *
      * @return \Psr\Http\Message\ResponseInterface
      */

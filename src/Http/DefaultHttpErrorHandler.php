@@ -34,9 +34,13 @@ class DefaultHttpErrorHandler extends AbstractController implements HttpErrorHan
      */
     public function handle(?ServerRequestInterface $request, HttpException $e): ResponseInterface
     {
-        $str = $this->render('@Berlioz-HttpCore/Twig/Http/error.html.twig',
-                             ['request'   => $request,
-                              'exception' => $e]);
+        $str = $this->render(
+            '@Berlioz-HttpCore/Twig/Http/error.html.twig',
+            [
+                'request' => $request,
+                'exception' => $e,
+            ]
+        );
 
         return new Response($str, $e->getCode(), [], $e->getMessage());
     }

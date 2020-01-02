@@ -24,7 +24,9 @@ use Berlioz\Package\Twig\Controller\RenderingControllerTrait;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
 use Berlioz\HttpCore\App\HttpApp;
+use LogicException;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 
 /**
  * Class AbstractController.
@@ -55,7 +57,7 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
      */
     public function __sleep(): array
     {
-        throw new \RuntimeException('Unable to serialize a Controller object');
+        throw new RuntimeException('Unable to serialize a Controller object');
     }
 
     /**
@@ -98,17 +100,20 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
      *
      * If response is given in parameter, it will be completed with good headers.
      *
-     * @param array                               $queryParams      Http GET parameters
-     * @param bool                                $mergeQueryParams Merge parameters with current server request
-     * @param \Psr\Http\Message\ResponseInterface $response         Response
+     * @param array $queryParams Http GET parameters
+     * @param bool $mergeQueryParams Merge parameters with current server request
+     * @param \Psr\Http\Message\ResponseInterface $response Response
      *
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Berlioz\Core\Exception\BerliozException
      */
-    public function reload(?array $queryParams = [], bool $mergeQueryParams = false, ?ResponseInterface $response = null): ResponseInterface
-    {
-        if (is_null($serverRequest = $this->getRouter()->getServerRequest())) {
-            throw new \LogicException('You can not reload without server request');
+    public function reload(
+        ?array $queryParams = [],
+        bool $mergeQueryParams = false,
+        ?ResponseInterface $response = null
+    ): ResponseInterface {
+        if (null === ($serverRequest = $this->getRouter()->getServerRequest())) {
+            throw new LogicException('You can not reload without server request');
         }
 
         // Query
@@ -128,26 +133,28 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
      *
      * If response is given in parameter, it will be completed with good headers.
      *
-     * @param string|\Psr\Http\Message\UriInterface    $uri
-     * @param int                                      $httpResponseCode
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @param int $httpResponseCode
      * @param null|\Psr\Http\Message\ResponseInterface $response
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function redirect($uri, int $httpResponseCode = 302, ?ResponseInterface $response = null): ResponseInterface
     {
-        if (is_null($response)) {
+        if (null === $response) {
             $response = new Response;
         }
 
-        return $response->withStatus($httpResponseCode)
-                        ->withHeader('Location', (string) $uri);
+        return
+            $response
+                ->withStatus($httpResponseCode)
+                ->withHeader('Location', (string)$uri);
     }
 
     /**
      * Add new message in flash bag.
      *
-     * @param string $type    Type of message
+     * @param string $type Type of message
      * @param string $message Message
      *
      * @return static

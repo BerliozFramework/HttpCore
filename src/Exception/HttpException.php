@@ -16,6 +16,7 @@ namespace Berlioz\HttpCore\Exception;
 
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Message\Response;
+use Throwable;
 
 /**
  * Class HttpException.
@@ -27,14 +28,14 @@ class HttpException extends BerliozException
     /**
      * HttpException constructor.
      *
-     * @param int             $code
-     * @param null|string     $message
+     * @param int $code
+     * @param null|string $message
      * @param \Throwable|null $previous
      */
-    public function __construct(int $code = 500, ?string $message = null, \Throwable $previous = null)
+    public function __construct(int $code = 500, ?string $message = null, Throwable $previous = null)
     {
         // Default message
-        if (is_null($message)) {
+        if (null === $message) {
             $message = Response::REASONS[$code] ?? 'Unknown error';
         }
 

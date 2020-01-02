@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Berlioz\HttpCore\Exception\Http;
 
 use Berlioz\HttpCore\Exception\HttpException;
+use Throwable;
 
 /**
  * Class NotFoundHttpException.
@@ -26,10 +27,10 @@ class NotFoundHttpException extends HttpException
     /**
      * NotFoundHttpException constructor.
      *
-     * @param null|string     $message
+     * @param null|string $message
      * @param null|\Throwable $previous
      */
-    public function __construct(?string $message = null, ?\Throwable $previous = null)
+    public function __construct(?string $message = null, ?Throwable $previous = null)
     {
         parent::__construct(404, $message, $previous);
     }

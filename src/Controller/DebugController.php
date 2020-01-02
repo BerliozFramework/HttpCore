@@ -29,6 +29,7 @@ use Berlioz\Package\Twig\Controller\RenderingControllerInterface;
 use Berlioz\Package\Twig\Controller\RenderingControllerTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * Class DebugController.
@@ -88,7 +89,7 @@ class DebugController extends AbstractController implements RenderingControllerI
             }
         } catch (BerliozException $e) {
             throw $e;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new BerliozException(sprintf('Error during get debug report "%s"', $id), 0, $e);
         }
 
@@ -97,7 +98,6 @@ class DebugController extends AbstractController implements RenderingControllerI
 
     /**
      * @inheritdoc
-     * @throws \Berlioz\Config\Exception\ConfigException
      */
     public function render(string $name, array $variables = []): string
     {
@@ -122,8 +122,8 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \Berlioz\HttpCore\Exception\Http\NotFoundHttpException
-     * @route('/_console/dist/{type}/{file}', requirements={"type": "js|css", "file":
-     *                                        "[\\w\\-]+\\.\\w{8}\\.\\w{2,3}(\\.map)?"})
+     * @route('/_console/dist/{type}/{file}',
+     *        requirements={"type": "js|css", "file": "[\\w\\-]+\\.\\w{8}\\.\\w{2,3}(\\.map)?"})
      */
     public function distFiles(ServerRequest $request): ResponseInterface
     {
@@ -153,6 +153,8 @@ class DebugController extends AbstractController implements RenderingControllerI
                 $response = $response->withHeader('Content-Type', 'text/css');
                 break;
         }
+
+        // Map file?
         if (substr($request->getAttribute('file'), -4) == '.map') {
             $response = $response->withHeader('Content-Type', 'application/javascript');
         }
@@ -186,14 +188,15 @@ class DebugController extends AbstractController implements RenderingControllerI
 
         $body = new Stream();
         $body->write(file_get_contents($fileName));
-        $response = new Response(
-            $body,
-            200,
-            [
-                'Content-Type' => ['application/javascript'],
-                'Content-Length' => [$body->getSize()],
-            ]
-        );
+        $response =
+            new Response(
+                $body,
+                200,
+                [
+                    'Content-Type' => ['application/javascript'],
+                    'Content-Length' => [$body->getSize()],
+                ]
+            );
 
         return $response;
     }
@@ -204,7 +207,6 @@ class DebugController extends AbstractController implements RenderingControllerI
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface|string
-     * @throws \Berlioz\Config\Exception\ConfigException
      * @throws \Berlioz\Core\Exception\BerliozException
      * @throws \Twig\Error\Error
      * @route("/_console/{id}/toolbar", name="_berlioz/console/toolbar", requirements={"id":"\w+"})

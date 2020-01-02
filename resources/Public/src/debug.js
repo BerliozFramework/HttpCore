@@ -9,11 +9,11 @@
  * file that was distributed with this source code, to the root.
  */
 
-import jQuery from 'jquery'
-import 'bootstrap/dist/js/bootstrap.bundle'
-import './debug.scss'
-import hljs from 'highlight.js/lib/highlight'
-import 'highlight.js/styles/github.css'
+import jQuery from 'jquery';
+import 'bootstrap/dist/js/bootstrap.bundle';
+import './debug.scss';
+import hljs from 'highlight.js/lib/highlight';
+import 'highlight.js/styles/github.css';
 
 const BERLIOZ_REPORTS_KEY = 'BERLIOZ_REPORTS';
 
@@ -81,7 +81,7 @@ jQuery(($) => {
             });
 
     // Add report to storage
-    const refreshReports = window.refreshReports = (report) => {
+    const refreshReports = window.refreshReports = () => {
         let currentReport = $('body').data('report') || null;
         let currentReportFound = false;
         let $reportSelect = $('#report_id');
