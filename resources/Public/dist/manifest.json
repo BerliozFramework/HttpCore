@@ -1,8 +1,8 @@
 {
   "/vendor.js": "/_console/dist/js/vendor.a803af2f.js",
-  "/debug.css": "/_console/dist/css/debug.93c50796.css",
+  "/debug.css": "/_console/dist/css/debug.365724ed.css",
   "/debug.js": "/_console/dist/js/debug.f5486189.js",
-  "/debug-caller.js": "/_console/dist/js/debug-caller.d79da51e.js",
-  "/debug-toolbar.css": "/_console/dist/css/debug-toolbar.93c50796.css",
+  "/debug-caller.js": "/_console/dist/js/debug-caller.9fa3bccd.js",
+  "/debug-toolbar.css": "/_console/dist/css/debug-toolbar.365724ed.css",
   "/debug-toolbar.js": "/_console/dist/js/debug-toolbar.49e20b41.js"
 }

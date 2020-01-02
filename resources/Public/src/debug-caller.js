@@ -93,28 +93,25 @@ if (window.berlioz_debug_report) {
     };
 
     // Replacement of window.parent.XMLHttpRequest to catch XHR requests
-    let oldParentXHR = window.XMLHttpRequest;
-    window.XMLHttpRequest =
-        () => {
-            let realParentXHR = new oldParentXHR();
+    let oldXhrSend = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send =
+        function () {
+            this.addEventListener(
+                'readystatechange',
+                function () {
+                    if (this.readyState !== 2) {
+                        return;
+                    }
 
-            realParentXHR
-                .addEventListener(
-                    'readystatechange',
-                    function () {
-                        if (this.readyState !== 2) {
-                            return;
-                        }
+                    if (!this.getResponseHeader('X-Berlioz-Debug')) {
+                        return;
+                    }
 
-                        if (!this.getResponseHeader('X-Berlioz-Debug')) {
-                            return;
-                        }
+                    addReport(this.getResponseHeader('X-Berlioz-Debug'));
+                },
+                false);
 
-                        addReport(this.getResponseHeader('X-Berlioz-Debug'));
-                    },
-                    false);
-
-            return realParentXHR;
+            return oldXhrSend.apply(this, arguments);
         };
 } else {
     console.error('Unable to load Berlioz Debug Toolbar without report id');
