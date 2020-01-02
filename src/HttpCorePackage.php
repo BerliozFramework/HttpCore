@@ -28,6 +28,7 @@ use Berlioz\Router\RouteGenerator;
 use Berlioz\Router\Router;
 use Berlioz\Router\RouterInterface;
 use Berlioz\ServiceContainer\Service;
+use Exception;
 use Psr\SimpleCache\CacheException;
 
 /**
@@ -47,7 +48,10 @@ class HttpCorePackage extends AbstractPackage implements PackageInterface
      */
     public static function config()
     {
-        return new ExtendedJsonConfig(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'resources', 'config.default.json']), true);
+        return new ExtendedJsonConfig(
+            implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'resources', 'config.default.json']),
+            true
+        );
     }
 
     /**
@@ -96,7 +100,7 @@ class HttpCorePackage extends AbstractPackage implements PackageInterface
             $cacheManager = $core->getCacheManager();
 
             // Get from cache
-            if (!is_null($cacheManager) && !is_null($router = $cacheManager->get('berlioz-router'))) {
+            if (null !== $cacheManager && null !== ($router = $cacheManager->get('berlioz-router'))) {
                 return $router;
             }
 
@@ -114,24 +118,28 @@ class HttpCorePackage extends AbstractPackage implements PackageInterface
 
             if (!empty($routes = $core->getConfig()->get('routes', []))) {
                 foreach ($routes as $routeName => $routeCfg) {
-                    $route = new Route($routeCfg['route'],
-                                       array_merge(['name' => $routeName], $routeCfg['options'] ?? []),
-                                       $routeCfg['context'] ?? []);
+                    $route = new Route(
+                        $routeCfg['route'],
+                        array_merge(['name' => $routeName], $routeCfg['options'] ?? []),
+                        $routeCfg['context'] ?? []
+                    );
                     $router->getRouteSet()->addRoute($route);
                 }
             }
 
             // Save to cache
-            if (!is_null($cacheManager)) {
-                $core->onTerminate(function (Core $core) use ($router) {
-                    $core->getCacheManager()->set('berlioz-router', $router);
-                });
+            if (null !== $cacheManager) {
+                $core->onTerminate(
+                    function (Core $core) use ($router) {
+                        $core->getCacheManager()->set('berlioz-router', $router);
+                    }
+                );
             }
 
             return $router;
         } catch (CacheException $e) {
             throw new BerliozException('Router initialization error', 0, $e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new BerliozException('Router initialization error', 0, $e);
         } finally {
             $core->getDebug()->getTimeLine()->addActivity($routerActivity->end());

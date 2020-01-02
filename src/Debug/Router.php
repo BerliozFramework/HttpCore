@@ -19,7 +19,10 @@ use Berlioz\Core\CoreAwareInterface;
 use Berlioz\Core\CoreAwareTrait;
 use Berlioz\Core\Debug\AbstractSection;
 use Berlioz\HttpCore\App\HttpApp;
+use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
+use Berlioz\Router\RouteSetInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class Router.
@@ -64,7 +67,7 @@ class Router extends AbstractSection implements CoreAwareInterface, Section
      */
     public function saveReport()
     {
-        if (is_null($this->getCore())) {
+        if (null === $this->getCore()) {
             return;
         }
 
@@ -107,9 +110,13 @@ class Router extends AbstractSection implements CoreAwareInterface, Section
      */
     public function serialize()
     {
-        return serialize(['serverRequest' => $this->getServerRequest(),
-                          'route'         => $this->getRoute(),
-                          'routeSet'      => $this->getRouteSet()]);
+        return serialize(
+            [
+                'serverRequest' => $this->getServerRequest(),
+                'route' => $this->getRoute(),
+                'routeSet' => $this->getRouteSet(),
+            ]
+        );
     }
 
     /**
@@ -133,7 +140,7 @@ class Router extends AbstractSection implements CoreAwareInterface, Section
      *
      * @return \Psr\Http\Message\ServerRequestInterface|null
      */
-    public function getServerRequest(): ?\Psr\Http\Message\ServerRequestInterface
+    public function getServerRequest(): ?ServerRequestInterface
     {
         return $this->serverRequest;
     }
@@ -143,7 +150,7 @@ class Router extends AbstractSection implements CoreAwareInterface, Section
      *
      * @return \Berlioz\Router\RouteInterface|null
      */
-    public function getRoute(): ?\Berlioz\Router\RouteInterface
+    public function getRoute(): ?RouteInterface
     {
         return $this->route;
     }
@@ -153,7 +160,7 @@ class Router extends AbstractSection implements CoreAwareInterface, Section
      *
      * @return \Berlioz\Router\RouteSetInterface|null
      */
-    public function getRouteSet(): ?\Berlioz\Router\RouteSetInterface
+    public function getRouteSet(): ?RouteSetInterface
     {
         return $this->routeSet;
     }

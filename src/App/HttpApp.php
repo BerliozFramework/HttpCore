@@ -32,6 +32,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
 /**
  * Class HttpApp.
@@ -55,11 +56,13 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     {
         parent::__construct($core);
 
-        $this->getCore()->onTerminate(function (Core $core) {
-            if ($core->getDebug()->isEnabled()) {
-                $core->getDebug()->addSection(new DebugRouter($core));
+        $this->getCore()->onTerminate(
+            function (Core $core) {
+                if ($core->getDebug()->isEnabled()) {
+                    $core->getDebug()->addSection(new DebugRouter($core));
+                }
             }
-        });
+        );
     }
 
     //////////////
@@ -74,9 +77,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      */
     public function getRouter(): RouterInterface
     {
-        $router = $this->getCore()->getServiceContainer()->get(RouterInterface::class);
-
-        return $router;
+        return $this->getCore()->getServiceContainer()->get(RouterInterface::class);
     }
 
     /**
@@ -112,8 +113,8 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             $this->getCore()->getDebug()->getTimeLine()->addActivity($routerActivity->end());
 
             // No route?
-            if (is_null($this->route)) {
-                if (is_null($response = $this->httpRedirection($serverRequest->getUri()))) {
+            if (null === $this->route) {
+                if (null === ($response = $this->httpRedirection($serverRequest->getUri()))) {
                     throw new NotFoundHttpException;
                 }
 
@@ -128,7 +129,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             }
 
             // Define default locale from request and route (attribute _locale)
-            if (!is_null($locale = $serverRequest->getAttribute('_locale'))) {
+            if (null !== $locale = $serverRequest->getAttribute('_locale')) {
                 $this->getCore()->setLocale($locale);
             }
 
@@ -142,20 +143,28 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
 
                 // Create instance of controller
                 $controller = $this->getCore()->getServiceContainer()
-                                   ->getInstantiator()
-                                   ->newInstanceOf($routeContext['_class'],
-                                                   ['request'  => $serverRequest,
-                                                    'response' => $response]);
+                    ->getInstantiator()
+                    ->newInstanceOf(
+                        $routeContext['_class'],
+                        [
+                            'request' => $serverRequest,
+                            'response' => $response,
+                        ]
+                    );
 
                 // Call _b_pre() method?
                 if (method_exists($controller, '_b_pre')) {
                     // Call main method
                     $preResult = $this->getCore()->getServiceContainer()
-                                      ->getInstantiator()
-                                      ->invokeMethod($controller,
-                                                     '_b_pre',
-                                                     ['request'  => $serverRequest,
-                                                      'response' => $response]);
+                        ->getInstantiator()
+                        ->invokeMethod(
+                            $controller,
+                            '_b_pre',
+                            [
+                                'request' => $serverRequest,
+                                'response' => $response,
+                            ]
+                        );
 
                     if ($preResult instanceof ServerRequestInterface) {
                         $serverRequest = $preResult;
@@ -168,11 +177,15 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                 // Call main method only if response code is between 200 and 299
                 if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
                     $mainResponse = $this->getCore()->getServiceContainer()
-                                         ->getInstantiator()
-                                         ->invokeMethod($controller,
-                                                        $routeContext['_method'],
-                                                        ['request'  => $serverRequest,
-                                                         'response' => $response]);
+                        ->getInstantiator()
+                        ->invokeMethod(
+                            $controller,
+                            $routeContext['_method'],
+                            [
+                                'request' => $serverRequest,
+                                'response' => $response,
+                            ]
+                        );
 
                     if (!$mainResponse instanceof ResponseInterface) {
                         $stream = new Stream;
@@ -187,11 +200,15 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
                 if (method_exists($controller, '_b_post')) {
                     // Call main method
                     $postResponse = $this->getCore()->getServiceContainer()
-                                         ->getInstantiator()
-                                         ->invokeMethod($controller,
-                                                        '_b_post',
-                                                        ['request'  => $serverRequest,
-                                                         'response' => $response]);
+                        ->getInstantiator()
+                        ->invokeMethod(
+                            $controller,
+                            '_b_post',
+                            [
+                                'request' => $serverRequest,
+                                'response' => $response,
+                            ]
+                        );
 
                     if ($postResponse instanceof ResponseInterface) {
                         $response = $postResponse;
@@ -200,7 +217,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             } finally {
                 $this->getCore()->getDebug()->getTimeLine()->addActivity($controllerActivity->end());
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->getCore()->getDebug()->setExceptionThrown($e);
 
             if (!($e instanceof HttpException)) {
@@ -220,7 +237,6 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      *
      * @return \Psr\Http\Message\ResponseInterface|null
      * @throws \Berlioz\Config\Exception\ConfigException
-     * @throws \Berlioz\Core\Exception\BerliozException
      */
     public function httpRedirection(UriInterface $uri): ?ResponseInterface
     {
@@ -234,10 +250,10 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
 
             if (is_array($redirection)) {
                 $redirectionType = intval($redirection['type'] ?? 301);
-                $redirectionUrl = (string) $redirection['url'];
+                $redirectionUrl = (string)$redirection['url'];
             } else {
                 $redirectionType = 301;
-                $redirectionUrl = (string) $redirection;
+                $redirectionUrl = (string)$redirection;
             }
 
             // Replacement
@@ -261,50 +277,62 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         try {
             // Get error handler in configuration
             $errorHandler = $this->getCore()
-                                 ->getConfig()
-                                 ->get(sprintf('berlioz.http.errors.%s', $e->getCode()),
-                                       $this->getCore()
-                                            ->getConfig()
-                                            ->get('berlioz.http.errors.default'));
+                ->getConfig()
+                ->get(
+                    sprintf('berlioz.http.errors.%s', $e->getCode()),
+                    $this->getCore()
+                        ->getConfig()
+                        ->get('berlioz.http.errors.default')
+                );
 
             // Check validity of error handler
-            if (empty($errorHandler) || !class_exists($errorHandler) || !is_a($errorHandler, HttpErrorHandler::class, true)) {
+            if (empty($errorHandler) || !class_exists($errorHandler) || !is_a(
+                    $errorHandler,
+                    HttpErrorHandler::class,
+                    true
+                )) {
                 $errorHandler = DefaultHttpErrorHandler::class;
             }
 
             // Invoke method of error handler
             $handler = $this->getCore()->getServiceContainer()
-                            ->getInstantiator()
-                            ->newInstanceOf($errorHandler);
+                ->getInstantiator()
+                ->newInstanceOf($errorHandler);
             $response = $this->getCore()->getServiceContainer()
-                             ->getInstantiator()
-                             ->invokeMethod($handler,
-                                            'handle',
-                                            ['request' => $this->getRouter()->getServerRequest(),
-                                             'e'       => $e]);
-        } catch (\Throwable $throwable) {
+                ->getInstantiator()
+                ->invokeMethod(
+                    $handler,
+                    'handle',
+                    [
+                        'request' => $this->getRouter()->getServerRequest(),
+                        'e' => $e,
+                    ]
+                );
+        } catch (Throwable $throwable) {
             try {
                 $handler = new DefaultHttpErrorHandler($this);
                 $response = $handler->handle($this->getRouter()->getServerRequest(), $e);
-            } catch (\Throwable $throwable) {
-                $str = "<html lang='en'>" .
-                       "<body>" .
-                       "<h1>Internal Server Error</h1>";
+            } catch (Throwable $throwable) {
+                $str =
+                    '<html lang="en">' .
+                    '<body>' .
+                    '<h1>Internal Server Error</h1>';
 
                 try {
                     $debug = false;
-                    if ($debug = $this->getCore()->getConfig()->get('berlioz.debug', false)) {
-                        $str .= "<pre>{$e}</pre>";
+                    if ($debug = $this->getCore()->getDebug()->isEnabled()) {
+                        $str .= '<pre>' . $e . '</pre>';
                     }
-                } catch (\Throwable $throwable) {
+                } catch (Throwable $throwable) {
                 }
 
                 if (!$debug) {
-                    $str .= "<p>Looks like we're having some server issues.</p>";
+                    $str .= '<p>Looks like we\'re having some server issues.</p>';
                 }
 
-                $str .= "</body>" .
-                        "</html>";
+                $str .=
+                    '</body>' .
+                    '</html>';
 
                 $response = new Response($str, 500);
             }
@@ -332,7 +360,11 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         // Headers
         if (!headers_sent()) {
             // Remove headers and add main header
-            header('HTTP/' . $response->getProtocolVersion() . ' ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase(), true);
+            header(
+                'HTTP/' . $response->getProtocolVersion() . ' ' .
+                $response->getStatusCode() . ' ' . $response->getReasonPhrase(),
+                true
+            );
 
             // Headers
             foreach ($response->getHeaders() as $name => $values) {

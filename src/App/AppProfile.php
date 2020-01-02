@@ -35,14 +35,14 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
     /**
      * AppProfile constructor.
      *
-     * @param \Berlioz\Core\Core                 $core
+     * @param \Berlioz\Core\Core $core
      * @param \Berlioz\HttpCore\App\HttpApp|null $app
      */
     public function __construct(Core $core, ?HttpApp $app)
     {
         $this->setCore($core);
 
-        if (!is_null($app)) {
+        if (null !== $app) {
             $this->setApp($app);
         }
     }
@@ -102,7 +102,7 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
      */
     public function getRoute(): ?RouteInterface
     {
-        if (is_null($this->getApp())) {
+        if (null === $this->getApp()) {
             return null;
         }
 
