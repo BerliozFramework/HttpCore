@@ -28,7 +28,7 @@
     "ext-zlib": "*",
     "berlioz/core": "dev-develop",
     "berlioz/flash-bag": "^1.0",
-    "berlioz/http-message": "dev-develop",
+    "berlioz/http-message": "^1.0",
     "berlioz/router": "dev-develop",
     "berlioz/twig-package": "dev-develop",
     "psr/http-server-handler": "^1.0.0"
