@@ -78,10 +78,21 @@ class DebugController extends AbstractController implements RenderingControllerI
 
         try {
             $debugDirectory = $this->getApp()->getCore()->getConfig()->get('berlioz.directories.debug');
+            if (empty($debugDirectory)) {
+                throw new BerliozException('Debug directory does not defined');
+            }
 
-            if (empty($debugDirectory) ||
-                !file_exists($debugFile = $debugDirectory . DIRECTORY_SEPARATOR . $id . '.debug')) {
-                throw new BerliozException(sprintf('Debug report "%s" does not exists', $id));
+            // Prevent write timing of harddrives (retry 4 times)
+            $nbRetries = 0;
+            $debugFile = $debugDirectory . DIRECTORY_SEPARATOR . $id . '.debug';
+            while (!file_exists($debugFile)) {
+                if ($nbRetries > 4) {
+                    throw new BerliozException(sprintf('Debug report "%s" does not exists', $id));
+                }
+
+                $nbRetries++;
+                usleep(250000);
+                clearstatcache(true, $debugFile);
             }
 
             if (empty($this->debug[$id] = unserialize(gzinflate(file_get_contents($debugFile))))) {
