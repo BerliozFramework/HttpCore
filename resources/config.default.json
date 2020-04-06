@@ -19,15 +19,8 @@
   ],
   "twig": {
     "paths": {
-      "__main__": "%berlioz.directories.templates%",
       "Berlioz-HttpCore": "%berlioz.directories.vendor%/berlioz/http-core/resources"
     },
-    "options": {
-      "cache": "%berlioz.directories.cache%/twig",
-      "debug": "%berlioz.debug%"
-    },
-    "extensions": [
-    ],
     "globals": {
       "app": "@AppProfile"
     }
