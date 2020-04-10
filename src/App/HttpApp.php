@@ -23,6 +23,7 @@ use Berlioz\HttpCore\Debug\Router as DebugRouter;
 use Berlioz\HttpCore\Exception\HttpException;
 use Berlioz\HttpCore\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
+use Berlioz\HttpCore\Exception\Http\ServiceUnavailableHttpException;
 use Berlioz\HttpCore\Http\DefaultHttpErrorHandler;
 use Berlioz\HttpCore\Http\HttpErrorHandler;
 use Berlioz\Router\RouteInterface;
