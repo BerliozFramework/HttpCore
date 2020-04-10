@@ -12,7 +12,8 @@
         "default": "Berlioz\\HttpCore\\Http\\DefaultHttpErrorHandler"
       },
       "redirections": {}
-    }
+    },
+    "maintenance": false
   },
   "controllers": [
     "Berlioz\\HttpCore\\Controller\\DebugController"
