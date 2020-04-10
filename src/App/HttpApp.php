@@ -105,6 +105,12 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     public function handle(?ServerRequestInterface $serverRequest = null): ResponseInterface
     {
         try {
+            // Check if application is in maintenance mode
+            if ($this->getCore()->getConfig()->get('berlioz.maintenance', false) &&
+                !$this->getCore()->getDebug()->isEnabled()) {
+                throw new ServiceUnavailableHttpException();
+            }
+
             $router = $this->getRouter();
 
             // Handle router
