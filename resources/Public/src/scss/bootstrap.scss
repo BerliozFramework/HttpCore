@@ -12,7 +12,7 @@
 // Variables
 
 $theme-colors: (
-        "primary": #ee7600
+        'primary': #ee7600
 );
 $body-color: #343a40;
 $font-family-sans-serif: 'Open Sans', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
@@ -29,6 +29,8 @@ $container-max-widths: (
         lg: 1060px,
         xl: 1300px
 );
+
+$card-border-radius: .5rem;
 
 // Theme mixins
 

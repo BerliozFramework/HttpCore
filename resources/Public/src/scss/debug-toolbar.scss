@@ -1,0 +1,152 @@
+/*!
+ * This file is part of Berlioz framework.
+ *
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @copyright 2017 Ronan GIRON
+ * @author    Ronan GIRON <https://github.com/ElGigi>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code, to the root.
+ */
+// Imports
+@import 'bootstrap';
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/reboot";
+@import '~bootstrap/scss/buttons';
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/utilities";
+
+html, body {
+  height: 75px;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+#toolbar {
+  height: 75px;
+  padding: 35px 37.5px 0 0;
+
+  .rtl & {
+    padding: 35px 0 0 37.5px;
+  }
+
+  #toolbar-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    height: 40px;
+    padding: 5px 35px 5px 0;
+    cursor: pointer;
+    background-color: theme-color('primary');
+    border-top: 1px solid white;
+    box-shadow: 0 0 5px 0 white;
+    color: #fff;
+    font-size: .8rem;
+    line-height: 30px;
+
+    .rtl & {
+      padding: 5px 0 5px 35px;
+      flex-direction: row-reverse;
+    }
+
+    .danger & {
+      background-color: theme-color('danger');
+    }
+
+    .col {
+      padding: 0 5px;
+      text-align: center;
+
+      .feather {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
+
+  #logo {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    right: 6px;
+    width: 69px;
+    height: 69px;
+    cursor: pointer;
+    fill: #fff;
+    border-radius: 34.5px;
+    border: 5px solid theme-color('primary');
+    background-color: theme-color('primary');
+
+    .rtl & {
+      left: 6px;
+      right: auto;
+    }
+
+    .danger & {
+      border: 5px solid theme-color('danger');
+      background-color: theme-color('danger');
+    }
+  }
+
+  #logo-shadow {
+    position: absolute;
+    z-index: 0;
+    bottom: -1px;
+    right: 5px;
+    width: 71px;
+    height: 71px;
+    border-radius: 35.5px;
+    background-color: white;
+    box-shadow: 0 0 5px 0 white;
+
+    .rtl & {
+      left: 5px;
+      right: auto;
+    }
+  }
+
+  #buttons {
+    display: none;
+    position: absolute;
+    bottom: 45px;
+    left: 0;
+    line-height: 0;
+    opacity: .5;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    .rtl & {
+      left: auto;
+      right: 0;
+      flex-direction: row-reverse;
+    }
+
+    :hover & {
+      display: flex;
+    }
+
+    .btn {
+      &[data-toggle="flip"], &[data-toggle="close"] {
+        margin: 0 .1rem;
+        padding: 0 .25rem;
+        height: 1.25rem;
+
+        svg {
+          display: block;
+          width: .75rem;
+          height: .75rem;
+        }
+      }
+
+      &[data-toggle="flip"] {
+        left: 2rem;
+      }
+    }
+  }
+}

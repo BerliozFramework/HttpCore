@@ -228,7 +228,10 @@ class DebugController extends AbstractController implements RenderingControllerI
 
         return $this->render(
             '@Berlioz-HttpCore/Twig/Debug/_toolbar.html.twig',
-            ['report' => $report]
+            [
+                'report' => $report,
+                'rtl' => ($_COOKIE['berlioz_toolbar_direction'] ?? 'ltr') === 'rtl',
+            ]
         );
     }
 
@@ -266,11 +269,34 @@ class DebugController extends AbstractController implements RenderingControllerI
     public function dashboard(ServerRequestInterface $request)
     {
         $report = $this->getDebugReport($request->getAttribute('id'));
+
+        return $this->render(
+            '@Berlioz-HttpCore/Twig/Debug/dashboard.html.twig',
+            [
+                'report' => $report,
+            ]
+        );
+    }
+
+    /**
+     * System.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface|string
+     * @throws \Berlioz\Config\Exception\ConfigException
+     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws \Twig\Error\Error
+     * @route("/_console/{id}/environment", name="_berlioz/console/environment", requirements={"id":"\w+"})
+     */
+    public function environment(ServerRequestInterface $request)
+    {
+        $report = $this->getDebugReport($request->getAttribute('id'));
         $system = $report->getSystemInfo();
         $php = $report->getPhpInfo();
 
         return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/dashboard.html.twig',
+            '@Berlioz-HttpCore/Twig/Debug/environment.html.twig',
             [
                 'report' => $report,
                 'system' => $system,

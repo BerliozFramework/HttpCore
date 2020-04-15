@@ -1,8 +1,12 @@
 {
-  "/vendor.js": "/_console/dist/js/vendor.80395559.js",
-  "/debug.css": "/_console/dist/css/debug.a80bb2b6.css",
-  "/debug.js": "/_console/dist/js/debug.cb9f7e2c.js",
-  "/debug-caller.js": "/_console/dist/js/debug-caller.9ada95c0.js",
-  "/debug-toolbar.css": "/_console/dist/css/debug-toolbar.a80bb2b6.css",
-  "/debug-toolbar.js": "/_console/dist/js/debug-toolbar.8aac01c2.js"
+  "/vendor.js": "/_console/dist/js/vendor.ab92cfdd.js",
+  "/debug.css": "/_console/dist/css/debug.9416336f.css",
+  "/debug.js": "/_console/dist/js/debug.5006d0b1.js",
+  "/debug-caller.js": "/_console/dist/js/debug-caller.fc931883.js",
+  "/debug-toolbar.css": "/_console/dist/css/debug-toolbar.9416336f.css",
+  "/debug-toolbar.js": "/_console/dist/js/debug-toolbar.55f35c77.js",
+  "/js/debug-caller.fc931883.js.LICENSE.txt": "/_console/dist/js/debug-caller.fc931883.js.LICENSE.txt",
+  "/js/debug-toolbar.55f35c77.js.LICENSE.txt": "/_console/dist/js/debug-toolbar.55f35c77.js.LICENSE.txt",
+  "/js/debug.5006d0b1.js.LICENSE.txt": "/_console/dist/js/debug.5006d0b1.js.LICENSE.txt",
+  "/js/vendor.ab92cfdd.js.LICENSE.txt": "/_console/dist/js/vendor.ab92cfdd.js.LICENSE.txt"
 }

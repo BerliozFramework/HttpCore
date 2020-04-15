@@ -1,7 +1,8 @@
 {% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
 
 {% block menu %}
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2">
         <circle cx="18" cy="5" r="3"></circle>
         <circle cx="6" cy="12" r="3"></circle>
         <circle cx="18" cy="19" r="3"></circle>
@@ -9,6 +10,27 @@
         <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
     </svg>
     {{ section.sectionName }}
+{% endblock %}
+
+{% block widget %}
+    <dl class="mb-0">
+        <dt>Server request</dt>
+        <dd>
+            {% if section.serverRequest %}
+                {{ section.serverRequest.uri }}
+            {% else %}
+                <em class="text-muted">No server request!</em>
+            {% endif %}
+        </dd>
+        <dt>Route found</dt>
+        <dd class="mb-0">
+            {% if section.route %}
+                {{ section.route.name }}
+            {% else %}
+                <em class="text-muted">No route found!</em>
+            {% endif %}
+        </dd>
+    </dl>
 {% endblock %}
 
 {% block main %}
@@ -22,13 +44,22 @@
 
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#route" role="tab" aria-controls="route" aria-selected="true">Route</a>
+            <a class="nav-link active" id="route-tab" data-toggle="tab" href="#route" role="tab"
+               aria-controls="route" aria-selected="true">
+                Route
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#server-request" role="tab" aria-controls="server-request" aria-selected="false">Server request</a>
+            <a class="nav-link" id="request-tab" data-toggle="tab" href="#server-request" role="tab"
+               aria-controls="server-request" aria-selected="false">
+                Server request
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#routeset" role="tab" aria-controls="routeset" aria-selected="false">Route set</a>
+            <a class="nav-link" id="routeset-tab" data-toggle="tab" href="#routeset" role="tab"
+               aria-controls="routeset" aria-selected="false">
+                Route set
+            </a>
         </li>
     </ul>
     <div class="tab-content">
@@ -245,17 +276,17 @@
                         {% set routeFound = false %}
                         {%- for route in section.routeSet.routes %}
                             <tr class="
-                {%- apply spaceless -%}
-                  {% if section.route is not empty and routeFound is same as(false) %}
-                    {% if section.route.name == route.name %}
-                      {% set routeFound  = true %}
-                      bg-success text-white
-                    {% else %}
-                      bg-warning
-                    {% endif %}
-                  {% endif %}
-                {%- endapply -%}
-              ">
+                                    {%- apply spaceless -%}
+                                      {% if section.route is not empty and routeFound is same as(false) %}
+                                        {% if section.route.name == route.name %}
+                                          {% set routeFound  = true %}
+                                          bg-success text-white
+                                        {% else %}
+                                          text-muted
+                                        {% endif %}
+                                      {% endif %}
+                                    {%- endapply -%}
+                                  ">
                                 <th class="align-middle" scope="row">{{ route.name }}</th>
                                 <td class="align-middle">
                                     {% if section.route.methods is empty or section.route.methods == ['GET', 'HEAD', 'POST', 'OPTIONS', 'CONNECT', 'TRACE', 'PUT', 'DELETE'] %}

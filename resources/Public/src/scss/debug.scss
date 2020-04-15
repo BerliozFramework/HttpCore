@@ -9,8 +9,8 @@
  * file that was distributed with this source code, to the root.
  */
 // Imports
-@import "bootstrap";
-@import "~bootstrap/scss/bootstrap";
+@import 'bootstrap';
+@import '~bootstrap/scss/bootstrap';
 
 /*
  * Loader
@@ -79,6 +79,16 @@
   width: 20px;
   height: 20px;
   vertical-align: text-bottom;
+
+  &-lg {
+    width: 50px;
+    height: 50px;
+
+    @include media-breakpoint-down(md) {
+      width: 30px;
+      height: 30px;
+    }
+  }
 }
 
 /*
@@ -162,7 +172,7 @@
     color: #333;
 
     &.active {
-      color: theme-color("primary");
+      color: theme-color('primary');
     }
 
     .feather {
@@ -232,6 +242,27 @@
 
 .border-bottom {
   border-bottom: 1px solid #e5e5e5;
+}
+
+/*
+ * Cards
+ */
+
+@include media-breakpoint-up(sm) {
+  .card-dashboard-columns {
+    column-count: 2;
+  }
+}
+
+.card {
+  .card-value {
+    font-weight: bold;
+    font-size: 2rem;
+
+    @include media-breakpoint-down(md) {
+      font-size: 1.5rem;
+    }
+  }
 }
 
 /*
@@ -396,7 +427,8 @@
           position: relative;
           padding: 4px 0 5px;
           min-height: 5px;
-          border-bottom: 1px solid theme-color("dark");
+          border-bottom: 1px solid theme-color('dark');
+          background-color: #dddddd55;
 
           &:before,
           &:after {
@@ -407,7 +439,7 @@
             width: 0;
             height: 0;
             border-right: 5px solid transparent;
-            border-bottom: 5px solid theme-color("dark");
+            border-bottom: 5px solid theme-color('dark');
           }
 
           &:after {
@@ -422,7 +454,7 @@
             height: 10px;
             border-top: 2px solid white;
             border-bottom: 2px solid white;
-            background-color: theme-color("info");
+            background-color: theme-color('info');
           }
         }
       }
@@ -430,7 +462,7 @@
 
     .memory-usage {
       margin-top: 20px;
-      border-top: 2px dotted theme-color("secondary");
+      border-top: 2px dotted theme-color('secondary');
 
       .memory-title {
         padding: 5px 0;
@@ -452,14 +484,14 @@
           position: absolute;
           cursor: pointer;
           bottom: 0;
-          background-color: theme-color-level("info", -10);
+          background-color: theme-color-level('info', -10);
         }
 
         .peak {
           .memory {
             right: 0;
             left: 0;
-            background-color: theme-color("info");
+            background-color: theme-color('info');
           }
         }
       }
