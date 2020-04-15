@@ -1,23 +1,23 @@
-const path = require('path')
-const AssetsPlugin = require('assets-webpack-plugin')
-const {CleanWebpackPlugin} = require("clean-webpack-plugin")
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
-const ManifestPlugin = require('webpack-manifest-plugin')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin')
-const WebpackNotifierPlugin = require('webpack-notifier')
+const path = require('path');
+const AssetsPlugin = require('assets-webpack-plugin');
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const WebpackNotifierPlugin = require('webpack-notifier');
 
 const purgeManifestFile = (name) => {
     return name.replace(/^/, '/')
         .replace(/\\/g, '/')
         .replace(/\/{2,}/g, '/')
         .replace(/(\?v=[0-9.]*)$/, '')
-}
+};
 
 module.exports = (env, argv) => {
-    const devMode = argv.mode !== 'production'
+    const devMode = argv.mode !== 'production';
 
     return {
         devtool: devMode ? 'source-map' : false,
@@ -84,10 +84,9 @@ module.exports = (env, argv) => {
             ]
         },
         optimization: {
-            namedModules: true,
             minimize: !devMode,
             minimizer: [
-                new UglifyJsPlugin({
+                new TerserPlugin({
                     test: /\.js($|\?)/i,
                     sourceMap: devMode
                 }),
@@ -96,7 +95,7 @@ module.exports = (env, argv) => {
             splitChunks: {
                 cacheGroups: {
                     vendor: {
-                        test: /.*\.js($|\?)/i,
+                        test: /\.js($|\?)/i,
                         chunks: 'all',
                         minChunks: 2,
                         name: 'vendor',
@@ -121,8 +120,8 @@ module.exports = (env, argv) => {
             }),
             new ManifestPlugin({
                 map: (file) => {
-                    file.name = purgeManifestFile(file.name)
-                    file.path = purgeManifestFile(file.path)
+                    file.name = purgeManifestFile(file.name);
+                    file.path = purgeManifestFile(file.path);
                     return file
                 }
             }),
@@ -134,4 +133,4 @@ module.exports = (env, argv) => {
             new WebpackNotifierPlugin({alwaysNotify: true})
         ]
     }
-}
+};

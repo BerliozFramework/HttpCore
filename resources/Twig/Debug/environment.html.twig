@@ -1,0 +1,76 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1>Environment</h1>
+    </div>
+
+    <p>
+        It's a snapshot of environment at the moment of request.
+    </p>
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <h2>System</h2>
+            <div class="table-responsive">
+                <table class="table border-bottom">
+                    <tbody>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Uname</th>
+                        <td>{{ system.uname }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Current user</th>
+                        <td>{{ system.current_user }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">User ID</th>
+                        <td>{{ system.uid }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Group ID</th>
+                        <td>{{ system.gid }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Process ID</th>
+                        <td>{{ system.pid }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Inode</th>
+                        <td>{{ system.inode }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Temporary directory</th>
+                        <td>{{ system.tmp_dir }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <h2>PHP</h2>
+            <div class="table-responsive">
+                <table class="table border-bottom">
+                    <tbody>
+                    <tr>
+                        <th scope="row" class="text-nowrap">PHP version</th>
+                        <td>{{ php.php_version }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">PHP memory limit</th>
+                        <td>{{ php.memory_limit|human_file_size }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">PHP extensions</th>
+                        <td>{{ php.extensions|join(', ') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">PHP info</th>
+                        <td><a href="{{ path('_berlioz/console/phpinfo', {"id": report.uniqid}) }}">phpinfo()</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

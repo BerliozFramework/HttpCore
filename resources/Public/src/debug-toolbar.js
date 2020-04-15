@@ -10,17 +10,27 @@
  */
 
 import jQuery from 'jquery'
-import './debug-toolbar.scss'
+import './scss/debug-toolbar.scss'
 
 jQuery(($) => {
     const toggleBerliozConsole = () => {
         if ((window.parent && window.parent.toggleBerliozConsole) !== undefined) {
-            window.parent.toggleBerliozConsole()
+            window.parent.toggleBerliozConsole();
+        }
+    };
+    const closeBerliozToolbar = () => {
+        if ((window.parent && window.parent.closeBerliozToolbar) !== undefined) {
+            window.parent.closeBerliozToolbar();
+        }
+    };
+    const flipBerliozToolbar = () => {
+        if ((window.parent && window.parent.flipBerliozToolbar) !== undefined) {
+            window.parent.flipBerliozToolbar();
+            $('body').toggleClass('rtl');
         }
     };
 
-    $('#toolbar-content, #toolbar #logo')
-        .click(function () {
-            toggleBerliozConsole()
-        });
+    $('#toolbar-content, #toolbar #logo').click(() => toggleBerliozConsole());
+    $('[data-toggle="close"]').click(() => closeBerliozToolbar());
+    $('[data-toggle="flip"]').click(() => flipBerliozToolbar());
 });

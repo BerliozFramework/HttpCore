@@ -11,7 +11,7 @@
 
 import jQuery from 'jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
-import './debug.scss';
+import './scss/debug.scss';
 import hljs from 'highlight.js/lib/highlight';
 import 'highlight.js/styles/github.css';
 
@@ -25,6 +25,15 @@ hljs.registerLanguage('sql', require('highlight.js/lib/languages/sql'));
 
 global.$ = global.jQuery = jQuery;
 
+
+///////////////
+/// WINDOWS ///
+///////////////
+
+let parentWindow = (window.parent && window.parent !== window ? window.parent : null);
+let openerWindow = (window.opener && window.opener !== window ? window.opener : null);
+
+
 jQuery(($) => {
     /////////////////
     /// HIGHLIGHT ///
@@ -36,14 +45,6 @@ jQuery(($) => {
                 hljs.highlightBlock(block)
             })
     };
-
-
-    ///////////////
-    /// WINDOWS ///
-    ///////////////
-
-    let parentWindow = (window.parent && window.parent !== window ? window.parent : null);
-    let openerWindow = (window.opener && window.opener !== window ? window.opener : null);
 
 
     ///////////////////////
@@ -88,7 +89,7 @@ jQuery(($) => {
         let reports = [];
 
         if (parentWindow || openerWindow) {
-            reports = (parentWindow || openerWindow).berlioz_reports || [];
+            reports = (parentWindow || openerWindow).berlioz.console.reports || [];
         }
 
         if (!parentWindow) {
@@ -136,15 +137,18 @@ jQuery(($) => {
     }, 1000);
 
 
-    ////////////
-    /// AJAX ///
-    ////////////
+    //////////////
+    /// LOADER ///
+    //////////////
 
     $(document).ajaxStart(function () {
         $('#loader-wrapper').show()
     });
     $(document).ajaxStop(function () {
         $('#loader-wrapper').hide()
+    });
+    $(document).on('click', 'a[href]:not([data-toggle]):not([href="#"])', () => {
+        $('#loader-wrapper').show()
     });
 
 
@@ -160,11 +164,12 @@ jQuery(($) => {
     ///////////////
 
     $('iframe.iframe-h-auto')
-        .on('load', function () {
-            if ($(this).get(0).contentWindow) {
-                $(this).height($(this).get(0).contentWindow.document.body.scrollHeight + 100)
-            }
-        })
+        .on('load',
+            function () {
+                if ($(this).get(0).contentWindow) {
+                    $(this).height($(this).get(0).contentWindow.document.body.scrollHeight + 100)
+                }
+            })
         .trigger('load');
 
 
@@ -230,15 +235,18 @@ jQuery(($) => {
         .on('click',
             function () {
                 let modal = $('#' + $(this).data('type') + 'Detail').filter('.modal');
-                if (modal.length === 1) {
-                    $.ajax({
-                        "url": $(this).data('target'),
-                        "success": function (data) {
-                            $('.modal-body', modal).html(data);
-                            highlight($('.modal-body pre > code', modal));
-                            $(modal).modal('show')
-                        }
-                    })
+
+                if (modal.length !== 1) {
+                    return;
                 }
+
+                $.ajax({
+                    "url": $(this).data('target'),
+                    "success": function (data) {
+                        $('.modal-body', modal).html(data);
+                        highlight($('.modal-body pre > code', modal));
+                        $(modal).modal('show')
+                    }
+                })
             })
 });

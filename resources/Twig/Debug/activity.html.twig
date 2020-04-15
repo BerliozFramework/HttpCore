@@ -1,39 +1,39 @@
 <h4>Profile</h4>
 <div class="table-responsive">
-  <table class="table border-bottom">
-    <tbody>
-    <tr>
-      <th scope="row" class="text-nowrap">Name</th>
-      <td>{{ activity.name }}</td>
-    </tr>
-    <tr>
-      <th scope="row" class="text-nowrap">Group</th>
-      <td>{{ activity.group|default('--') }}</td>
-    </tr>
-    {% if activity.description %}
-      <tr>
-        <th scope="row" class="text-nowrap">Description</th>
-        <td>{{ activity.description }}</td>
-      </tr>
-    {% endif %}
-    <tr>
-      <th scope="row" class="text-nowrap">Start after</th>
-      <td>{{ ((activity.startMicroTime - timeLine.firstTime) * 1000)|round(6) }}ms</td>
-    </tr>
-    <tr>
-      <th scope="row" class="text-nowrap">Duration</th>
-      <td>{{ (activity.duration * 1000)|round(6) }}ms</td>
-    </tr>
-    </tbody>
-  </table>
+    <table class="table border-bottom">
+        <tbody>
+        <tr>
+            <th scope="row" class="text-nowrap">Name</th>
+            <td>{{ activity.name }}</td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">Group</th>
+            <td>{{ activity.group|default('--') }}</td>
+        </tr>
+        {% if activity.description %}
+            <tr>
+                <th scope="row" class="text-nowrap">Description</th>
+                <td>{{ activity.description }}</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <th scope="row" class="text-nowrap">Start after</th>
+            <td>{{ ((activity.startMicroTime - timeLine.firstTime) * 1000)|round(6) }}ms</td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">Duration</th>
+            <td>{{ (activity.duration * 1000)|round(6) }}ms</td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 {% if activity.detail %}
-  <h4>Detail</h4>
-  <pre class="w-100"><code>{{ activityDetail }}</code></pre>
+    <h4>Detail</h4>
+    <pre class="w-100"><code>{{ activityDetail }}</code></pre>
 {% endif %}
 
 {% if activity.result %}
-  <h4>Result</h4>
-  <pre class="w-100"><code>{{ activityResult }}</code></pre>
+    <h4>Result</h4>
+    <pre class="w-100"><code>{{ activityResult }}</code></pre>
 {% endif %}

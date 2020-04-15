@@ -17,29 +17,35 @@
 
     <div class="row">
         <div class="col">
-            <div class="widget bg-dark text-white">
-                <div class="d-block">Berlioz internal cache</div>
-                {% if not cacheManager %}
-                    <div class="d-block value">disabled</div>
-                {% else %}
-                    <div class="d-block value">enabled</div>
-                    <div class="d-block mt-2">
-                        <a href="{{ path('_berlioz/console/cache', {id: report.uniqid, clear: 'internal'}) }}" class="btn btn-primary">Clear cache</a>
-                    </div>
-                {% endif %}
+            <div class="card bg-dark text-white">
+                <div class="card-body text-center">
+                    <p class="card-text mb-0">Berlioz internal cache</p>
+                    {% if not cacheManager %}
+                        <p class="card-value mb-0">disabled</p>
+                    {% else %}
+                        <p class="card-value">enabled</p>
+                        <a href="{{ path('_berlioz/console/cache', {id: report.uniqid, clear: 'internal'}) }}"
+                           class="btn btn-primary">
+                            Clear cache
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="col">
-            <div class="widget bg-dark text-white">
-                <div class="d-block">OPcache</div>
-                {% if opcache is same as(false) or not opcache.opcache_enabled %}
-                    <div class="d-block value">disabled</div>
-                {% else %}
-                    <div class="d-block value">enabled</div>
-                    <div class="d-block mt-2">
-                        <a href="{{ path('_berlioz/console/cache', {id: report.uniqid, clear: 'opcache'}) }}" class="btn btn-primary">Clear cache</a>
-                    </div>
-                {% endif %}
+            <div class="card bg-dark text-white">
+                <div class="card-body text-center">
+                    <p class="card-text mb-0">OPcache</p>
+                    {% if opcache is same as(false) or not opcache.opcache_enabled %}
+                        <p class="card-value mb-0">disabled</p>
+                    {% else %}
+                        <p class="card-value">enabled</p>
+                        <a href="{{ path('_berlioz/console/cache', {id: report.uniqid, clear: 'opcache'}) }}"
+                           class="btn btn-primary">
+                            Clear cache
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
