@@ -119,8 +119,6 @@ class Console {
     set report(report) {
         this._reports.push(report);
 
-        console.log(this._reports);
-        console.log(this._windows);
         this._windows.forEach((consoleWindow) => {
             consoleWindow.refreshReports();
         })
