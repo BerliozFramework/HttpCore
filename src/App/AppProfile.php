@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Berlioz\HttpCore\App;
 
 use Berlioz\Config\ConfigInterface;
+use Berlioz\Core\Asset\Assets;
 use Berlioz\Core\Core;
 use Berlioz\Core\CoreAwareInterface;
 use Berlioz\Core\CoreAwareTrait;
@@ -65,6 +66,17 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
     public function getConfig(): ConfigInterface
     {
         return $this->getCore()->getConfig();
+    }
+
+    /**
+     * Get assets.
+     *
+     * @return \Berlioz\Core\Asset\Assets
+     * @throws \Berlioz\Core\Exception\BerliozException
+     */
+    public function getAssets(): Assets
+    {
+        return $this->getCore()->getServiceContainer()->get(Assets::class);
     }
 
     /**
