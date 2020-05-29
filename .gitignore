@@ -2,7 +2,7 @@
 /vendor/
 /tests/_envTest/var/
 !**/.gitkeep
-composer.lock
+/composer.lock
 .phpunit.result.cache
 
 # Dev environment
