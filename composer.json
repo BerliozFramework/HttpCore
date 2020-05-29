@@ -32,11 +32,11 @@
     "ext-intl": "*",
     "ext-json": "*",
     "ext-zlib": "*",
-    "berlioz/core": "dev-develop",
+    "berlioz/core": "^1.0",
     "berlioz/flash-bag": "^1.0",
     "berlioz/http-message": "^1.0",
-    "berlioz/router": "dev-develop",
-    "berlioz/twig-package": "dev-develop",
+    "berlioz/router": "^1.0",
+    "berlioz/twig-package": "^1.0",
     "psr/http-server-handler": "^1.0.0"
   },
   "require-dev": {
