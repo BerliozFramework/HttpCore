@@ -1,8 +1,7 @@
 {
   "name": "berlioz/http-core",
+  "type": "library",
   "description": "Berlioz Framework HTTP Core",
-  "minimum-stability": "dev",
-  "prefer-stable": true,
   "license": "MIT",
   "homepage": "http://getberlioz.com",
   "authors": [
@@ -14,12 +13,19 @@
   "autoload": {
     "psr-4": {
       "Berlioz\\HttpCore\\": "src/"
-    }
+    },
+    "exclude-from-classmap": [
+      "/tests/"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
-      "Berlioz\\HttpCore\\Tests\\": "tests/"
-    }
+      "Berlioz\\HttpCore\\Tests\\": "tests/",
+      "Berlioz\\HttpCore\\TestProject\\": "tests/_envTest/src/"
+    },
+    "exclude-from-classmap": [
+      "/tests/_envTest/"
+    ]
   },
   "require": {
     "php": "^7.1",
@@ -34,7 +40,7 @@
     "psr/http-server-handler": "^1.0.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.5 || ^8.0"
+    "phpunit/phpunit": "^7.5 || ^8.0 || ^9.0"
   },
   "provide": {
     "psr/container-implementation": "^1.0",

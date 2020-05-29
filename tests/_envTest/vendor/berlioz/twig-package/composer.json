@@ -1,0 +1,10 @@
+{
+  "name": "berlioz/twig-package",
+  "type": "berlioz-package",
+  "description": "Twig package for Berlioz Framework",
+  "config": {
+    "berlioz": {
+      "package": "Berlioz\\Package\\Twig\\TwigPackage"
+    }
+  }
+}

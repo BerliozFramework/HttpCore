@@ -3,7 +3,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2020 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -16,16 +16,19 @@ namespace Berlioz\HttpCore\Controller;
 
 use Berlioz\Core\CoreAwareInterface;
 use Berlioz\Core\CoreAwareTrait;
+use Berlioz\Core\Exception\BerliozException;
+use Berlioz\FlashBag\FlashBag;
 use Berlioz\Http\Message\Response;
+use Berlioz\HttpCore\App\HttpApp;
 use Berlioz\HttpCore\App\HttpAppAwareInterface;
 use Berlioz\HttpCore\App\HttpAppAwareTrait;
 use Berlioz\Package\Twig\Controller\RenderingControllerInterface;
 use Berlioz\Package\Twig\Controller\RenderingControllerTrait;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
-use Berlioz\HttpCore\App\HttpApp;
 use LogicException;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UriInterface;
 use RuntimeException;
 
 /**
@@ -42,7 +45,7 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
     /**
      * AbstractController constructor.
      *
-     * @param \Berlioz\HttpCore\App\HttpApp $app
+     * @param HttpApp $app
      */
     public function __construct(HttpApp $app)
     {
@@ -53,7 +56,7 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
     /**
      * __sleep() magic method.
      *
-     * @throws \RuntimeException because unable to serialize a Controller object
+     * @throws RuntimeException because unable to serialize a Controller object
      */
     public function __sleep(): array
     {
@@ -66,7 +69,7 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
      * @param string $id
      *
      * @return mixed
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws BerliozException
      */
     public function getService(string $id)
     {
@@ -76,19 +79,19 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
     /**
      * Get router.
      *
-     * @return \Berlioz\Router\RouterInterface|null
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @return RouterInterface|null
+     * @throws BerliozException
      */
     public function getRouter(): ?RouterInterface
     {
-        /** @var \Berlioz\Router\RouterInterface $router */
+        /** @var RouterInterface $router */
         return $this->getService(RouterInterface::class);
     }
 
     /**
      * Get current route.
      *
-     * @return \Berlioz\Router\RouteInterface|null
+     * @return RouteInterface|null
      */
     public function getRoute(): ?RouteInterface
     {
@@ -102,10 +105,10 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
      *
      * @param array $queryParams Http GET parameters
      * @param bool $mergeQueryParams Merge parameters with current server request
-     * @param \Psr\Http\Message\ResponseInterface $response Response
+     * @param ResponseInterface $response Response
      *
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @return ResponseInterface
+     * @throws BerliozException
      */
     public function reload(
         ?array $queryParams = [],
@@ -133,11 +136,11 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
      *
      * If response is given in parameter, it will be completed with good headers.
      *
-     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @param string|UriInterface $uri
      * @param int $httpResponseCode
-     * @param null|\Psr\Http\Message\ResponseInterface $response
+     * @param null|ResponseInterface $response
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     public function redirect($uri, int $httpResponseCode = 302, ?ResponseInterface $response = null): ResponseInterface
     {
@@ -158,13 +161,13 @@ abstract class AbstractController implements CoreAwareInterface, HttpAppAwareInt
      * @param string $message Message
      *
      * @return static
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws BerliozException
      * @see \Berlioz\FlashBag\FlashBag FlashBag class whose manage all flash messages
      */
     protected function addFlash($type, $message): AbstractController
     {
-        /** @var \Berlioz\FlashBag\FlashBag $flashBag */
-        $flashBag = $this->getService('flashbag');
+        /** @var FlashBag $flashBag */
+        $flashBag = $this->getService(FlashBag::class);
         $flashBag->add($type, $message);
 
         return $this;

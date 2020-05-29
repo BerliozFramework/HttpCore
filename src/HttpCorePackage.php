@@ -3,7 +3,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2020 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore;
 
+use Berlioz\Config\Exception\ConfigException;
 use Berlioz\Config\ExtendedJsonConfig;
 use Berlioz\Core\Core;
 use Berlioz\Core\Debug;
@@ -27,6 +28,7 @@ use Berlioz\Router\Route;
 use Berlioz\Router\RouteGenerator;
 use Berlioz\Router\Router;
 use Berlioz\Router\RouterInterface;
+use Berlioz\ServiceContainer\Exception\ContainerException;
 use Berlioz\ServiceContainer\Service;
 use Exception;
 use Psr\SimpleCache\CacheException;
@@ -44,7 +46,7 @@ class HttpCorePackage extends AbstractPackage implements PackageInterface
 
     /**
      * @inheritdoc
-     * @throws \Berlioz\Config\Exception\ConfigException
+     * @throws ConfigException
      */
     public static function config()
     {
@@ -56,8 +58,7 @@ class HttpCorePackage extends AbstractPackage implements PackageInterface
 
     /**
      * @inheritdoc
-     * @throws \Berlioz\ServiceContainer\Exception\ContainerException
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws ContainerException
      */
     public static function register(Core $core): void
     {
@@ -86,10 +87,10 @@ class HttpCorePackage extends AbstractPackage implements PackageInterface
     /**
      * Router factory.
      *
-     * @param \Berlioz\Core\Core $core
+     * @param Core $core
      *
-     * @return \Berlioz\Router\Router
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @return Router
+     * @throws BerliozException
      */
     public static function routerFactory(Core $core): Router
     {
@@ -100,7 +101,7 @@ class HttpCorePackage extends AbstractPackage implements PackageInterface
             $cacheManager = $core->getCacheManager();
 
             // Get from cache
-            if (null !== $cacheManager && null !== ($router = $cacheManager->get('berlioz-router'))) {
+            if ($router = $cacheManager->get('berlioz-router')) {
                 return $router;
             }
 
@@ -128,7 +129,7 @@ class HttpCorePackage extends AbstractPackage implements PackageInterface
             }
 
             // Save to cache
-            if (null !== $cacheManager) {
+            if ($core->isCacheEnabled()) {
                 $core->onTerminate(
                     function (Core $core) use ($router) {
                         $core->getCacheManager()->set('berlioz-router', $router);

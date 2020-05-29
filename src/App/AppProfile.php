@@ -3,7 +3,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2020 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -19,8 +19,10 @@ use Berlioz\Core\Asset\Assets;
 use Berlioz\Core\Core;
 use Berlioz\Core\CoreAwareInterface;
 use Berlioz\Core\CoreAwareTrait;
+use Berlioz\Core\Exception\BerliozException;
 use Berlioz\FlashBag\FlashBag;
 use Berlioz\Router\RouteInterface;
+use Berlioz\Router\RouterInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -36,8 +38,8 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
     /**
      * AppProfile constructor.
      *
-     * @param \Berlioz\Core\Core $core
-     * @param \Berlioz\HttpCore\App\HttpApp|null $app
+     * @param Core $core
+     * @param HttpApp|null $app
      */
     public function __construct(Core $core, ?HttpApp $app)
     {
@@ -61,7 +63,7 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
     /**
      * Get configuration.
      *
-     * @return \Berlioz\Config\ConfigInterface
+     * @return ConfigInterface
      */
     public function getConfig(): ConfigInterface
     {
@@ -71,8 +73,8 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
     /**
      * Get assets.
      *
-     * @return \Berlioz\Core\Asset\Assets
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @return Assets
+     * @throws BerliozException
      */
     public function getAssets(): Assets
     {
@@ -82,12 +84,12 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
     /**
      * Get flash bag.
      *
-     * @return \Berlioz\FlashBag\FlashBag
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @return FlashBag
+     * @throws BerliozException
      */
     public function getFlashBag(): FlashBag
     {
-        /** @var \Berlioz\FlashBag\FlashBag $flashBag */
+        /** @var FlashBag $flashBag */
         $flashBag = $this->getCore()->getServiceContainer()->get('flashbag');
 
         return $flashBag;
@@ -96,12 +98,12 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
     /**
      * Get server request.
      *
-     * @return \Psr\Http\Message\ServerRequestInterface
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @return ServerRequestInterface
+     * @throws BerliozException
      */
     public function getRequest(): ServerRequestInterface
     {
-        /** @var \Berlioz\Router\RouterInterface $router */
+        /** @var RouterInterface $router */
         $router = $this->getCore()->getServiceContainer()->get('router');
 
         return $router->getServerRequest();
@@ -110,7 +112,7 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
     /**
      * Get route.
      *
-     * @return \Berlioz\Router\RouteInterface|null
+     * @return RouteInterface|null
      */
     public function getRoute(): ?RouteInterface
     {
@@ -118,7 +120,7 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
             return null;
         }
 
-        /** @var \Berlioz\Router\RouteInterface $route */
+        /** @var RouteInterface $route */
         $route = $this->getApp()->getRoute();
 
         return $route;
@@ -138,7 +140,7 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
      * Is debug enabled?
      *
      * @return bool
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws BerliozException
      */
     public function isDebugEnabled(): bool
     {
@@ -149,7 +151,7 @@ class AppProfile implements CoreAwareInterface, HttpAppAwareInterface
      * Get debug unique ID.
      *
      * @return string
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws BerliozException
      */
     public function getDebugUniqid(): string
     {

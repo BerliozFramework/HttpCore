@@ -3,7 +3,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2020 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -14,11 +14,13 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\Http;
 
+use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Message\Response;
 use Berlioz\HttpCore\Controller\AbstractController;
 use Berlioz\HttpCore\Exception\HttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Twig\Error\Error;
 
 /**
  * Class DefaultHttpErrorHandler.
@@ -29,8 +31,8 @@ class DefaultHttpErrorHandler extends AbstractController implements HttpErrorHan
 {
     /**
      * @inheritdoc
-     * @throws \Berlioz\Core\Exception\BerliozException
-     * @throws \Twig\Error\Error
+     * @throws BerliozException
+     * @throws Error
      */
     public function handle(?ServerRequestInterface $request, HttpException $e): ResponseInterface
     {

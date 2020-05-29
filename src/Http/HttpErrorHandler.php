@@ -3,7 +3,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2020 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -28,10 +28,10 @@ interface HttpErrorHandler
     /**
      * Handle HTTP error.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface|null $request
-     * @param \Berlioz\HttpCore\Exception\HttpException $e
+     * @param ServerRequestInterface|null $request
+     * @param HttpException $e
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     public function handle(?ServerRequestInterface $request, HttpException $e): ResponseInterface;
 }

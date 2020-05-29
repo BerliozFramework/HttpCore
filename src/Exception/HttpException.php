@@ -3,7 +3,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2020 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -30,7 +30,7 @@ class HttpException extends BerliozException
      *
      * @param int $code
      * @param null|string $message
-     * @param \Throwable|null $previous
+     * @param Throwable|null $previous
      */
     public function __construct(int $code = 500, ?string $message = null, Throwable $previous = null)
     {

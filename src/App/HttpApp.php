@@ -3,7 +3,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2020 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -14,20 +14,23 @@ declare(strict_types=1);
 
 namespace Berlioz\HttpCore\App;
 
+use Berlioz\Config\Exception\ConfigException;
 use Berlioz\Core\App\AbstractApp;
 use Berlioz\Core\Core;
 use Berlioz\Core\Debug;
+use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Message\Response;
 use Berlioz\Http\Message\Stream;
 use Berlioz\HttpCore\Debug\Router as DebugRouter;
-use Berlioz\HttpCore\Exception\HttpException;
 use Berlioz\HttpCore\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
 use Berlioz\HttpCore\Exception\Http\ServiceUnavailableHttpException;
+use Berlioz\HttpCore\Exception\HttpException;
 use Berlioz\HttpCore\Http\DefaultHttpErrorHandler;
 use Berlioz\HttpCore\Http\HttpErrorHandler;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\RouterInterface;
+use Berlioz\ServiceContainer\Exception\ContainerException;
 use Berlioz\ServiceContainer\Service;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -42,16 +45,16 @@ use Throwable;
  */
 class HttpApp extends AbstractApp implements RequestHandlerInterface
 {
-    /** @var \Berlioz\Router\RouteInterface|null Current route */
+    /** @var RouteInterface|null Current route */
     private $route;
 
     /**
      * HttpApp constructor.
      *
-     * @param \Berlioz\Core\Core|null $core
+     * @param Core|null $core
      *
-     * @throws \Berlioz\Core\Exception\BerliozException
-     * @throws \Berlioz\ServiceContainer\Exception\ContainerException
+     * @throws BerliozException
+     * @throws ContainerException
      */
     public function __construct(?Core $core = null)
     {
@@ -73,18 +76,18 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     /**
      * Initialize router.
      *
-     * @return \Berlioz\Router\RouterInterface
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @return RouterInterface
+     * @throws BerliozException
      */
     public function getRouter(): RouterInterface
     {
-        return $this->getCore()->getServiceContainer()->get(RouterInterface::class);
+        return $this->getService(RouterInterface::class);
     }
 
     /**
      * Get current route.
      *
-     * @return \Berlioz\Router\RouteInterface|null
+     * @return RouteInterface|null
      */
     public function getRoute(): ?RouteInterface
     {
@@ -98,10 +101,10 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     /**
      * Handle application.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $serverRequest Server request
+     * @param ServerRequestInterface $serverRequest Server request
      *
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @return ResponseInterface
+     * @throws BerliozException
      */
     public function handle(?ServerRequestInterface $serverRequest = null): ResponseInterface
     {
@@ -240,10 +243,10 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     /**
      * HTTP redirection.
      *
-     * @param \Psr\Http\Message\UriInterface $uri
+     * @param UriInterface $uri
      *
-     * @return \Psr\Http\Message\ResponseInterface|null
-     * @throws \Berlioz\Config\Exception\ConfigException
+     * @return ResponseInterface|null
+     * @throws ConfigException
      */
     public function httpRedirection(UriInterface $uri): ?ResponseInterface
     {
@@ -275,9 +278,9 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     /**
      * HTTP error handler.
      *
-     * @param \Berlioz\HttpCore\Exception\HttpException $e
+     * @param HttpException $e
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     private function httpErrorHandler(HttpException $e): ResponseInterface
     {
@@ -351,9 +354,9 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     /**
      * Print ResponseInterface object.
      *
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      *
-     * @throws \Berlioz\Core\Exception\BerliozException
+     * @throws BerliozException
      */
     public function printResponse(ResponseInterface $response)
     {

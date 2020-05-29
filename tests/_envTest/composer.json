@@ -1,0 +1,23 @@
+{
+  "name": "berlioz/envtest",
+  "description": "Berlioz Framework Tests",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "license": "MIT",
+  "homepage": "http://getberlioz.com",
+  "authors": [
+    {
+      "name": "Ronan Giron",
+      "email": "ronan@getberlioz.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Berlioz\\HttpCore\\TestProject\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^7.1",
+    "berlioz/core": "@dev"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "berlioz": {
+    "http": {
+      "redirections": {
+        "^/old$": "/new",
+        "^/old-route/(.*)": "/new-route/$1",
+        "^/another-old-route/": "/new/",
+        "^/foo$": {
+          "url": "/bar",
+          "type": 302
+        }
+      }
+    }
+  }
+}

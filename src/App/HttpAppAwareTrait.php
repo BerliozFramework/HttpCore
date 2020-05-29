@@ -3,7 +3,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2020 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -19,13 +19,13 @@ namespace Berlioz\HttpCore\App;
  */
 trait HttpAppAwareTrait
 {
-    /** @var \Berlioz\HttpCore\App\HttpApp Application */
+    /** @var HttpApp Application */
     private $app;
 
     /**
      * Get application.
      *
-     * @return \Berlioz\HttpCore\App\HttpApp|null
+     * @return HttpApp|null
      */
     public function getApp(): ?HttpApp
     {
@@ -35,7 +35,7 @@ trait HttpAppAwareTrait
     /**
      * Set application.
      *
-     * @param \Berlioz\HttpCore\App\HttpApp $app
+     * @param HttpApp $app
      *
      * @return static
      */
