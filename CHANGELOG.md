@@ -6,6 +6,7 @@ For change log format, use [Keep a Changelog] (http://keepachangelog.com/).
 ## [1.0.1] - 2020-09-02
 ### Changed
 - Print response by sequence to prevent exhausted memory error
+- Update NPM dependencies
 
 ## [1.0.0] - 2020-05-29
 First version
