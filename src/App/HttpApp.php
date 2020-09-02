@@ -387,7 +387,16 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         }
 
         // Content
-        print $response->getBody();
+        $stream = $response->getBody();
+        if ($stream->isReadable()) {
+            $stream->seek(0);
+
+            while (!$stream->eof()) {
+                print $stream->read(8192);
+            }
+
+            $stream->close();
+        }
 
         // Debug
         $this->getCore()->getDebug()->getTimeLine()->addActivity($printActivity->end());
