@@ -10,14 +10,14 @@
  */
 
 /*!
-  * Bootstrap v4.5.0 (https://getbootstrap.com/)
+  * Bootstrap v4.5.2 (https://getbootstrap.com/)
   * Copyright 2011-2020 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
-  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
 /**!
    * @fileOverview Kickass library to create and place poppers near their reference elements.
-   * @version 1.16.0
+   * @version 1.16.1
    * @license
    * Copyright (c) 2016 Federico Zivolo and contributors
    *
