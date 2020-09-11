@@ -611,13 +611,14 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @return ResponseInterface|string
      * @throws BerliozException
+     * @throws ConfigException
      * @throws Error
      * @route("/_console/{id}/config", name="_berlioz/console/config", requirements={"id":"\w+"})
      */
     public function configuration(ServerRequestInterface $request)
     {
         $report = $this->getDebugReport($request->getAttribute('id'));
-        $configuration = json_encode($report->getConfig(), JSON_PRETTY_PRINT);
+        $configuration = json_encode($report->getConfig()->get(), JSON_PRETTY_PRINT);
 
         return $this->render(
             '@Berlioz-HttpCore/Twig/Debug/config.html.twig',
