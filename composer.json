@@ -45,7 +45,7 @@
   "provide": {
     "psr/container-implementation": "^1.0",
     "psr/http-message-implementation": "^1.0",
-    "psr/http-server-handler": "^1.0",
+    "psr/http-server-handler-implementation": "^1.0",
     "psr/log-implementation": "^1.0",
     "psr/simple-cache-implementation": "^1.0"
   },
