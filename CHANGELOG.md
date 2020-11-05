@@ -10,6 +10,7 @@ For change log format, use [Keep a Changelog] (http://keepachangelog.com/).
 ### Changed
 - psr/http-server-handler required version in `composer.json`
 
+## [1.0.3] - 2020-11-05
 ### Fixed
 - Composer provide rule for package `psr/http-server-handler-implementation`
 
