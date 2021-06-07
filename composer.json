@@ -1,9 +1,9 @@
 {
   "name": "berlioz/http-core",
-  "type": "library",
+  "type": "berlioz-package",
   "description": "Berlioz Framework HTTP Core",
   "license": "MIT",
-  "homepage": "http://getberlioz.com",
+  "homepage": "https://getberlioz.com",
   "authors": [
     {
       "name": "Ronan Giron",
@@ -12,7 +12,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Berlioz\\HttpCore\\": "src/"
+      "Berlioz\\Http\\Core\\": "src/"
     },
     "exclude-from-classmap": [
       "/tests/"
@@ -20,38 +20,40 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Berlioz\\HttpCore\\Tests\\": "tests/",
-      "Berlioz\\HttpCore\\TestProject\\": "tests/_envTest/src/"
+      "Berlioz\\Http\\Core\\Tests\\": "tests/",
+      "Berlioz\\Http\\Core\\TestProject\\": "tests_env/src/"
     },
     "exclude-from-classmap": [
       "/tests/_envTest/"
     ]
   },
+  "minimum-stability": "beta",
+  "prefer-stable": true,
   "require": {
-    "php": "^7.1 || ^8.0",
+    "php": "^8.0",
     "ext-intl": "*",
-    "ext-json": "*",
     "ext-zlib": "*",
-    "berlioz/core": "^1.0",
+    "berlioz/core": "^2.0",
     "berlioz/flash-bag": "^1.0",
-    "berlioz/http-message": "^1.0",
-    "berlioz/router": "^1.0",
-    "berlioz/twig-package": "^1.0",
-    "psr/http-server-handler": "^1.0"
+    "berlioz/http-message": "^2.0",
+    "berlioz/router": "^2.0",
+    "berlioz/twig-package": "^2.0",
+    "psr/http-server-handler": "^1.0",
+    "psr/http-server-middleware": "^1.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.5 || ^8.0 || ^9.0"
+    "phpunit/phpunit": "^9.3"
   },
   "provide": {
     "psr/container-implementation": "^1.0",
     "psr/http-message-implementation": "^1.0",
     "psr/http-server-handler-implementation": "^1.0",
-    "psr/log-implementation": "^1.0",
+    "psr/http-server-middleware-implementation": "^1.0",
     "psr/simple-cache-implementation": "^1.0"
   },
   "config": {
     "berlioz": {
-      "package": "Berlioz\\HttpCore\\HttpCorePackage"
+      "package": "Berlioz\\Http\\Core\\BerliozPackage"
     }
   }
 }

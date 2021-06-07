@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2020 Ronan GIRON
+ * @copyright 2021 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,76 +12,104 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\App;
+namespace Berlioz\Http\Core\App;
 
 use Berlioz\Config\Exception\ConfigException;
 use Berlioz\Core\App\AbstractApp;
 use Berlioz\Core\Core;
-use Berlioz\Core\Debug;
-use Berlioz\Core\Exception\BerliozException;
-use Berlioz\Http\Message\Response;
-use Berlioz\Http\Message\Stream;
-use Berlioz\HttpCore\Debug\Router as DebugRouter;
-use Berlioz\HttpCore\Exception\Http\InternalServerErrorHttpException;
-use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
-use Berlioz\HttpCore\Exception\Http\ServiceUnavailableHttpException;
-use Berlioz\HttpCore\Exception\HttpException;
-use Berlioz\HttpCore\Http\DefaultHttpErrorHandler;
-use Berlioz\HttpCore\Http\HttpErrorHandler;
+use Berlioz\Core\Debug\Snapshot\TimelineActivity;
+use Berlioz\Http\Core\Debug\RouterSection;
+use Berlioz\Http\Core\Http\Handler\ControllerHandler;
+use Berlioz\Http\Core\Http\Handler\Error\ErrorHandler;
+use Berlioz\Http\Core\Http\HttpHandler;
+use Berlioz\Http\Message\HttpFactory;
 use Berlioz\Router\RouteInterface;
+use Berlioz\Router\Router;
 use Berlioz\Router\RouterInterface;
-use Berlioz\ServiceContainer\Exception\ContainerException;
-use Berlioz\ServiceContainer\Service;
+use Berlioz\ServiceContainer\Inflector\Inflector;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Throwable;
 
 /**
  * Class HttpApp.
- *
- * @package Berlioz\HttpCore\App
  */
 class HttpApp extends AbstractApp implements RequestHandlerInterface
 {
-    /** @var RouteInterface|null Current route */
-    private $route;
+    private bool $printed = false;
+    private HttpHandler $httpHandler;
+    protected ?Maintenance $maintenance;
+    protected ?ServerRequestInterface $request;
+    protected ?RouteInterface $route;
 
     /**
      * HttpApp constructor.
      *
      * @param Core|null $core
-     *
-     * @throws BerliozException
-     * @throws ContainerException
      */
     public function __construct(?Core $core = null)
     {
         parent::__construct($core);
 
-        $this->getCore()->onTerminate(
-            function (Core $core) {
-                if ($core->getDebug()->isEnabled()) {
-                    $core->getDebug()->addSection(new DebugRouter($core));
-                }
-            }
+        $this->getCore()->getContainer()->addInflector(
+            new Inflector(
+                HttpAppAwareInterface::class,
+                'setApp',
+                ['app' => '@app']
+            )
         );
     }
 
-    //////////////
-    /// ROUTER ///
-    //////////////
+    /**
+     * @inheritDoc
+     */
+    protected function boot(): void
+    {
+        $this->core->getDebug()->addSection(new RouterSection($this));
+        $bootActivity = $this->core->getDebug()->newActivity('Application Boot', 'Berlioz')->start();
+
+        $this->maintenance = Maintenance::buildFromConfig($this->getConfig());
+        $this->httpHandler = new HttpHandler(
+            container: $this->getCore()->getContainer(),
+            requestHandler: new ControllerHandler($this),
+            errorHandler: new ErrorHandler($this),
+        );
+
+        $bootActivity->end();
+    }
+
+    ///////////////
+    /// GETTERS ///
+    ///////////////
 
     /**
-     * Initialize router.
+     * Get maintenance.
+     *
+     * @return Maintenance|null
+     */
+    public function getMaintenance(): ?Maintenance
+    {
+        return $this->maintenance;
+    }
+
+    /**
+     * Get router.
      *
      * @return RouterInterface
-     * @throws BerliozException
      */
     public function getRouter(): RouterInterface
     {
-        return $this->getService(RouterInterface::class);
+        return $this->get(Router::class);
+    }
+
+    /**
+     * Get request.
+     *
+     * @return ServerRequestInterface|null
+     */
+    public function getRequest(): ?ServerRequestInterface
+    {
+        return $this->request ?? null;
     }
 
     /**
@@ -91,7 +119,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      */
     public function getRoute(): ?RouteInterface
     {
-        return $this->route;
+        return $this->route ?? null;
     }
 
     ///////////////
@@ -99,280 +127,100 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     ///////////////
 
     /**
+     * Find route.
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return RouteInterface|null
+     */
+    protected function findRoute(ServerRequestInterface &$request): ?RouteInterface
+    {
+        $activity = $this->core->getDebug()->newActivity('Router', 'Berlioz')->start();
+        $router = $this->getRouter();
+        $activity->end();
+
+        $activity = $this->core->getDebug()->newActivity('Router handle', 'Berlioz')->start();
+        $route = $router->handle($request);
+        $activity->end();
+
+        return $route;
+    }
+
+    /**
      * Handle application.
      *
-     * @param ServerRequestInterface $serverRequest Server request
+     * @param ServerRequestInterface|null $request Server request
      *
      * @return ResponseInterface
-     * @throws BerliozException
-     */
-    public function handle(?ServerRequestInterface $serverRequest = null): ResponseInterface
-    {
-        try {
-            // Check if application is in maintenance mode
-            if ($this->getCore()->getConfig()->get('berlioz.maintenance', false) &&
-                !$this->getCore()->getDebug()->isEnabled()) {
-                throw new ServiceUnavailableHttpException();
-            }
-
-            $router = $this->getRouter();
-
-            // Handle router
-            $routerActivity = (new Debug\Activity('Router (handle)', 'Berlioz'))->start();
-            $this->route = $router->handle($serverRequest);
-            $this->getCore()->getDebug()->getTimeLine()->addActivity($routerActivity->end());
-
-            // No route?
-            if (null === $this->route) {
-                if (null === ($response = $this->httpRedirection($serverRequest->getUri()))) {
-                    throw new NotFoundHttpException;
-                }
-
-                return $response;
-            }
-
-            $routeContext = $this->route->getContext();
-
-            // No controller?
-            if (empty($routeContext['_class']) || empty($routeContext['_method'])) {
-                throw new InternalServerErrorHttpException;
-            }
-
-            // Define default locale from request and route (attribute _locale)
-            if (null !== $locale = $serverRequest->getAttribute('_locale')) {
-                $this->getCore()->setLocale($locale);
-            }
-
-            // Add server request to the service container
-            $this->getCore()->getServiceContainer()->add(new Service($serverRequest));
-
-            // Create instance of controller and invoke method
-            try {
-                $response = new Response;
-                $controllerActivity = (new Debug\Activity('Controller'))->start();
-
-                // Create instance of controller
-                $controller = $this->getCore()->getServiceContainer()
-                    ->getInstantiator()
-                    ->newInstanceOf(
-                        $routeContext['_class'],
-                        [
-                            'request' => $serverRequest,
-                            'response' => $response,
-                        ]
-                    );
-
-                // Call _b_pre() method?
-                if (method_exists($controller, '_b_pre')) {
-                    // Call main method
-                    $preResult = $this->getCore()->getServiceContainer()
-                        ->getInstantiator()
-                        ->invokeMethod(
-                            $controller,
-                            '_b_pre',
-                            [
-                                'request' => $serverRequest,
-                                'response' => $response,
-                            ]
-                        );
-
-                    if ($preResult instanceof ServerRequestInterface) {
-                        $serverRequest = $preResult;
-                    }
-                    if ($preResult instanceof ResponseInterface) {
-                        $response = $preResult;
-                    }
-                }
-
-                // Call main method only if response code is between 200 and 299
-                if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-                    $mainResponse = $this->getCore()->getServiceContainer()
-                        ->getInstantiator()
-                        ->invokeMethod(
-                            $controller,
-                            $routeContext['_method'],
-                            [
-                                'request' => $serverRequest,
-                                'response' => $response,
-                            ]
-                        );
-
-                    if (!$mainResponse instanceof ResponseInterface) {
-                        $stream = new Stream;
-                        $stream->write($mainResponse);
-                        $response = $response->withBody($stream);
-                    } else {
-                        $response = $mainResponse;
-                    }
-                }
-
-                // Call _b_post() method?
-                if (method_exists($controller, '_b_post')) {
-                    // Call main method
-                    $postResponse = $this->getCore()->getServiceContainer()
-                        ->getInstantiator()
-                        ->invokeMethod(
-                            $controller,
-                            '_b_post',
-                            [
-                                'request' => $serverRequest,
-                                'response' => $response,
-                            ]
-                        );
-
-                    if ($postResponse instanceof ResponseInterface) {
-                        $response = $postResponse;
-                    }
-                }
-            } finally {
-                $this->getCore()->getDebug()->getTimeLine()->addActivity($controllerActivity->end());
-            }
-        } catch (Throwable $e) {
-            $this->getCore()->getDebug()->setExceptionThrown($e);
-
-            if (!($e instanceof HttpException)) {
-                $e = new InternalServerErrorHttpException(null, $e);
-            }
-
-            $response = $this->httpErrorHandler($e);
-        }
-
-        return $response;
-    }
-
-    /**
-     * HTTP redirection.
-     *
-     * @param UriInterface $uri
-     *
-     * @return ResponseInterface|null
      * @throws ConfigException
      */
-    public function httpRedirection(UriInterface $uri): ?ResponseInterface
+    public function handle(?ServerRequestInterface $request = null): ResponseInterface
     {
-        $redirections = $this->getCore()->getConfig()->get('berlioz.http.redirections', []);
+        $activity = $this->core->getDebug()->newActivity('Application handle', 'Berlioz')->start();
 
-        foreach ($redirections as $origin => $redirection) {
-            $matches = [];
-            if (!(preg_match(sprintf('#%s#i', $origin), $uri->getPath(), $matches) >= 1)) {
-                continue;
-            }
-
-            if (is_array($redirection)) {
-                $redirectionType = intval($redirection['type'] ?? 301);
-                $redirectionUrl = (string)$redirection['url'];
-            } else {
-                $redirectionType = 301;
-                $redirectionUrl = (string)$redirection;
-            }
-
-            // Replacement
-            $redirectionUrl = preg_replace(sprintf('#%s#i', $origin), $redirectionUrl, $uri->getPath());
-
-            return new Response(null, $redirectionType, ['Location' => $redirectionUrl]);
+        if (null === $request) {
+            $httpFactory = new HttpFactory();
+            $request = $httpFactory->createServerRequestFromGlobals();
         }
+        $this->request = $request;
+        $activity->end();
 
-        return null;
+        // Find route
+        $this->route = $this->findRoute($this->request);
+
+        $activity = $this->core->getDebug()->newActivity('Middleware', 'Berlioz')->start();
+
+        // Add middlewares to http handler
+        $middlewares = $this->getConfig()->get('berlioz.http.middlewares', []);
+        array_walk_recursive($middlewares, fn($middleware) => $this->httpHandler->addMiddleware($middleware));
+
+        $activity->end();
+
+        return $this->httpHandler->handle($this->request);
     }
 
     /**
-     * HTTP error handler.
+     * Set printed.
      *
-     * @param HttpException $e
-     *
-     * @return ResponseInterface
+     * @param bool $print
      */
-    private function httpErrorHandler(HttpException $e): ResponseInterface
+    public function setPrinted(bool $print = true): void
     {
-        try {
-            // Get error handler in configuration
-            $errorHandler = $this->getCore()
-                ->getConfig()
-                ->get(
-                    sprintf('berlioz.http.errors.%s', $e->getCode()),
-                    $this->getCore()
-                        ->getConfig()
-                        ->get('berlioz.http.errors.default')
-                );
-
-            // Check validity of error handler
-            if (empty($errorHandler) || !class_exists($errorHandler) || !is_a(
-                    $errorHandler,
-                    HttpErrorHandler::class,
-                    true
-                )) {
-                $errorHandler = DefaultHttpErrorHandler::class;
-            }
-
-            // Invoke method of error handler
-            $handler = $this->getCore()->getServiceContainer()
-                ->getInstantiator()
-                ->newInstanceOf($errorHandler);
-            $response = $this->getCore()->getServiceContainer()
-                ->getInstantiator()
-                ->invokeMethod(
-                    $handler,
-                    'handle',
-                    [
-                        'request' => $this->getRouter()->getServerRequest(),
-                        'e' => $e,
-                    ]
-                );
-        } catch (Throwable $throwable) {
-            try {
-                $handler = new DefaultHttpErrorHandler($this);
-                $response = $handler->handle($this->getRouter()->getServerRequest(), $e);
-            } catch (Throwable $throwable) {
-                $str =
-                    '<html lang="en">' .
-                    '<body>' .
-                    '<h1>Internal Server Error</h1>';
-
-                try {
-                    $debug = false;
-                    if ($debug = $this->getCore()->getDebug()->isEnabled()) {
-                        $str .= '<pre>' . $e . '</pre>';
-                    }
-                } catch (Throwable $throwable) {
-                }
-
-                if (!$debug) {
-                    $str .= '<p>Looks like we\'re having some server issues.</p>';
-                }
-
-                $str .=
-                    '</body>' .
-                    '</html>';
-
-                $response = new Response($str, 500);
-            }
-        }
-
-        return $response;
+        $this->printed = $print;
     }
 
     /**
      * Print ResponseInterface object.
      *
      * @param ResponseInterface $response
-     *
-     * @throws BerliozException
      */
-    public function printResponse(ResponseInterface $response)
+    public function print(ResponseInterface $response): void
     {
-        $printActivity = (new Debug\Activity('Print response', 'Berlioz'))->start();
+        if (true === $this->printed) {
+            return;
+        }
 
-        // Debug?
-        if ($this->getCore()->getDebug()->isEnabled()) {
-            $response = $response->withAddedHeader('X-Berlioz-Debug', $this->getCore()->getDebug()->getUniqid());
+        // Set response printed to not print again the response
+        $this->setPrinted();
+
+        $printActivity = $this->getDebug()->newActivity('Print response', TimelineActivity::BERLIOZ_GROUP);
+        $printActivity->start();
+
+        // Debug? So attach a header for unique id of debug snapshot
+        if ($this->getDebug()->isEnabled()) {
+            $response = $response->withAddedHeader('X-Berlioz-Debug', $this->getDebug()->getUniqid());
         }
 
         // Headers
         if (!headers_sent()) {
             // Remove headers and add main header
             header(
-                'HTTP/' . $response->getProtocolVersion() . ' ' .
-                $response->getStatusCode() . ' ' . $response->getReasonPhrase(),
+                sprintf(
+                    'HTTP/%s %d %s',
+                    $response->getProtocolVersion(),
+                    $response->getStatusCode(),
+                    $response->getReasonPhrase()
+                ),
                 true
             );
 
@@ -386,7 +234,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             }
         }
 
-        // Content
+        // Print body packets 8K by 8K
         $stream = $response->getBody();
         if ($stream->isReadable()) {
             $stream->seek(0);
@@ -399,6 +247,6 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         }
 
         // Debug
-        $this->getCore()->getDebug()->getTimeLine()->addActivity($printActivity->end());
+        $printActivity->end();
     }
 }

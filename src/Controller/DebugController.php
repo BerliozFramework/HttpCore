@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2020 Ronan GIRON
+ * @copyright 2021 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,117 +12,102 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\Controller;
+namespace Berlioz\Http\Core\Controller;
 
 use Berlioz\Config\Exception\ConfigException;
 use Berlioz\Core\Asset\EntryPoints;
 use Berlioz\Core\Asset\Manifest;
-use Berlioz\Core\Debug;
+use Berlioz\Core\Debug\DebugHandler;
+use Berlioz\Core\Debug\Snapshot;
 use Berlioz\Core\Exception\AssetException;
 use Berlioz\Core\Exception\BerliozException;
+use Berlioz\Http\Core\Attribute\Route;
+use Berlioz\Http\Core\Attribute\RouteGroup;
+use Berlioz\Http\Core\Debug\Section;
+use Berlioz\Http\Core\Exception\Http\BadRequestHttpException;
+use Berlioz\Http\Core\Exception\Http\InternalServerErrorHttpException;
+use Berlioz\Http\Core\Exception\Http\NotFoundHttpException;
 use Berlioz\Http\Message\Response;
 use Berlioz\Http\Message\ServerRequest;
 use Berlioz\Http\Message\Stream;
-use Berlioz\HttpCore\App\HttpApp;
-use Berlioz\HttpCore\Debug\Section;
-use Berlioz\HttpCore\Exception\Http\InternalServerErrorHttpException;
-use Berlioz\HttpCore\Exception\Http\NotFoundHttpException;
-use Berlioz\Package\Twig\Controller\RenderingControllerInterface;
-use Berlioz\Package\Twig\Controller\RenderingControllerTrait;
+use Berlioz\Router\Exception\RoutingException;
+use League\Flysystem\DirectoryAttributes;
+use League\Flysystem\StorageAttributes;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionClass;
+use ReflectionException;
 use Throwable;
 use Twig\Error\Error;
 
 /**
  * Class DebugController.
- *
- * @package Berlioz\HttpCore\Controller
- * @route(priority=1000)
  */
-class DebugController extends AbstractController implements RenderingControllerInterface
+#[RouteGroup('/_console', requirements: ['id' => '\w+'], priority: 1000)]
+class DebugController extends AbstractController
 {
-    use RenderingControllerTrait;
-
-    /** @var string Resource string */
-    private $resourceDist;
-    /** @var Debug[] $debug */
-    private $debug = [];
+    private string $resourceDist;
+    private array $snapshots = [];
 
     /**
      * DebugController constructor.
      *
-     * @param HttpApp $app
-     *
-     * @throws BerliozException
+     * @param DebugHandler $debug
      */
-    public function __construct(HttpApp $app)
+    public function __construct(DebugHandler $debug)
     {
-        parent::__construct($app);
-
-        $this->getApp()->getCore()->getDebug()->setEnabled(false);
+        $debug->setEnabled(false);
         $this->resourceDist = implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', 'resources', 'Public', 'dist']);
     }
 
     /**
-     * Get debug report.
+     * Get debug snapshot.
      *
      * @param string $id
      *
-     * @return Debug
+     * @return Snapshot
      * @throws BerliozException
      */
-    private function getDebugReport(string $id): Debug
+    private function getDebugSnapshot(string $id): Snapshot
     {
         $id = basename($id, '.debug');
 
-        if (array_key_exists($id, $this->debug)) {
-            return $this->debug[$id];
+        if (array_key_exists($id, $this->snapshots)) {
+            return $this->snapshots[$id];
         }
 
         try {
-            $debugDirectory = $this->getApp()->getCore()->getConfig()->get('berlioz.directories.debug');
-            if (empty($debugDirectory)) {
-                throw new BerliozException('Debug directory does not defined');
-            }
+            $fs = $this->getApp()->getCore()->getFilesystem();
+            $filename = sprintf('debug://%s.debug', $id);
 
-            // Prevent write timing of harddrives (retry 4 times)
             $nbRetries = 0;
-            $debugFile = $debugDirectory . DIRECTORY_SEPARATOR . $id . '.debug';
-            while (!file_exists($debugFile)) {
+            while (false === $fs->fileExists($filename)) {
                 if ($nbRetries > 4) {
-                    throw new BerliozException(sprintf('Debug report "%s" does not exists', $id));
+                    throw new BerliozException(sprintf('Debug snapshot "%s" does not exists', $id));
                 }
 
                 $nbRetries++;
                 usleep(250000);
-                clearstatcache(true, $debugFile);
             }
 
-            if (empty($this->debug[$id] = unserialize(gzinflate(file_get_contents($debugFile))))) {
-                throw new BerliozException(sprintf('Debug report "%s" corrupted', $id));
+            if (empty($this->snapshots[$id] = unserialize(gzinflate($fs->read($filename))))) {
+                throw new BerliozException(sprintf('Debug snapshot "%s" corrupted', $id));
             }
         } catch (BerliozException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new BerliozException(sprintf('Error during get debug report "%s"', $id), 0, $e);
+            throw new BerliozException(sprintf('Error during get debug snapshot "%s"', $id), 0, $e);
         }
 
-        return $this->debug[$id];
+        return $this->snapshots[$id];
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function render(string $name, array $variables = []): string
     {
-        $variables = array_merge(
-            [
-                'entrypoints' => new EntryPoints($this->resourceDist . DIRECTORY_SEPARATOR . 'entrypoints.json'),
-            ],
-            $variables
-        );
+        $variables['entrypoints'] = new EntryPoints($this->resourceDist . DIRECTORY_SEPARATOR . 'entrypoints.json');
 
         return parent::render($name, $variables);
     }
@@ -138,47 +123,42 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @return ResponseInterface
      * @throws NotFoundHttpException
-     * @route('/_console/dist/{type}/{file}',
-     *        requirements={"type": "js|css", "file": "[\\w\\-]+\\.\\w{8}\\.\\w{2,3}(\\.map)?"})
      */
-    public function distFiles(ServerRequest $request): ResponseInterface
-    {
-        $fileName = implode(
-            DIRECTORY_SEPARATOR,
-            [
-                $this->resourceDist,
-                $request->getAttribute('type'),
-                basename($request->getAttribute('file')),
-            ]
-        );
+    #[Route('/dist/{type}/{file}',
+        requirements: [
+            "type" => "js|css|fonts",
+            "file" => "[\\w\\-]+\\.\\w{8}\\.\\w+"
+        ])]
+    public function distFiles(
+        ServerRequest $request
+    ): ResponseInterface {
+        $fileName =
+            $this->resourceDist . '/' .
+            $request->getAttribute('type') . '/' .
+            basename($request->getAttribute('file'));
 
         if (!file_exists($fileName)) {
             throw new NotFoundHttpException('Asset not found');
         }
 
-        $body = new Stream();
-        $body->write(file_get_contents($fileName));
-        $response = new Response($body);
+        $extension = substr($fileName, strrpos($fileName, '.') + 1);
+        $stream = new Stream\FileStream($fileName);
 
-        // Content-Type
-        switch ($request->getAttribute('type')) {
-            case 'js':
-                $response = $response->withHeader('Content-Type', 'application/javascript');
-                break;
-            case 'css':
-                $response = $response->withHeader('Content-Type', 'text/css');
-                break;
-        }
+        // Headers
+        $headers = [
+            'Content-Type' => match ($request->getAttribute('type')) {
+                'js' => 'application/javascript',
+                'css' => 'text/css',
+                'fonts' => match ($extension) {
+                    'woff' => 'font/woff',
+                    'woff2' => 'font/woff2',
+                }
+            },
+            'Content-Length' => $stream->getSize(),
+            'Cache-Control' => 'private, max-age=604800, immutable',
+        ];
 
-        // Map file?
-        if (substr($request->getAttribute('file'), -4) == '.map') {
-            $response = $response->withHeader('Content-Type', 'application/javascript');
-        }
-
-        // Content-Length
-        $response = $response->withHeader('Content-Length', $body->getSize());
-
-        return $response;
+        return $this->response($stream, Response::HTTP_STATUS_OK, $headers);
     }
 
     ///////////////
@@ -191,23 +171,22 @@ class DebugController extends AbstractController implements RenderingControllerI
      * @return ResponseInterface
      * @throws AssetException
      * @throws InternalServerErrorHttpException
-     * @route('/_console/dist/toolbar.js', name='_berlioz/console/toolbar-dist')
      */
+    #[Route('/dist/toolbar.js', name: '_berlioz/console/toolbar-dist')]
     public function distCaller(): ResponseInterface
     {
         $manifest = new Manifest($this->resourceDist . DIRECTORY_SEPARATOR . 'manifest.json');
-        $fileName = $this->resourceDist . substr($manifest->get('/debug-caller.js'), strlen('/_console/dist'));
+        $fileName = $this->resourceDist . substr($manifest->get('debug-caller.js'), strlen('/_console/dist'));
 
         if (!file_exists($fileName)) {
             throw new InternalServerErrorHttpException('Toolbar caller not found');
         }
 
-        $body = new Stream();
-        $body->write(file_get_contents($fileName));
+        $body = new Stream\FileStream($fileName);
 
-        return new Response(
+        return $this->response(
             $body,
-            200,
+            Response::HTTP_STATUS_OK,
             [
                 'Content-Type' => ['application/javascript'],
                 'Content-Length' => [$body->getSize()],
@@ -220,21 +199,24 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/toolbar", name="_berlioz/console/toolbar", requirements={"id":"\w+"})
      */
-    public function toolbar(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
+    #[Route('/{id}/toolbar', name: '_berlioz/console/toolbar')]
+    public function toolbar(
+        ServerRequestInterface $request
+    ) {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/_toolbar.html.twig',
-            [
-                'report' => $report,
-                'rtl' => ($_COOKIE['berlioz_toolbar_direction'] ?? 'ltr') === 'rtl',
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/_toolbar.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                    'rtl' => ($_COOKIE['berlioz_toolbar_direction'] ?? 'ltr') === 'rtl',
+                ]
+            )
         );
     }
 
@@ -245,17 +227,17 @@ class DebugController extends AbstractController implements RenderingControllerI
     /**
      * PHP info.
      *
-     * @return ResponseInterface|string
-     * @route("/_phpinfo", name="_berlioz/phpinfo")
+     * @return ResponseInterface
      */
-    public function phpInfoRaw()
+    #[Route('/_phpinfo', name: '_berlioz/phpinfo')]
+    public function phpInfoRaw(): ResponseInterface
     {
         ob_start();
         phpinfo();
         $phpInfo = ob_get_contents();
         ob_end_clean();
 
-        return $phpInfo;
+        return $this->response($phpInfo);
     }
 
     /**
@@ -263,20 +245,21 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}", name="_berlioz/console/home", requirements={"id":"\w+"})
      */
-    public function dashboard(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
+    #[Route('/{id}', name: '_berlioz/console/home')]
+    public function dashboard(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/dashboard.html.twig',
-            [
-                'report' => $report,
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/dashboard.html.twig',
+                ['snapshot' => $snapshot]
+            )
         );
     }
 
@@ -285,24 +268,21 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/environment", name="_berlioz/console/environment", requirements={"id":"\w+"})
      */
-    public function environment(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $system = $report->getSystemInfo();
-        $php = $report->getPhpInfo();
+    #[Route('/{id}/environment', name: '_berlioz/console/environment')]
+    public function environment(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/environment.html.twig',
-            [
-                'report' => $report,
-                'system' => $system,
-                'php' => $php,
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/environment.html.twig',
+                ['snapshot' => $snapshot]
+            )
         );
     }
 
@@ -311,24 +291,21 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/performances", name="_berlioz/console/performances", requirements={"id":"\w+"})
      */
-    public function performances(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $timeLine = $report->getTimeLine();
-        $performances = $report->getPerformancesInfo();
+    #[Route('/{id}/performances', name: '_berlioz/console/performances')]
+    public function performances(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/performances.html.twig',
-            [
-                'report' => $report,
-                'timeLine' => $timeLine,
-                'performances' => $performances,
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/performances.html.twig',
+                ['snapshot' => $snapshot]
+            )
         );
     }
 
@@ -337,18 +314,21 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/phpinfo", name="_berlioz/console/phpinfo", requirements={"id":"\w+"})
      */
-    public function phpInfo(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
+    #[Route('/{id}/phpinfo', name: '_berlioz/console/phpinfo')]
+    public function phpInfo(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/phpinfo.html.twig',
-            ['report' => $report]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/phpinfo.html.twig',
+                ['snapshot' => $snapshot]
+            )
         );
     }
 
@@ -357,22 +337,21 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/activities", name="_berlioz/console/activities", requirements={"id":"\w+"})
      */
-    public function activities(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $timeLine = $report->getTimeLine();
+    #[Route('/{id}/activities', name: '_berlioz/console/activities')]
+    public function activities(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/activities.html.twig',
-            [
-                'report' => $report,
-                'timeLine' => $timeLine,
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/activities.html.twig',
+                ['snapshot' => $snapshot]
+            )
         );
     }
 
@@ -381,40 +360,59 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/activities/{activity}", name="_berlioz/console/activity", requirements={"id":"\w+",
-     *                                                "activity": "\d+"})
      */
-    public function activity(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $timeLine = $report->getTimeLine();
+    #[Route('/{id}/activities/{activity}', requirements: ['activity' => '\w+'], name: '_berlioz/console/activity')]
+    public function activity(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        if ($activity = $timeLine->getActivities()[$request->getAttribute('activity')] ?? null) {
-            $activityDetail = $activity->getDetail();
-            $activityResult = $activity->getResult();
-
-            return $this->render(
-                '@Berlioz-HttpCore/Twig/Debug/activity.html.twig',
-                [
-                    'report' => $report,
-                    'timeLine' => $timeLine,
-                    'activity' => $activity,
-                    'activityDetail' => is_scalar($activityDetail) ? $activityDetail : var_export(
-                        $activityDetail,
-                        true
-                    ),
-                    'activityResult' => is_scalar($activityResult) ? $activityResult : var_export(
-                        $activityResult,
-                        true
-                    ),
-                ]
-            );
-        } else {
+        if (null === ($activity = $snapshot->getTimeline()->getActivity($request->getAttribute('activity')))) {
             throw new NotFoundHttpException('Detail of activity not found');
         }
+
+        $activityDetail = $activity->getDetail();
+        $activityResult = $activity->getResult();
+
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/activity.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                    'activity' => $activity,
+                    'aDetail' => is_scalar($activityDetail) ? $activityDetail : var_export($activityDetail, true),
+                    'aResult' => is_scalar($activityResult) ? $activityResult : var_export($activityResult, true),
+                ]
+            )
+        );
+    }
+
+    /**
+     * Events.
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     * @throws BerliozException
+     * @throws Error
+     */
+    #[Route('/{id}/events', name: '_berlioz/console/events')]
+    public function events(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
+
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/events.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                ]
+            )
+        );
     }
 
     /**
@@ -422,22 +420,23 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/exception", name="_berlioz/console/exception", requirements={"id":"\w+"})
      */
-    public function exception(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $exception = $report->getExceptionThrown();
+    #[Route('/{id}/exception', name: '_berlioz/console/exception')]
+    public function exception(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/exception.html.twig',
-            [
-                'report' => $report,
-                'exception' => $exception,
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/exception.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                ]
+            )
         );
     }
 
@@ -446,22 +445,21 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/php-errors", name="_berlioz/console/php-errors", requirements={"id":"\w+"})
      */
-    public function phpErrors(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $phpErrors = $report->getPhpError()->getPhpErrors();
+    #[Route('/{id}/php-errors', name: '_berlioz/console/php-errors')]
+    public function phpErrors(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/php-errors.html.twig',
-            [
-                'report' => $report,
-                'phpErrors' => $phpErrors,
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/php-errors.html.twig',
+                ['snapshot' => $snapshot]
+            )
         );
     }
 
@@ -470,28 +468,30 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/php-errors/{error}", name="_berlioz/console/php-error", requirements={"id":"\w+",
-     *                                             "error": "\d+"})
      */
-    public function phpError(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $phpErrors = $report->getPhpError()->getPhpErrors();
+    #[Route('/{id}/php-errors/{error}', requirements: ['error' => '\d+'], name: '_berlioz/console/php-error')]
+    public function phpError(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
+        $phpErrors = iterator_to_array($snapshot->getPhpErrors()->getErrors());
 
-        if ($phpError = $phpErrors[$request->getAttribute('error')] ?? null) {
-            return $this->render(
-                '@Berlioz-HttpCore/Twig/Debug/php-error.html.twig',
-                [
-                    'report' => $report,
-                    'error' => $phpError,
-                ]
-            );
-        } else {
+        if (!($phpError = $phpErrors[$request->getAttribute('error')] ?? null)) {
             throw new NotFoundHttpException('Detail of PHP error not found');
         }
+
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/php-error.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                    'error' => $phpError,
+                ]
+            )
+        );
     }
 
     /**
@@ -499,33 +499,34 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/used-classes", name="_berlioz/console/used-classes", requirements={"id":"\w+"})
+     * @throws ReflectionException
      */
-    public function usedClasses(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $projectInfo = $report->getProjectInfo();
+    #[Route('/{id}/used-classes', name: '_berlioz/console/used-classes')]
+    public function usedClasses(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         $nbClasses = ['berlioz' => 0, 'composer' => 0, 'user' => 0];
-        $projectInfo['declared_classes'] = array_map(
+        $classes = array_map(
             function ($className) use (&$nbClasses) {
                 if (class_exists($className) && call_user_func([new ReflectionClass($className), 'isInternal'])) {
                     return false;
+                }
+
+                if (str_starts_with($className, 'Berlioz\\')) {
+                    $type = 'berlioz';
+                    $nbClasses['berlioz']++;
                 } else {
-                    if (substr($className, 0, 8) == 'Berlioz\\') {
-                        $type = 'berlioz';
-                        $nbClasses['berlioz']++;
+                    if (str_starts_with($className, 'Composer\\')) {
+                        $type = 'composer';
+                        $nbClasses['composer']++;
                     } else {
-                        if (substr($className, 0, 8) == 'Composer') {
-                            $type = 'composer';
-                            $nbClasses['composer']++;
-                        } else {
-                            $type = 'user';
-                            $nbClasses['user']++;
-                        }
+                        $type = 'user';
+                        $nbClasses['user']++;
                     }
                 }
 
@@ -534,17 +535,19 @@ class DebugController extends AbstractController implements RenderingControllerI
                     'type' => $type,
                 ];
             },
-            $projectInfo['declared_classes']
+            $snapshot->getProjectInfo()->getDeclaredClasses()
         );
-        $projectInfo['declared_classes'] = array_filter($projectInfo['declared_classes']);
+        $classes = array_filter($classes);
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/used-classes.html.twig',
-            [
-                'report' => $report,
-                'classes' => $projectInfo['declared_classes'],
-                'nbClasses' => $nbClasses,
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/used-classes.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                    'classes' => $classes,
+                    'nbClasses' => $nbClasses,
+                ]
+            )
         );
     }
 
@@ -553,26 +556,36 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/cache", name="_berlioz/console/cache", requirements={"id":"\w+"})
+     * @throws RoutingException
      */
-    public function cache(ServerRequestInterface $request)
-    {
+    #[Route('/{id}/cache', name: '_berlioz/console/cache')]
+    public function cache(
+        ServerRequest $request
+    ): ResponseInterface {
         $requestQueryParams = $request->getQueryParams();
-        $report = $this->getDebugReport($request->getAttribute('id'));
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         // Clear
-        if ($clear = ($requestQueryParams['clear'] ?? null)) {
+        if ($clear = $request->getQueryParam('clear')) {
             switch ($clear) {
                 case 'internal':
-                    $this->getCore()->getCacheManager()->clear();
+                    $this->getApp()->getCore()->getCache()->clear();
                     break;
                 case 'opcache':
                     if (function_exists('opcache_reset')) {
                         opcache_reset();
                     }
+                    break;
+                case 'directory':
+                    if (null === ($directory = $request->getQueryParam('directory'))) {
+                        throw new BadRequestHttpException();
+                    }
+
+                    $clear .= ':' . basename($directory);
+                    $this->getApp()->getCore()->getFilesystem()->deleteDirectory('cache://' . basename($directory));
                     break;
             }
 
@@ -580,7 +593,7 @@ class DebugController extends AbstractController implements RenderingControllerI
                 $this->getRouter()->generate(
                     '_berlioz/console/cache',
                     [
-                        'id' => $report->getUniqid(),
+                        'id' => $snapshot->getUniqid(),
                         'cleared' => $clear,
                     ]
                 )
@@ -593,14 +606,24 @@ class DebugController extends AbstractController implements RenderingControllerI
             $opcache = opcache_get_status(true);
         }
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/cache.html.twig',
-            [
-                'report' => $report,
-                'cacheManager' => $this->getCore()->getCacheManager(),
-                'opcache' => $opcache,
-                'cleared' => ($requestQueryParams['cleared'] ?? null),
-            ]
+        $directories =
+            $this->getApp()->getCore()->getFilesystem()
+                ->listContents('cache://')
+                ->filter(fn(StorageAttributes $attr) => $attr->isDir())
+                ->map(fn(DirectoryAttributes $attr) => basename($attr->path()))
+                ->toArray();
+
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/cache.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                    'cacheManager' => $this->getApp()->getCore()->getCache(),
+                    'opcache' => $opcache,
+                    'cacheDirectories' => $directories,
+                    'cleared' => ($requestQueryParams['cleared'] ?? null),
+                ]
+            )
         );
     }
 
@@ -609,23 +632,26 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws ConfigException
      * @throws Error
-     * @route("/_console/{id}/config", name="_berlioz/console/config", requirements={"id":"\w+"})
      */
-    public function configuration(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $configuration = json_encode($report->getConfig()->get(), JSON_PRETTY_PRINT);
+    #[Route('/{id}/config', name: '_berlioz/console/config')]
+    public function configuration(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
+        $configuration = json_encode($snapshot->getConfig()->getArrayCopy(), JSON_PRETTY_PRINT);
 
-        return $this->render(
-            '@Berlioz-HttpCore/Twig/Debug/config.html.twig',
-            [
-                'report' => $report,
-                'configuration' => $configuration,
-            ]
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/config.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                    'configuration' => $configuration,
+                ]
+            )
         );
     }
 
@@ -634,33 +660,37 @@ class DebugController extends AbstractController implements RenderingControllerI
      *
      * @param ServerRequestInterface $request
      *
-     * @return ResponseInterface|string
+     * @return ResponseInterface
      * @throws BerliozException
      * @throws Error
-     * @route("/_console/{id}/{section}", name="_berlioz/console/section", requirements={"id":"\w+", "section":
-     *                                    "[\w\-_]+"})
      */
-    public function section(ServerRequestInterface $request)
-    {
-        $report = $this->getDebugReport($request->getAttribute('id'));
-        $reportSection = $report->getSection($request->getAttribute('section'));
+    #[Route('/{id}/{section}', requirements: ['section' => '[\w\-_]+'], name: '_berlioz/console/section')]
+    public function section(
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
+        $snapshotSection = $snapshot->getSection($request->getAttribute('section'));
 
-        if ($reportSection instanceof Section || method_exists($reportSection, 'getTemplateName')) {
-            return $this->render(
-                $reportSection->getTemplateName(),
-                [
-                    'report' => $report,
-                    'section' => $reportSection,
-                ]
-            );
-        } else {
-            return $this->render(
-                '@Berlioz-HttpCore/Twig/Debug/section.html.twig',
-                [
-                    'report' => $report,
-                    'section' => $reportSection,
-                ]
+        if ($snapshotSection instanceof Section || method_exists($snapshotSection, 'getTemplateName')) {
+            return $this->response(
+                $this->render(
+                    $snapshotSection->getTemplateName(),
+                    [
+                        'snapshot' => $snapshot,
+                        'section' => $snapshotSection,
+                    ]
+                )
             );
         }
+
+        return $this->response(
+            $this->render(
+                '@Berlioz-HttpCore/Twig/Debug/section.html.twig',
+                [
+                    'snapshot' => $snapshot,
+                    'section' => $snapshotSection,
+                ]
+            )
+        );
     }
 }

@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2020 Ronan GIRON
+ * @copyright 2021 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,12 +12,10 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\App;
+namespace Berlioz\Http\Core\App;
 
 /**
  * Interface HttpAppAwareInterface.
- *
- * @package Berlioz\HttpCore\App
  */
 interface HttpAppAwareInterface
 {
@@ -32,10 +30,8 @@ interface HttpAppAwareInterface
      * Set application.
      *
      * @param HttpApp $app
-     *
-     * @return static
      */
-    public function setApp(HttpApp $app);
+    public function setApp(HttpApp $app): void;
 
     /**
      * Has application ?

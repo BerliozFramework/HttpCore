@@ -4,7 +4,6 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1>Configuration</h1>
     </div>
-
     <p>
         It's a snapshot of configuration at the moment of request.
     </p>
@@ -15,7 +14,7 @@
         </div>
     {% else %}
         <pre>
-    <code class="json">{{ configuration }}</code>
-  </pre>
+            <code class="json">{{ configuration }}</code>
+        </pre>
     {% endif %}
 {% endblock %}

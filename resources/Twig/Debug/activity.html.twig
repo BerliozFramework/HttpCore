@@ -1,6 +1,6 @@
 <h4>Profile</h4>
 <div class="table-responsive">
-    <table class="table border-bottom">
+    <table class="table table-striped table-sm border-top">
         <tbody>
         <tr>
             <th scope="row" class="text-nowrap">Name</th>
@@ -18,11 +18,19 @@
         {% endif %}
         <tr>
             <th scope="row" class="text-nowrap">Start after</th>
-            <td>{{ ((activity.startMicroTime - timeLine.firstTime) * 1000)|round(6) }}ms</td>
+            <td>{{ ((activity.startMicroTime - snapshot.timeLine.firstTime) * 1000)|round(3) }} ms</td>
         </tr>
         <tr>
             <th scope="row" class="text-nowrap">Duration</th>
-            <td>{{ (activity.duration * 1000)|round(6) }}ms</td>
+            <td>{{ (activity.duration * 1000)|round(3) }} ms</td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">Memory usage</th>
+            <td>{{ activity.memoryUsage|human_file_size }}</td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">Memory peak usage</th>
+            <td>{{ activity.memoryPeakUsage|human_file_size }}</td>
         </tr>
         </tbody>
     </table>
@@ -30,10 +38,10 @@
 
 {% if activity.detail %}
     <h4>Detail</h4>
-    <pre class="w-100"><code>{{ activityDetail }}</code></pre>
+    <pre class="w-100"><code>{{ aDetail }}</code></pre>
 {% endif %}
 
 {% if activity.result %}
     <h4>Result</h4>
-    <pre class="w-100"><code>{{ activityResult }}</code></pre>
+    <pre class="w-100"><code>{{ aResult }}</code></pre>
 {% endif %}

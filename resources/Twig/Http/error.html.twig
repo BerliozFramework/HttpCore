@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     {% apply spaceless %}
         <title>
-            {% if exception.code < 500 %}
+            {% if httpException.code < 500 %}
                 Oops, the page you're looking for doesn't exist
-            {% elseif exception.code >= 500 %}
+            {% elseif httpException.code >= 500 %}
                 Looks like we're having some server issues
             {% endif %}
-            - {{ exception.code }} error
+            - {{ httpException.code }} error
         </title>
     {% endapply %}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" media="screen" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600"/>
-    <style type="text/css">
+    <style>
         * {
             padding: 0;
             margin: 0;
@@ -126,12 +126,13 @@
         </div>
         <div class="container">
             <div class="header clearfix">
-                <h1>{{ exception.code }}
-                    <small>{{ exception.code != 404 and exception.code != 500 ? exception.message : '' }}</small>
+                <h1>
+                    {{ httpException.code }}
+                    <small>{{ httpException.code != 404 and httpException.code != 500 ? httpException.message : '' }}</small>
                 </h1>
-                {% if exception.code < 500 %}
+                {% if httpException.code < 500 %}
                     <p>Oops, the page you're looking for doesn't exist.</p>
-                {% elseif exception.code >= 500 %}
+                {% elseif httpException.code >= 500 %}
                     <p>Looks like we're having some server issues.</p>
                 {% endif %}
             </div>
@@ -140,7 +141,7 @@
                 You may want to head back to the homepage.<br/>
                 If you think something is broken, report a problem.
             </p>
-            {% if app.isDebugEnabled %}
+            {% if app.isDebugEnabled() %}
                 <pre class="debug">{{ exception }}</pre>
             {% endif %}
         </div>

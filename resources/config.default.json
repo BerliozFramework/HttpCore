@@ -1,26 +1,34 @@
 {
   "berlioz": {
     "directories": {
-      "templates": "%berlioz.directories.app%/templates"
+      "templates": "{config:berlioz.directories.app}/resources/templates"
     },
     "assets": {
-      "manifest": "%berlioz.directories.app%/public/assets/manifest.json",
-      "entrypoints": "%berlioz.directories.app%/public/assets/entrypoints.json"
+      "manifest": "{config:berlioz.directories.app}/public/assets/manifest.json",
+      "entrypoints": "{config:berlioz.directories.app}/public/assets/entrypoints.json"
     },
     "http": {
       "errors": {
-        "default": "Berlioz\\HttpCore\\Http\\DefaultHttpErrorHandler"
+        "default": "Berlioz\\Http\\Core\\Http\\Error\\DefaultErrorHandler"
       },
-      "redirections": {}
+      "redirections": {},
+      "middlewares": {
+        "00": {
+          "maintenance": "Berlioz\\Http\\Core\\Http\\Middleware\\MaintenanceMiddleware"
+        },
+        "99": {
+          "redirection": "Berlioz\\Http\\Core\\Http\\Middleware\\RedirectionMiddleware"
+        }
+      }
     },
     "maintenance": false
   },
   "controllers": [
-    "Berlioz\\HttpCore\\Controller\\DebugController"
+    "Berlioz\\Http\\Core\\Controller\\DebugController"
   ],
   "twig": {
     "paths": {
-      "Berlioz-HttpCore": "%berlioz.directories.vendor%/berlioz/http-core/resources"
+      "Berlioz-HttpCore": "{config:berlioz.directories.vendor}/berlioz/http-core/resources"
     },
     "globals": {
       "app": "@AppProfile"

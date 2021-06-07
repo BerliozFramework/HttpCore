@@ -1,0 +1,11 @@
+{
+  "controllers": [
+    "Berlioz\\Http\\Core\\TestProject\\Controller\\ControllerOne",
+    "Berlioz\\Http\\Core\\TestProject\\Controller\\ControllerTwo"
+  ],
+  "twig": {
+    "options": {
+      "cache": false
+    }
+  }
+}

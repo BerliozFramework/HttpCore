@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2020 Ronan GIRON
+ * @copyright 2021 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,15 +12,13 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\Exception\Http;
+namespace Berlioz\Http\Core\Exception\Http;
 
-use Berlioz\HttpCore\Exception\HttpException;
+use Berlioz\Http\Core\Exception\HttpException;
 use Throwable;
 
 /**
  * Class NotFoundHttpException.
- *
- * @package Berlioz\HttpCore\Exception\Http
  */
 class NotFoundHttpException extends HttpException
 {

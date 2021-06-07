@@ -1,0 +1,59 @@
+/*!
+ * This file is part of Berlioz framework.
+ *
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @copyright 2021 Ronan GIRON
+ * @author    Ronan GIRON <https://github.com/ElGigi>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code, to the root.
+ */
+
+$list-tree-color: #fff !default;
+$list-tree-line: 2px !default;
+$list-tree-line-height: 1rem !default;
+
+.list-tree {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+
+  & & &-item {
+    margin-left: .5rem;
+    padding-left: 1rem;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      border-left: #{$list-tree-line} solid $list-tree-color;
+    }
+
+    &:first-child {
+      &::before {
+        top: $list-tree-line;
+      }
+    }
+
+    &:last-child {
+      &::before {
+        bottom: auto;
+        height: calc(#{$list-tree-line-height} - #{$list-tree-line});
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: calc(#{$list-tree-line-height} - #{$list-tree-line});
+      left: 0;
+      height: 0;
+      width: .65rem;
+      border-bottom: #{$list-tree-line} solid $list-tree-color;
+    }
+  }
+}

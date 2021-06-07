@@ -1,12 +1,9 @@
 {
-  "/vendor.js": "/_console/dist/js/vendor.15a8bf8f.js",
-  "/debug.css": "/_console/dist/css/debug.040a526a.css",
-  "/debug.js": "/_console/dist/js/debug.c747920d.js",
-  "/debug-caller.js": "/_console/dist/js/debug-caller.488ea7fa.js",
-  "/debug-toolbar.css": "/_console/dist/css/debug-toolbar.040a526a.css",
-  "/debug-toolbar.js": "/_console/dist/js/debug-toolbar.3c888032.js",
-  "/js/debug-caller.488ea7fa.js.LICENSE.txt": "/_console/dist/js/debug-caller.488ea7fa.js.LICENSE.txt",
-  "/js/debug-toolbar.3c888032.js.LICENSE.txt": "/_console/dist/js/debug-toolbar.3c888032.js.LICENSE.txt",
-  "/js/debug.c747920d.js.LICENSE.txt": "/_console/dist/js/debug.c747920d.js.LICENSE.txt",
-  "/js/vendor.15a8bf8f.js.LICENSE.txt": "/_console/dist/js/vendor.15a8bf8f.js.LICENSE.txt"
+  "debug.css": "/_console/dist/css/debug.feb9704a.css",
+  "debug.js": "/_console/dist/js/debug.07f97f44.js",
+  "debug-toolbar.css": "/_console/dist/css/debug-toolbar.feb9704a.css",
+  "debug-toolbar.js": "/_console/dist/js/debug-toolbar.9dd4536f.js",
+  "debug-caller.js": "/_console/dist/js/debug-caller.617030da.js",
+  "fonts/bootstrap-icons.woff?": "/_console/dist/fonts/bootstrap-icons.94eeade1.woff",
+  "fonts/bootstrap-icons.woff2?": "/_console/dist/fonts/bootstrap-icons.dfd0ea12.woff2"
 }

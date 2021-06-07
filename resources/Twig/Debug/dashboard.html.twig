@@ -11,33 +11,27 @@
 
     <div class="row">
         <div class="col-12 col-md-4">
-            <div class="card mb-3 bg-dark text-white shadow-sm">
+            <div class="card mb-3 bg-primary text-white shadow-sm">
                 <div class="card-body">
                     <dl class="m-0">
-                        <dt>Report ID</dt>
-                        <dd>#{{ report.uniqid }}</dd>
-                        <dt>Report date time</dt>
-                        <dd class="m-0">{{ report.datetime|date('D, j M Y H:i:s.u O') }}</dd>
+                        <dt>Snapshot ID</dt>
+                        <dd>#{{ snapshot.uniqid }}</dd>
+                        <dt>Snapshot date time</dt>
+                        <dd class="m-0">{{ snapshot.dateTime|date('D, j M Y H:i:s.u O') }}</dd>
                     </dl>
                 </div>
             </div>
 
-            {% if report.exception or report.phpError|length > 0 %}
-                <div class="card mb-3 shadow-sm text-white {% if report.exception %}bg-danger{% else %}bg-warning{% endif %}">
+            {% if snapshot.exception or snapshot.phpError|length > 0 %}
+                <div class="card mb-3 shadow-sm text-white {% if snapshot.exception %}bg-danger{% else %}bg-warning{% endif %}">
                     <div class="card-body d-flex align-items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="feather feather-lg feather-alert-triangle">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                            <line x1="12" y1="9" x2="12" y2="13"></line>
-                            <line x1="12" y1="17" x2="12" y2="17"></line>
-                        </svg>
+                        <i class="bi bi-exclamation-octagon-fill fs-1"></i>
                         <div class="pl-4">
-                            {% if report.exception > 0 %}
+                            {% if snapshot.exception > 0 %}
                                 <p class="m-0">An exception has been thrown.</p>
                             {% endif %}
-                            {% if report.phpError|length > 0 %}
-                                <p class="m-0">{{ report.phpError|length }} PHP errors occurred.</p>
+                            {% if snapshot.phpError|length > 0 %}
+                                <p class="m-0">{{ snapshot.phpError|length }} PHP errors occurred.</p>
                             {% endif %}
                         </div>
                     </div>
@@ -46,47 +40,36 @@
 
             <div class="card mb-3 shadow-sm">
                 <div class="card-body d-flex align-items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         class="feather feather-lg feather-clock">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    <div class="pl-3">
-                        <p class="card-value mb-0">{{ (report.timeLine.duration * 1000)|round(3) }}ms</p>
+                    <i class="bi bi-speedometer2 me-3 fs-1"></i>
+                    <div class="me-auto pl-3">
+                        <p class="card-value mb-0">{{ (snapshot.timeLine.duration * 1000)|round(3) }} ms</p>
                         <p class="card-text">Execution time</p>
                     </div>
-                    <a href="{{ path('_berlioz/console/performances', {"id": report.uniqid}) }}"
-                       class="ml-auto text-right text-dark stretched-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-                             stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"
-                             stroke-linejoin="round" class="feather feather-lg feather-chevron-right">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
+                    <a href="{{ path('_berlioz/console/performances', {"id": snapshot.uniqid}) }}"
+                       class="ms-3 text-end text-dark stretched-link">
+                        <i class="bi bi-chevron-right fs-1"></i>
                     </a>
                 </div>
             </div>
         </div>
 
         <div class="col-12 col-md-8">
-            <div class="card-columns card-dashboard-columns">
-                {% for section in report.sections %}
-                    {% if block("widget", section.templateName) is defined %}
-                        <div class="card">
-                            <div class="card-header bg-secondary text-white h5">{{ section.sectionName }}</div>
-                            <div class="card-body">
-                                {{ block("widget", section.templateName) }}
-                            </div>
-                            <div class="card-footer bg-secondary text-right">
-                                <a href="{{ path('_berlioz/console/section', {"id": report.uniqid, "section": section.sectionId}) }}"
-                                   class="text-white stretched-link">
-                                    Go to detail
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
-                                         stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"
-                                         stroke-linejoin="round" class="feather feather-chevron-right">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </a>
+            <div class="row">
+                {% for section in snapshot.sections %}
+                    {% if section.templateName and block("widget", section.templateName) is defined %}
+                        <div class="col-12 col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header text-white h5">{{ section.sectionName }}</div>
+                                <div class="card-body">
+                                    {{ block("widget", section.templateName) }}
+                                </div>
+                                <div class="card-footer text-end">
+                                    <a href="{{ path('_berlioz/console/section', {"id": snapshot.uniqid, "section": section.sectionId}) }}"
+                                       class="link-light stretched-link">
+                                        Go to detail
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     {% endif %}

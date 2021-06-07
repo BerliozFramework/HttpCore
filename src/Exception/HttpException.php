@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2020 Ronan GIRON
+ * @copyright 2021 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Berlioz\HttpCore\Exception;
+namespace Berlioz\Http\Core\Exception;
 
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Message\Response;
@@ -20,8 +20,6 @@ use Throwable;
 
 /**
  * Class HttpException.
- *
- * @package Berlioz\HttpCore\Exception
  */
 class HttpException extends BerliozException
 {

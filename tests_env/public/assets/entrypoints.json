@@ -1,0 +1,6 @@
+{
+  "fake": {
+    "css": "/assets/fake.css",
+    "js": "/assets/fake.js"
+  }
+}

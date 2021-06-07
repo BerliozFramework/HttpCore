@@ -2,7 +2,7 @@
  * This file is part of Berlioz framework.
  *
  * @license   https://opensource.org/licenses/MIT MIT License
- * @copyright 2017 Ronan GIRON
+ * @copyright 2021 Ronan GIRON
  * @author    Ronan GIRON <https://github.com/ElGigi>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -11,6 +11,8 @@
 // Imports
 @import 'bootstrap';
 @import '~bootstrap/scss/bootstrap';
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+@import 'tree';
 
 /*
  * Loader
@@ -22,8 +24,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
-  background: rgba(255, 255, 255, .8);
+  background: $dark;
+  background: rgba($dark, .8);
   z-index: 100000;
 }
 
@@ -51,6 +53,7 @@
   width: 130px;
   height: 130px;
   margin: -65px 0 0 -65px;
+  fill: $white;
 }
 
 @-webkit-keyframes spinLoader {
@@ -72,125 +75,11 @@
 }
 
 /*
- * Feather
+ * Highlight
  */
 
-.feather {
-  width: 20px;
-  height: 20px;
-  vertical-align: text-bottom;
-
-  &-lg {
-    width: 50px;
-    height: 50px;
-
-    @include media-breakpoint-down(md) {
-      width: 30px;
-      height: 30px;
-    }
-  }
-}
-
-/*
- * Sidebar
- */
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100; /* Behind the navbar */
-  padding: 48px 0 0; /* Height of navbar */
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-
-  @include media-breakpoint-up(md) {
-    &.collapse {
-      display: block !important;
-    }
-  }
-
-  .sidebar-sticky {
-    position: relative;
-    top: 0;
-    height: calc(100vh - 48px);
-    padding-top: .5rem;
-    overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-  }
-
-  @supports ((position: -webkit-sticky) or (position: sticky)) {
-    .sidebar-sticky {
-      position: -webkit-sticky;
-      position: sticky;
-    }
-  }
-
-  .sidebar-heading {
-    font-size: .75rem;
-    text-transform: uppercase;
-    color: $text-muted;
-
-    * {
-      margin: 0;
-      font-weight: 500;
-      font-size: .75rem;
-      text-transform: uppercase;
-      color: $text-muted;
-    }
-
-    .custom-select {
-      height: 1.5rem;
-      padding: .1rem .25rem;
-      margin-left: .25rem;
-      border: none;
-      background-color: transparent;
-
-      &:hover {
-        border-color: $custom-select-focus-border-color;
-        @if $enable-shadows {
-          box-shadow: $custom-select-box-shadow, $custom-select-focus-box-shadow;
-        } @else {
-          box-shadow: $custom-select-focus-box-shadow;
-        }
-
-        &::-ms-value {
-          // For visual consistency with other platforms/browsers,
-          // suppress the default white text on blue background highlight given to
-          // the selected option text when the (still closed) <select> receives focus
-          // in IE and (under certain conditions) Edge.
-          // See https://github.com/twbs/bootstrap/issues/19398.
-          color: $input-color;
-          background-color: $input-bg;
-        }
-      }
-    }
-  }
-
-  .nav-link {
-    font-weight: 500;
-    color: #333;
-
-    &.active {
-      color: theme-color('primary');
-    }
-
-    .feather {
-      margin-right: 4px;
-      color: #999;
-    }
-
-    &.text-danger {
-      .feather {
-        color: $danger !important;
-      }
-    }
-
-    &:hover .feather,
-    &.active .feather {
-      color: inherit;
-    }
-  }
+.hljs {
+  background-color: $dark !important;
 }
 
 /*
@@ -199,36 +88,135 @@
 
 .navbar {
   .navbar-brand {
+    @include media-breakpoint-up(md) {
+      width: 15rem;
+    }
     padding-top: .75rem;
     padding-bottom: .75rem;
     font-size: 1rem;
-    background-color: rgba(0, 0, 0, .25);
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+    line-height: 1.5rem;
+    background-color: #191c1f;
+    box-shadow: inset -1px 0 0 #191c1f;
 
     #logo {
-      width: 20px;
-      height: 20px;
-      margin-right: 4px;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-right: .5rem;
       fill: #fff;
       vertical-align: text-bottom;
     }
   }
 
-  .form-control {
-    padding: .75rem 1rem;
-    border-width: 0;
-    border-radius: 0;
+  .form-select {
+    option {
+      color: $black;
+    }
+  }
+}
+
+/*
+ * Sidebar
+ */
+
+#sidebar {
+  height: calc(100vh - 48px);
+  position: fixed;
+  top: 48px;
+  bottom: 0;
+  left: 0;
+  padding: .5rem 0;
+  z-index: 100;
+  background-color: #191c1f;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: rgba($white, .75);
+  box-shadow: inset -0.25rem 0 0.25rem -0.25rem $black;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+
+    &-track {
+      background: #191c1f;
+    }
+
+    &-thumb {
+      background: rgba($white, .5);
+      border-style: solid;
+      border-color: #191c1f;
+      border-width: 1px;
+
+      &:hover {
+        background: $white;
+      }
+    }
   }
 
-  .form-control-dark {
-    color: #fff;
-    background-color: rgba(255, 255, 255, .1);
-    border-color: rgba(255, 255, 255, .1);
+  @include media-breakpoint-up(md) {
+    width: 3.75rem;
+    padding-right: .25rem;
+    transition: all .25s ease #{$debug-menu-time};
+
+    .nav-text {
+      visibility: hidden !important;
+      opacity: 0 !important;
+      transition: visible 0s #{$debug-menu-time}, all .25s ease #{$debug-menu-time};
+    }
+
+    &:hover {
+      width: 15rem;
+      padding-right: 0;
+      box-shadow: 0 0 0.25rem $black;
+
+      .nav-text {
+        visibility: visible !important;
+        opacity: 1 !important;
+        text-overflow: ellipsis;
+      }
+    }
+
+    &.collapse {
+      display: block !important;
+    }
   }
 
-  .form-control-dark:focus {
-    border-color: transparent;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding-top: .3rem;
+    padding-bottom: .3rem;
+    font-weight: 500;
+    color: rgba($white, .75);
+    white-space: nowrap;
+
+    &.active, &.active:hover {
+      color: $primary;
+    }
+
+    &:hover {
+      color: $white;
+    }
+
+    .nav-icon {
+      position: relative;
+      font-size: 1.5rem;
+
+      & + .nav-text {
+        margin-left: 1.25rem;
+
+        @include media-breakpoint-up(md) {
+          visibility: hidden;
+          opacity: 0;
+        }
+      }
+
+      .badge {
+        position: absolute;
+        bottom: -.25rem;
+        right: -.5rem;
+        opacity: .8;
+        font-size: .6rem;
+      }
+    }
   }
 }
 
@@ -248,13 +236,9 @@
  * Cards
  */
 
-@include media-breakpoint-up(sm) {
-  .card-dashboard-columns {
-    column-count: 2;
-  }
-}
-
 .card {
+  box-shadow: 0 0 0.25rem rgba($black, .5) !important;
+
   .card-value {
     font-weight: bold;
     font-size: 2rem;
@@ -271,6 +255,12 @@
 
 [role="main"] {
   padding-top: 48px; /* Space for fixed navbar */
+  margin-left: 0;
+  width: calc(100vh - 3.5rem);
+
+  @include media-breakpoint-up(md) {
+    margin-left: 3.5rem;
+  }
 
   .widget {
     padding: 1rem;
@@ -298,6 +288,13 @@
       .value {
         font-size: 1.5rem;
       }
+    }
+  }
+
+  h1, h2 {
+    .badge {
+      font-size: 50%;
+      vertical-align: super;
     }
   }
 
@@ -329,10 +326,10 @@
       right: 0;
       bottom: 0;
       padding: 0 2px;
-      border-left: 1px solid rgba(0, 0, 0, .05);
+      border-left: 1px solid rgba($white, .05);
       font-size: 9px;
       line-height: 10px;
-      color: rgba(0, 0, 0, .75);
+      color: rgba($white, .75);
 
       &.scale-0 {
         left: 0;
@@ -363,7 +360,7 @@
       &.scale-100 {
         left: 0;
         border-left: none;
-        border-right: 1px solid rgba(0, 0, 0, .05);
+        border-right: 1px solid rgba($white, .05);
         text-align: right;
       }
 
@@ -398,13 +395,13 @@
         z-index: 2;
         top: -10px;
         bottom: -10px;
-        border-left: 1px solid blue;
-        color: blue;
+        border-left: 1px solid var(--bs-primary);
+        color: var(--bs-primary);
 
         &.cursor-inverted {
           text-align: right;
           border-left: none;
-          border-right: 1px solid blue;
+          border-right: 1px solid var(--bs-primary);
         }
       }
     }
@@ -427,8 +424,14 @@
           position: relative;
           padding: 4px 0 5px;
           min-height: 5px;
-          border-bottom: 1px solid theme-color('dark');
-          background-color: #dddddd55;
+          border-bottom: 1px solid $white;
+          background: repeating-linear-gradient(
+                          45deg,
+                          rgba($dark, 0.1),
+                          rgba($dark, 0.1) 10px,
+                          rgba($dark, 0.4) 10px,
+                          rgba($dark, 0.4) 20px
+          );
 
           &:before,
           &:after {
@@ -439,7 +442,7 @@
             width: 0;
             height: 0;
             border-right: 5px solid transparent;
-            border-bottom: 5px solid theme-color('dark');
+            border-bottom: 5px solid $white;
           }
 
           &:after {
@@ -452,9 +455,9 @@
           .activity {
             display: block;
             height: 10px;
-            border-top: 2px solid white;
-            border-bottom: 2px solid white;
-            background-color: theme-color('info');
+            border-top: 2px solid $dark;
+            border-bottom: 2px solid $dark;
+            background-color: #a0ffa0;
           }
         }
       }
@@ -462,7 +465,7 @@
 
     .memory-usage {
       margin-top: 20px;
-      border-top: 2px dotted theme-color('secondary');
+      border-top: 2px dotted $secondary;
 
       .memory-title {
         padding: 5px 0;
@@ -484,14 +487,15 @@
           position: absolute;
           cursor: pointer;
           bottom: 0;
-          background-color: theme-color-level('info', -10);
+          background-color: rgba($warning, .5);
+          //background-color: theme-color-level('info', -10);
         }
 
         .peak {
           .memory {
             right: 0;
             left: 0;
-            background-color: theme-color('info');
+            background-color: $warning;
           }
         }
       }

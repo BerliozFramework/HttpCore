@@ -2,44 +2,48 @@
 
 {% block main %}
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1>Activities ({{ timeLine|length }})</h1>
+        <h1>
+            Activities
+            {% if snapshot.timeLine|length > 0 %}
+                <span class="badge bg-primary">{{ snapshot.timeLine|length }}</span>
+            {% endif %}
+        </h1>
     </div>
-
     <p>
         It's a snapshot of activities at the moment of request.
     </p>
 
     <h2>Time line</h2>
-    {% set timeLineFirstTime = timeLine.firstTime %}
-    {% set timeLineDuration = timeLine.duration %}
-    {% set timeLineMemoryPeakUsage = timeLine.memoryPeakUsage %}
+    {% set timeLineFirstTime = snapshot.timeLine.firstTime %}
+    {% set timeLineDuration = snapshot.timeLine.duration %}
+    {% set timeLineMemoryPeakUsage = snapshot.timeLine.memoryPeakUsage %}
     <div class="timeline mt-4 mb-5" data-duration="{{ timeLineDuration }}">
         <div class="scales">
             <div class="scale scale-0">0ms</div>
-            <div class="scale scale-12-5">{{ ((timeLineDuration * 0.125) * 1000)|round(3) }}ms</div>
-            <div class="scale scale-25">{{ ((timeLineDuration * 0.25) * 1000)|round(3) }}ms</div>
-            <div class="scale scale-37-5">{{ ((timeLineDuration * 0.375) * 1000)|round(3) }}ms</div>
-            <div class="scale scale-50">{{ ((timeLineDuration * 0.50) * 1000)|round(3) }}ms</div>
-            <div class="scale scale-62-5">{{ ((timeLineDuration * 0.625) * 1000)|round(3) }}ms</div>
-            <div class="scale scale-75">{{ ((timeLineDuration * 0.75) * 1000)|round(3) }}ms</div>
-            <div class="scale scale-87-5">{{ ((timeLineDuration * 0.875) * 1000)|round(3) }}ms</div>
-            <div class="scale scale-100">{{ (timeLineDuration * 1000)|round(3) }}ms</div>
+            <div class="scale scale-12-5">{{ ((timeLineDuration * 0.125) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-25">{{ ((timeLineDuration * 0.25) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-37-5">{{ ((timeLineDuration * 0.375) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-50">{{ ((timeLineDuration * 0.50) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-62-5">{{ ((timeLineDuration * 0.625) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-75">{{ ((timeLineDuration * 0.75) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-87-5">{{ ((timeLineDuration * 0.875) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-100">{{ (timeLineDuration * 1000)|round(3) }} ms</div>
 
             <div class="scale cursor" style="display: none;"><span class="cursor-value">0</span>ms</div>
         </div>
         <div class="activities">
-            {% for group in timeLine.groups %}
-                {% set groupFirstTime = timeLine.firstTime(group) %}
-                {% set groupDuration = timeLine.duration(group) %}
+            {% for group in snapshot.timeLine.groups %}
+                {% set groupFirstTime = snapshot.timeLine.firstTime(group) %}
+                {% set groupDuration = snapshot.timeLine.duration(group) %}
                 <div class="group-container"
                      style="width: {{ (groupDuration * 100 / timeLineDuration)|round(2, 'ceil') }}%; margin-left: {{ ((groupFirstTime - timeLineFirstTime) * 100 / timeLineDuration)|round(2, 'floor') }}%;">
                     <div class="group">
-                        {% for activity in timeLine.activities(group) %}
+                        {% for activity in snapshot.timeLine.activities(group) %}
                             <a href="#activity-{{ activity.uniqId }}"
-                               data-toggle="tooltip"
+                               data-bs-toggle="tooltip"
                                data-placement="bottom"
-                               title="{{ activity.description }} (during {{ (activity.duration * 1000)|round(3) }}ms after {{ ((activity.startMicroTime - timeLineFirstTime) * 1000)|round(3) }}ms)"
-                               class="activity bg-success"
+                               title="{{ activity.description }} (during {{ (activity.duration * 1000)|round(3) }} ms after {{ ((activity.startMicroTime - timeLineFirstTime) * 1000)|round(3) }} ms)"
+                               class="activity"
                                style="width: {{ (activity.duration * 100 / groupDuration)|round(2, 'ceil') }}%; margin-left: {{ ((activity.startMicroTime - groupFirstTime) * 100 / groupDuration)|round(2, 'floor') }}%; opacity: {{ (100 - random(50)) / 100 }};"></a>
                         {% endfor %}
                     </div>
@@ -50,8 +54,8 @@
         <div class="memory-usage">
             <div class="memory-title">Memory usage (peak: {{ timeLineMemoryPeakUsage|human_file_size }})</div>
             <div class="memory-container">
-                {% for memoryUsage in timeLine.memoryUsages %}
-                    <span data-toggle="tooltip"
+                {% for memoryUsage in snapshot.timeLine.memoryUsages %}
+                    <span data-bs-toggle="tooltip"
                           data-placement="bottom"
                           title="Usage: {{ memoryUsage.memory|human_file_size }} ; Peak: {{ memoryUsage.memory_peak|human_file_size }}"
                           class="peak"
@@ -69,7 +73,7 @@
 
     <h2>List of activities</h2>
     <div class="table-responsive">
-        <table class="table table-striped table-sm">
+        <table class="table table-striped table-sm align-middle">
             <thead>
             <tr>
                 <th>#</th>
@@ -80,21 +84,16 @@
             </tr>
             </thead>
             <tbody>
-            {% for activity in timeLine.activities %}
+            {% for activity in snapshot.timeLine.activities %}
                 <tr id="activity-{{ activity.uniqId }}">
-                    <th>{{ ((activity.startMicroTime - timeLine.firstTime) * 1000)|round(6) }}ms</th>
-                    <td>{{ activity.name }}</td>
+                    <th>{{ ((activity.startMicroTime - snapshot.timeLine.firstTime) * 1000)|round(3) }} ms</th>
+                    <td>{{ activity.name|truncate(64) }}</td>
                     <td>{{ activity.group|default('--') }}</td>
-                    <td>{{ (activity.duration * 1000)|round(6) }}ms</td>
-                    <td class="text-right">
-                        <button class="btn btn-secondary" data-toggle="detail" data-type="activity"
-                                data-target="{{ path('_berlioz/console/activity', {"id": report.uniqid, "activity": loop.index0}) }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round" class="feather feather-search">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
+                    <td>{{ (activity.duration * 1000)|round(3) }} ms</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-secondary" data-toggle="detail" data-type="activity"
+                                data-target="{{ path('_berlioz/console/activity', {"id": snapshot.uniqid, "activity": activity.uniqid}) }}">
+                            <i class="bi bi-search"></i>
                         </button>
                     </td>
                 </tr>
@@ -111,16 +110,14 @@
     <div class="modal fade" id="activityDetail" tabindex="-1" role="dialog" aria-labelledby="activityDetailTitle"
          aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
+            <div class="modal-content shadow">
                 <div class="modal-header">
                     <h5 class="modal-title" id="activityDetailTitle">Activity detail</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

@@ -1,0 +1,10 @@
+{
+  "name": "berlioz/http-core",
+  "type": "berlioz-package",
+  "description": "Berlioz Framework HTTP Core",
+  "config": {
+    "berlioz": {
+      "package": "Berlioz\\Http\\Core\\BerliozPackage"
+    }
+  }
+}
