@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [2.0.0-beta2] - In progress
+
+### Fixed
+
+- Fix display of events in debug console
+- Fix display of activities debug with no duration
+
 ## [2.0.0-beta1] - 2021-06-08
 
 ### Added
