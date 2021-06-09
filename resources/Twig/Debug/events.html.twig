@@ -23,16 +23,15 @@
             <table class="table table-striped table-sm align-middle">
                 <thead>
                 <tr>
-                    <th>Event class</th>
-                    <th></th>
+                    <th>Event name</th>
+                    <th>Time</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for event in snapshot.events %}
+                {% for event in snapshot.events.events %}
                     <tr>
-                        <th>{{ event }}</th>
-                        <td class="text-end">
-                        </td>
+                        <th>{{ event.name }}</th>
+                        <td>{{ event.time|date('c') }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
