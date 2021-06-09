@@ -35,20 +35,22 @@
             {% for group in snapshot.timeLine.groups %}
                 {% set groupFirstTime = snapshot.timeLine.firstTime(group) %}
                 {% set groupDuration = snapshot.timeLine.duration(group) %}
-                <div class="group-container"
-                     style="width: {{ (groupDuration * 100 / timeLineDuration)|round(2, 'ceil') }}%; margin-left: {{ ((groupFirstTime - timeLineFirstTime) * 100 / timeLineDuration)|round(2, 'floor') }}%;">
-                    <div class="group">
-                        {% for activity in snapshot.timeLine.activities(group) %}
-                            <a href="#activity-{{ activity.uniqId }}"
-                               data-bs-toggle="tooltip"
-                               data-placement="bottom"
-                               title="{{ activity.description }} (during {{ (activity.duration * 1000)|round(3) }} ms after {{ ((activity.startMicroTime - timeLineFirstTime) * 1000)|round(3) }} ms)"
-                               class="activity"
-                               style="width: {{ (activity.duration * 100 / groupDuration)|round(2, 'ceil') }}%; margin-left: {{ ((activity.startMicroTime - groupFirstTime) * 100 / groupDuration)|round(2, 'floor') }}%; opacity: {{ (100 - random(50)) / 100 }};"></a>
-                        {% endfor %}
+                {% if groupDuration > 0 %}
+                    <div class="group-container"
+                         style="width: {{ (groupDuration * 100 / timeLineDuration)|round(2, 'ceil') }}%; margin-left: {{ ((groupFirstTime - timeLineFirstTime) * 100 / timeLineDuration)|round(2, 'floor') }}%;">
+                        <div class="group">
+                            {% for activity in snapshot.timeLine.activities(group) %}
+                                <a href="#activity-{{ activity.uniqId }}"
+                                   data-bs-toggle="tooltip"
+                                   data-placement="bottom"
+                                   title="{{ activity.description }} (during {{ (activity.duration * 1000)|round(3) }} ms after {{ ((activity.startMicroTime - timeLineFirstTime) * 1000)|round(3) }} ms)"
+                                   class="activity"
+                                   style="width: {{ (activity.duration * 100 / groupDuration)|round(2, 'ceil') }}%; margin-left: {{ ((activity.startMicroTime - groupFirstTime) * 100 / groupDuration)|round(2, 'floor') }}%; opacity: {{ (100 - random(50)) / 100 }};"></a>
+                            {% endfor %}
+                        </div>
+                        <div class="group-name">{{ group }}</div>
                     </div>
-                    <div class="group-name">{{ group }}</div>
-                </div>
+                {% endif %}
             {% endfor %}
         </div>
         <div class="memory-usage">
