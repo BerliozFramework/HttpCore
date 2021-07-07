@@ -16,14 +16,11 @@ namespace Berlioz\Http\Core\Container;
 
 use Berlioz\Config\Config;
 use Berlioz\Core\Core;
-use Berlioz\Core\Debug\DebugHandler;
 use Berlioz\FlashBag\FlashBag;
 use Berlioz\Http\Core\App\AppProfile;
-use Berlioz\Http\Core\App\HttpAppAwareInterface;
 use Berlioz\Http\Core\Router\RouterBuilder;
 use Berlioz\Router\Router;
 use Berlioz\ServiceContainer\Container;
-use Berlioz\ServiceContainer\Inflector\Inflector;
 use Berlioz\ServiceContainer\Provider\AbstractServiceProvider;
 use Berlioz\ServiceContainer\Service\CacheStrategy;
 use Berlioz\ServiceContainer\Service\Service;
@@ -67,13 +64,5 @@ class ServiceProvider extends AbstractServiceProvider
                 cacheStrategy: new CacheStrategy($this->core->getCache())
             )
         );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function boot(Container $container): void
-    {
-        $container->addInflector(new Inflector(HttpAppAwareInterface::class, 'setApp', ['app' => '@app']));
     }
 }
