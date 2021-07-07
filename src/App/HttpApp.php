@@ -55,7 +55,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             new Inflector(
                 HttpAppAwareInterface::class,
                 'setApp',
-                ['app' => '@app']
+                ['app' => $this]
             )
         );
     }
