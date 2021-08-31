@@ -22,7 +22,7 @@
   "dependencies": {
     "bootstrap": "^4.5.3",
     "highlight.js": "^9.18.3",
-    "jquery": "^3.5.1"
+    "jquery": "^3.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
