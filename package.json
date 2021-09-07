@@ -20,7 +20,7 @@
   },
   "homepage": "https://getberlioz.com",
   "dependencies": {
-    "bootstrap": "^4.5.3",
+    "bootstrap": "^4.6.0",
     "highlight.js": "^9.18.3",
     "jquery": "^3.5.1"
   },
