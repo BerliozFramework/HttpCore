@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Berlioz\Http\Core\App;
 
-use Berlioz\Config\ConfigInterface;
 use Berlioz\Config\Exception\ConfigException;
 use Berlioz\Core\Asset\Assets;
 use Berlioz\FlashBag\FlashBag;
@@ -43,6 +42,17 @@ class AppProfile
     public function __debugInfo(): array
     {
         return [];
+    }
+
+    /**
+     * Get environment.
+     *
+     * @return string
+     * @throws ConfigException
+     */
+    public function getEnv(): string
+    {
+        return $this->app->getCore()->getEnv();
     }
 
     /**

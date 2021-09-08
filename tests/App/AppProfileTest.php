@@ -34,6 +34,13 @@ class AppProfileTest extends AbstractTestCase
         $this->assertEmpty($profile->__debugInfo());
     }
 
+    public function testGetEnv()
+    {
+        list($app, $profile) = $this->getAppAndProfile();
+
+        $this->assertSame($app->getCore()->getEnv(), $profile->getEnv());
+    }
+
     public function testGetConfig()
     {
         list($app, $profile) = $this->getAppAndProfile();
