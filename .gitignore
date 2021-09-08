@@ -3,6 +3,7 @@
 /tests_env/var/
 !**/.gitkeep
 /composer.lock
+/package-lock.json
 .phpunit.result.cache
 
 # Dev environment
