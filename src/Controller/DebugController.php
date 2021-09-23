@@ -128,7 +128,8 @@ class DebugController extends AbstractController
         requirements: [
             "type" => "js|css|fonts",
             "file" => "[\\w\\-]+\\.\\w{8}\\.\\w+"
-        ])]
+        ],
+        name: '_berlioz/console/dist')]
     public function distFiles(
         ServerRequest $request
     ): ResponseInterface {
