@@ -30,6 +30,16 @@ use Twig\Error\Error;
 class DefaultErrorHandler extends AbstractController implements ErrorHandlerInterface
 {
     /**
+     * Get template name.
+     *
+     * @return string
+     */
+    public function getTemplateName(): string
+    {
+        return '@Berlioz-HttpCore/Twig/Http/error.html.twig';
+    }
+
+    /**
      * @inheritDoc
      * @throws BerliozException
      * @throws Error
@@ -39,7 +49,7 @@ class DefaultErrorHandler extends AbstractController implements ErrorHandlerInte
         $httpException = $throwable instanceof HttpException ? $throwable : new InternalServerErrorHttpException();
 
         $str = $this->render(
-            '@Berlioz-HttpCore/Twig/Http/error.html.twig',
+            $this->getTemplateName(),
             [
                 'request' => $request,
                 'exception' => $throwable,
@@ -48,8 +58,8 @@ class DefaultErrorHandler extends AbstractController implements ErrorHandlerInte
         );
 
         return new Response(
-            body: $str,
-            statusCode: $httpException->getCode(),
+            body:         $str,
+            statusCode:   $httpException->getCode(),
             reasonPhrase: $httpException->getMessage()
         );
     }

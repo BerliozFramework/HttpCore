@@ -8,6 +8,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 
 ### Added
 
+- New method `DefaultErrorHandler::getTemplateName()` to facilitate extends
 - Add route name for berlioz console dist files
 
 ## [2.0.0] - 2021-09-09
