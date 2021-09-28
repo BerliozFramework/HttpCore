@@ -10,7 +10,7 @@
  * file that was distributed with this source code, to the root.
  */
 
-namespace Berlioz\Http\Core\Test\Container;
+namespace Berlioz\Http\Core\Tests\Container;
 
 use Berlioz\Core\Core;
 use Berlioz\Http\Core\Container\ServiceProvider;
