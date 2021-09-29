@@ -9,7 +9,7 @@
     },
     "http": {
       "errors": {
-        "default": "Berlioz\\Http\\Core\\Http\\Error\\DefaultErrorHandler"
+        "default": "Berlioz\\Http\\Core\\Http\\Handler\\Error\\DefaultErrorHandler"
       },
       "redirections": {},
       "middlewares": {

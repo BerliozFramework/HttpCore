@@ -15,6 +15,7 @@ namespace Berlioz\Http\Core\Tests\Http\Handler\Error;
 use Berlioz\Config\Adapter\ArrayAdapter;
 use Berlioz\Config\Adapter\JsonAdapter;
 use Berlioz\Core\Core;
+use Berlioz\Http\Core\TestProject\FakeDefaultDirectories;
 use Berlioz\Http\Message\ServerRequest;
 use Berlioz\Http\Core\App\HttpApp;
 use Berlioz\Http\Core\Container\ServiceProvider;
@@ -133,7 +134,7 @@ class ErrorHandlerTest extends TestCase
 
     public function testHandle_defaultDebugEnabled()
     {
-        $core = new Core(new TestDirectories(), cache: false);
+        $core = new Core(new FakeDefaultDirectories(), cache: false);
         $core->getDebug()->setEnabled(true);
         $app = $this->getApp($core);
         $handler = new ErrorHandler($app);

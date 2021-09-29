@@ -13,6 +13,10 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - Tests for `ServiceProvider`
 - Add route as service
 
+### Fixed
+
+- Default error http handler class in config
+
 ## [2.0.0] - 2021-09-09
 
 ### Added
