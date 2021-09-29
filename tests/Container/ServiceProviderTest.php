@@ -13,6 +13,7 @@
 namespace Berlioz\Http\Core\Tests\Container;
 
 use Berlioz\Core\Core;
+use Berlioz\Http\Core\Container\RouteProvider;
 use Berlioz\Http\Core\Container\ServiceProvider;
 use Berlioz\Http\Core\TestProject\FakeDefaultDirectories;
 use Berlioz\ServiceContainer\Provider\ProviderTestCase;
@@ -32,7 +33,8 @@ class ServiceProviderTest extends ProviderTestCase
     public function providers(): array
     {
         return [
-            [new ServiceProvider($this->getCore())],
+            [new ServiceProvider()],
+            [new RouteProvider($this->getCore())],
         ];
     }
 }

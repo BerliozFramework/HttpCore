@@ -19,6 +19,7 @@ use Berlioz\Config\ConfigInterface;
 use Berlioz\Config\Exception\ConfigException;
 use Berlioz\Core\Package\AbstractPackage;
 use Berlioz\Core\Package\PackageInterface;
+use Berlioz\Http\Core\Container\RouteProvider;
 use Berlioz\Http\Core\Container\ServiceProvider;
 use Berlioz\ServiceContainer\Container;
 
@@ -41,6 +42,7 @@ class BerliozPackage extends AbstractPackage implements PackageInterface
      */
     public static function register(Container $container): void
     {
-        $container->addProvider($container->call(ServiceProvider::class));
+        $container->addProvider($container->call(RouteProvider::class));
+        $container->addProvider(new ServiceProvider());
     }
 }

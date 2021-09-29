@@ -11,6 +11,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - New method `DefaultErrorHandler::getTemplateName()` to facilitate extends
 - Add route name for berlioz console dist files
 - Tests for `ServiceProvider`
+- Add route as service
 
 ## [2.0.0] - 2021-09-09
 
