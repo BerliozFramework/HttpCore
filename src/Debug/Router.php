@@ -107,18 +107,28 @@ class Router extends AbstractSection implements CoreAwareInterface, Section
         return '@Berlioz-HttpCore/Twig/Debug/router.html.twig';
     }
 
+    public function __serialize(): array
+    {
+        return [
+            'serverRequest' => $this->getServerRequest(),
+            'route' => $this->getRoute(),
+            'routeSet' => $this->getRouteSet(),
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->serverRequest = $unserialized['serverRequest'] ?? null;
+        $this->route = $unserialized['route'] ?? null;
+        $this->routeSet = $unserialized['routeSet'] ?? null;
+    }
+
     /**
      * @inheritdoc
      */
     public function serialize()
     {
-        return serialize(
-            [
-                'serverRequest' => $this->getServerRequest(),
-                'route' => $this->getRoute(),
-                'routeSet' => $this->getRouteSet(),
-            ]
-        );
+        return serialize($this->__serialize());
     }
 
     /**
@@ -126,11 +136,7 @@ class Router extends AbstractSection implements CoreAwareInterface, Section
      */
     public function unserialize($serialized)
     {
-        $unserialized = unserialize($serialized);
-
-        $this->serverRequest = $unserialized['serverRequest'] ?? null;
-        $this->route = $unserialized['route'] ?? null;
-        $this->routeSet = $unserialized['routeSet'] ?? null;
+        $this->__unserialize(unserialize($serialized));
     }
 
     ////////////////////
