@@ -118,9 +118,9 @@ class Router extends AbstractSection implements CoreAwareInterface, Section
 
     public function __unserialize(array $data): void
     {
-        $this->serverRequest = $unserialized['serverRequest'] ?? null;
-        $this->route = $unserialized['route'] ?? null;
-        $this->routeSet = $unserialized['routeSet'] ?? null;
+        $this->serverRequest = $data['serverRequest'] ?? null;
+        $this->route = $data['route'] ?? null;
+        $this->routeSet = $data['routeSet'] ?? null;
     }
 
     /**
