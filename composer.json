@@ -32,7 +32,7 @@
     "php": "^8.0",
     "ext-intl": "*",
     "ext-zlib": "*",
-    "berlioz/core": "^2.0",
+    "berlioz/core": "^2.1",
     "berlioz/flash-bag": "^1.0",
     "berlioz/http-message": "^2.0",
     "berlioz/router": "^2.0",
