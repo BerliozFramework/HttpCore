@@ -16,6 +16,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 ### Fixed
 
 - Default error http handler class in config
+- Middlewares not ordered
 
 ## [2.0.0] - 2021-09-09
 
