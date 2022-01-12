@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
-## [2.1.0] - In progress
+## [2.1.0] - 2022-01-13
 
 ### Added
 
@@ -12,6 +12,10 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - Add route name for berlioz console dist files
 - Tests for `ServiceProvider`
 - Add route as service
+
+### Changed
+
+- Bump package `berlioz/core` to 2.1
 
 ### Fixed
 
