@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [2.2.0] - 2022-03-23
+
+### Changed
+
+- Bump package `berlioz/core` to ^2.2
+- Bump package `berlioz/twig-package` to ^2.1
+- `Route` service is now nullable
+
 ## [2.1.0] - 2022-01-13
 
 ### Added
