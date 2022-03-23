@@ -70,6 +70,7 @@ class RouteProvider extends AbstractServiceProvider
                 factory: fn(HttpApp $app) => $app->getRoute()
             )
         );
+        $service->setNullable(true);
         $service->addProvide(RouteInterface::class);
     }
 }
