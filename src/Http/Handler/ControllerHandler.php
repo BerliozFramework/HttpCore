@@ -64,11 +64,6 @@ class ControllerHandler implements RequestHandlerInterface
             }
 
             return new Response(json_encode($result), headers: ['Content-Type' => 'application/json']);
-        } catch (Throwable $exception) {
-            // Add exception to debug
-            $this->app->getCore()->getDebug()->addException($exception);
-
-            throw $exception;
         } finally {
             $activity->end();
         }

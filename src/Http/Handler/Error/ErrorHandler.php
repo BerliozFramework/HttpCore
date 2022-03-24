@@ -37,6 +37,11 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     public function handle(ServerRequestInterface $request, ?Throwable $throwable = null): ResponseInterface
     {
+        // Add exception to debug
+        if (null !== $throwable) {
+            $this->app->getCore()->getDebug()->addException($throwable);
+        }
+
         try {
             $statusCode = Response::HTTP_STATUS_INTERNAL_SERVER_ERROR;
             if ($throwable instanceof HttpException) {
