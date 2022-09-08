@@ -112,7 +112,7 @@
     </div>
 
     <div class="tab-pane py-3 fade" id="server-request" role="tabpanel" aria-labelledby="request-tab">
-        {% if section.serverRequest is empty %}
+        {% if not section.serverRequest %}
         <div class="alert alert-secondary" role="alert">
             No server request!
         </div>

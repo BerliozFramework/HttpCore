@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [2.2.2] - 2022-09-08
+
+### Fixed
+
+- Fix display of server request in debug console
+
 ## [2.2.1] - 2022-03-24
 
 ### Fixed
