@@ -238,7 +238,9 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         // Print body packets 8K by 8K
         $stream = $response->getBody();
         if ($stream->isReadable()) {
-            $stream->seek(0);
+            if ($stream->isSeekable()) {
+                $stream->seek(0);
+            }
 
             while (!$stream->eof()) {
                 print $stream->read(8192);

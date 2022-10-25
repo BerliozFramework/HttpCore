@@ -128,4 +128,18 @@ class HttpAppTest extends TestCase
         $this->expectOutputString('');
         $app->print($response);
     }
+
+    public function testPrint_streamNotSeekable()
+    {
+        $app = new HttpApp(new Core(new FakeDefaultDirectories(), false));
+        $response = new Response(
+            popen('echo FOO BAR', 'r'),
+            200,
+            ['MyFirstHeader' => 'Value1', 'MySecondHeader' => ['Value2', 'Value3']],
+            'Hummmm OKKK!'
+        );
+
+        $this->expectOutputString("FOO BAR\n");
+        $app->print($response);
+    }
 }
