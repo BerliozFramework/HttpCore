@@ -14,12 +14,17 @@ namespace Berlioz\Http\Core\Tests\App;
 
 use Berlioz\Config\Adapter\ArrayAdapter;
 use Berlioz\Core\Core;
-use Berlioz\Http\Message\Response;
-use Berlioz\Http\Message\ServerRequest;
 use Berlioz\Http\Core\App\HttpApp;
 use Berlioz\Http\Core\App\Maintenance;
 use Berlioz\Http\Core\TestProject\Controller\ControllerOne;
 use Berlioz\Http\Core\TestProject\FakeDefaultDirectories;
+use Berlioz\Http\Core\TestProject\Http\Middleware\AbstractMiddleware;
+use Berlioz\Http\Core\TestProject\Http\Middleware\BarMiddleware;
+use Berlioz\Http\Core\TestProject\Http\Middleware\BazMiddleware;
+use Berlioz\Http\Core\TestProject\Http\Middleware\FooMiddleware;
+use Berlioz\Http\Core\TestProject\Http\Middleware\QuxMiddleware;
+use Berlioz\Http\Message\Response;
+use Berlioz\Http\Message\ServerRequest;
 use Berlioz\Router\Route;
 use Berlioz\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
@@ -63,7 +68,7 @@ class HttpAppTest extends TestCase
         $app = new HttpApp(new Core(new FakeDefaultDirectories(), false));
         $app->handle($request = new ServerRequest('GET', 'https://getberlioz.com'));
 
-        $this->assertSame($request,  $app->getRequest());
+        $this->assertSame($request, $app->getRequest());
     }
 
     public function testGetRoute()
@@ -98,6 +103,23 @@ class HttpAppTest extends TestCase
         $this->assertEquals('ControllerTwo::methodOne', (string)$response->getBody());
         $this->assertEmpty($serverRequest->getAttributes());
         $this->assertEquals(['attribute1' => 'foo'], $app->getRequest()->getAttributes());
+    }
+
+    public function testHandle_withMiddlewaresOrdered()
+    {
+        AbstractMiddleware::$calls = [];
+        $app = new HttpApp(new Core(new FakeDefaultDirectories(), false));
+        $app->handle(new ServerRequest('GET', 'https://getberlioz.com'));
+
+        $this->assertSame(
+            [
+                FooMiddleware::class,
+                BarMiddleware::class,
+                BazMiddleware::class,
+                QuxMiddleware::class,
+            ],
+            AbstractMiddleware::$calls,
+        );
     }
 
     public function testPrint()

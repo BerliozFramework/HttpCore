@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [2.2.4] - 2022-11-04
+
+### Fixed
+
+- Order of middlewares called
+
 ## [2.2.3] - 2022-10-25
 
 ### Fixed

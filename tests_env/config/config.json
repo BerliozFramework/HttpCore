@@ -1,11 +1,29 @@
 {
-  "controllers": [
-    "Berlioz\\Http\\Core\\TestProject\\Controller\\ControllerOne",
-    "Berlioz\\Http\\Core\\TestProject\\Controller\\ControllerTwo"
-  ],
-  "twig": {
-    "options": {
-      "cache": false
+    "berlioz": {
+        "http": {
+            "middlewares": {
+                "30": [
+                    "Berlioz\\Http\\Core\\TestProject\\Http\\Middleware\\BazMiddleware"
+                ],
+                "10": [
+                    "Berlioz\\Http\\Core\\TestProject\\Http\\Middleware\\FooMiddleware"
+                ],
+                "14": [
+                    "Berlioz\\Http\\Core\\TestProject\\Http\\Middleware\\BarMiddleware"
+                ],
+                "99": [
+                    "Berlioz\\Http\\Core\\TestProject\\Http\\Middleware\\QuxMiddleware"
+                ]
+            }
+        }
+    },
+    "controllers": [
+        "Berlioz\\Http\\Core\\TestProject\\Controller\\ControllerOne",
+        "Berlioz\\Http\\Core\\TestProject\\Controller\\ControllerTwo"
+    ],
+    "twig": {
+        "options": {
+            "cache": false
+        }
     }
-  }
 }

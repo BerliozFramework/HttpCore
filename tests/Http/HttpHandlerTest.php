@@ -12,9 +12,9 @@
 
 namespace Berlioz\Http\Core\Tests\Http;
 
+use Berlioz\Http\Core\Exception\Http\NotFoundHttpException;
 use Berlioz\Http\Message\Request;
 use Berlioz\Http\Message\ServerRequest;
-use Berlioz\Http\Core\Exception\Http\NotFoundHttpException;
 use Berlioz\ServiceContainer\Container;
 use PHPUnit\Framework\TestCase;
 use stdClass;
