@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [1.2.2] - 2022-11-04
+
+### Fixed
+
+- Seek on non seekable stream
+
 ## [1.2.1] - 2021-12-09
 
 ### Fixed
