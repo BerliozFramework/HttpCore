@@ -34,7 +34,7 @@
     "ext-zlib": "*",
     "berlioz/core": "^1.0",
     "berlioz/flash-bag": "^1.0",
-    "berlioz/http-message": "^1.0",
+    "berlioz/http-message": "^1.0 || ^2.0",
     "berlioz/router": "^1.0",
     "berlioz/twig-package": "^1.0",
     "psr/http-server-handler": "^1.0"
