@@ -10,6 +10,10 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 
 - `berlioz/http-message` v2.x compatibility
 
+### Fixed
+
+- Debug toolbar background on dark mode
+
 ## [1.2.2] - 2022-11-04
 
 ### Fixed
