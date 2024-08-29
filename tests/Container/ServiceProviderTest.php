@@ -20,21 +20,21 @@ use Berlioz\ServiceContainer\Provider\ProviderTestCase;
 
 class ServiceProviderTest extends ProviderTestCase
 {
-    private Core $core;
+    private static Core $core;
 
-    protected function getCore(): Core
+    protected static function getCore(): Core
     {
-        return $this->core ?? $this->core = new Core(new FakeDefaultDirectories(), false);
+        return self::$core ?? self::$core = new Core(new FakeDefaultDirectories(), false);
     }
 
     /**
      * @inheritDoc
      */
-    public function providers(): array
+    public static function providers(): array
     {
         return [
             [new ServiceProvider()],
-            [new RouteProvider($this->getCore())],
+            [new RouteProvider(self::getCore())],
         ];
     }
 }

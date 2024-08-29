@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% apply spaceless %}
-        <title>
-            {% if httpException.code < 500 %}
-                Oops, the page you're looking for doesn't exist
-            {% elseif httpException.code >= 500 %}
-                Looks like we're having some server issues
-            {% endif %}
-            - {{ httpException.code }} error
-        </title>
-    {% endapply %}
+    <title>
+        {%- if httpException.code < 500 -%}
+            Oops, the page you're looking for doesn't exist
+        {%- elseif httpException.code >= 500 -%}
+            Looks like we're having some server issues
+        {%- endif -%}
+        {{- ' ' }}- {{ httpException.code }} error</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" media="screen" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600"/>
     <style>

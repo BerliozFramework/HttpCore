@@ -179,16 +179,14 @@ Host: {{ section.serverRequest.uri.host }}
                     {% set routeFound = false %}
                     {%- for route in section.routes %}
                         <tr class="
-                                    {%- apply spaceless -%}
-                                      {% if section.route is not empty and routeFound is same as(false) %}
-                                        {% if section.route.name == route.name %}
-                                          {% set routeFound  = true %}
-                                          bg-success text-white
-                                        {% else %}
-                                          text-muted
-                                        {% endif %}
-                                      {% endif %}
-                                    {%- endapply -%}
+                                  {%- if section.route is not empty and routeFound is same as(false) -%}
+                                    {%- if section.route.name == route.name -%}
+                                      {%- set routeFound  = true -%}
+                                      bg-success text-white
+                                    {%- else -%}
+                                      text-muted
+                                    {%- endif -%}
+                                  {%- endif -%}
                                   ">
                             <th scope="row">{{ route.name|default('--') }}</th>
                             <td>
