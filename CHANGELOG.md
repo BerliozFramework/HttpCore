@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [2.2.7] - 2024-10-04
+
+### Fixed
+
+- `DebugController` now opens files read-only
+
 ## [2.2.6] - 2024-08-29
 
 ### Fixed

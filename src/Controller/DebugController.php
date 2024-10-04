@@ -143,7 +143,7 @@ class DebugController extends AbstractController
         }
 
         $extension = substr($fileName, strrpos($fileName, '.') + 1);
-        $stream = new Stream\FileStream($fileName);
+        $stream = new Stream\FileStream($fileName, 'r');
 
         // Headers
         $headers = [
@@ -183,7 +183,7 @@ class DebugController extends AbstractController
             throw new InternalServerErrorHttpException('Toolbar caller not found');
         }
 
-        $body = new Stream\FileStream($fileName);
+        $body = new Stream\FileStream($fileName, 'r');
 
         return $this->response(
             $body,
