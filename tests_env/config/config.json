@@ -15,6 +15,9 @@
                     "Berlioz\\Http\\Core\\TestProject\\Http\\Middleware\\QuxMiddleware"
                 ]
             }
+        },
+        "router": {
+            "X-Forwarded-Prefix": true
         }
     },
     "controllers": [

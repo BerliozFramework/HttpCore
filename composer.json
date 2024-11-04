@@ -35,7 +35,7 @@
     "berlioz/core": "^2.2",
     "berlioz/flash-bag": "^1.0",
     "berlioz/http-message": "^2.0",
-    "berlioz/router": "^2.0",
+    "berlioz/router": "^2.4",
     "berlioz/twig-package": "^2.1",
     "psr/http-server-handler": "^1.0",
     "psr/http-server-middleware": "^1.0"

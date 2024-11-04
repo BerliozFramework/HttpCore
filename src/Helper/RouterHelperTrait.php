@@ -53,13 +53,13 @@ trait RouterHelperTrait
     /**
      * Generate path.
      *
-     * @param string $name
+     * @param string|RouteInterface $name
      * @param array|RouteAttributes $parameters
      *
      * @return UriInterface
      * @throws RoutingException
      */
-    protected function path(string $name, array|RouteAttributes $parameters = []): UriInterface
+    protected function path(string|RouteInterface $name, array|RouteAttributes $parameters = []): UriInterface
     {
         return Uri::createFromString($this->getRouter()->generate($name, $parameters));
     }

@@ -44,7 +44,7 @@ class RouterBuilder
      */
     public function reset(): void
     {
-        $this->router = new Router();
+        $this->router = new Router(options: (array)$this->config->get('berlioz.router', []));
     }
 
     /**

@@ -19,6 +19,8 @@
         "99": {
           "redirection": "Berlioz\\Http\\Core\\Http\\Middleware\\RedirectionMiddleware"
         }
+      },
+      "router": {
       }
     },
     "maintenance": false
