@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [2.4.0] - 2024-11-04
+
+### Added
+
+- `RouterHelperTrait::finalize_path()` helper function to add prefix path
+
+### Changed
+
+- Bump library `berlioz/router` to ^2.5
+- JavaScript dependencies update
+- Console and toolbar are compatibles with a `X-Forwarded-Prefix` header
+
+### Fixed
+
+- Toolbar background
+- Default config
+
 ## [2.3.0] - 2024-11-04
 
 ### Changed

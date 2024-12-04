@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
 const AssetsPlugin = require('assets-webpack-plugin');
-const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const {WebpackManifestPlugin} = require('webpack-manifest-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -22,7 +21,10 @@ module.exports = (env, argv) => {
             path: path.resolve(__dirname, 'resources/Public/dist'),
             filename: 'js/[name].[contenthash:8].js',
             publicPath: '/_console/dist/',
-            pathinfo: false
+            pathinfo: false,
+            clean: {
+                keep: /entrypoints\.json/
+            },
         },
         module: {
             rules: [
@@ -41,7 +43,12 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(c|s[c|a])ss$/,
                     use: [
-                        MiniCssExtractPlugin.loader,
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                            options: {
+                                publicPath: '../',
+                            },
+                        },
                         {
                             loader: "css-loader",
                             options: {sourceMap: devMode, importLoaders: 1}
@@ -52,10 +59,8 @@ module.exports = (env, argv) => {
                                 sourceMap: devMode,
                                 postcssOptions: {
                                     plugins: [
-                                        [
-                                            'autoprefixer',
-                                            {}
-                                        ]
+                                        'postcss-preset-env',
+                                        'autoprefixer',
                                     ]
                                 }
                             }
@@ -73,14 +78,11 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(ttf|eot|otf|woff2?|svg)(\?v=[0-9.]*)?$/,
                     include: /font(s)?/,
-                    use: {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[hash:8].[ext]',
-                            outputPath: 'fonts/'
-                        }
+                    type: 'asset/resource',
+                    generator: {
+                        filename: 'fonts/[name].[hash:8][ext][query]'
                     }
-                },
+                }
             ]
         },
         optimization: {
@@ -116,9 +118,6 @@ module.exports = (env, argv) => {
                 useCompilerPath: true,
             }),
             new WebpackManifestPlugin({}),
-            new CleanWebpackPlugin({
-                cleanStaleWebpackAssets: false
-            }),
             new WebpackNotifierPlugin({alwaysNotify: true}),
         ]
     };

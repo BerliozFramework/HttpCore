@@ -10,7 +10,8 @@
  */
 
 class Console {
-    constructor(report) {
+    constructor(report, basePath) {
+        this._basePath = (basePath || '').replace(/\/$/, '');
         this._iframe = null;
         this._reports = [report];
         this._windows = [];
@@ -22,7 +23,7 @@ class Console {
     _init() {
         this._iframe = document.createElement('iframe');
         this._iframe.id = 'berlioz-console';
-        this._iframe.src = '/_console/' + this._reports[0];
+        this._iframe.src = this._basePath + '/_console/' + this._reports[0];
         this.refresh();
         document.body.appendChild(this._iframe);
         this._windows.push(this._iframe.contentWindow);
@@ -81,7 +82,7 @@ class Console {
     }
 
     newWindow() {
-        let consoleLocation = '/_console/' + this._reports[0];
+        let consoleLocation = this._basePath + '/_console/' + this._reports[0];
         if (this._iframe) {
             consoleLocation = this._iframe.contentDocument.location;
         }

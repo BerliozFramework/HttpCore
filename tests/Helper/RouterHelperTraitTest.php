@@ -31,6 +31,7 @@ class RouterHelperTraitTest extends AbstractTestCase
                 getRouter as public;
                 getRoute as public;
                 path as public;
+                finalize_path as public;
             }
         };
         $helper->setApp(new HttpApp(new Core(new FakeDefaultDirectories(), false)));
@@ -91,5 +92,30 @@ class RouterHelperTraitTest extends AbstractTestCase
         $this->expectException(RoutingException::class);
         $helper = $this->getHelper();
         $helper->path('c2m1');
+    }
+
+    public function testFinalizePath_withoutPrefix()
+    {
+        $helper = $this->getHelper();
+
+        $this->assertEquals('foo', (string)$helper->finalize_path('foo'));
+    }
+
+    public function testFinalizePath_withPrefix()
+    {
+        $_SERVER['HTTP_X_FORWARDED_PREFIX'] = '/super-prefix';
+
+        $helper = $this->getHelper();
+
+        $this->assertEquals('/super-prefix/foo', (string)$helper->finalize_path('/foo'));
+    }
+
+    public function testFinalizePath_withPrefixAndEmptyPath()
+    {
+        $_SERVER['HTTP_X_FORWARDED_PREFIX'] = '/super-prefix';
+
+        $helper = $this->getHelper();
+
+        $this->assertEquals('/super-prefix/', (string)$helper->finalize_path(''));
     }
 }

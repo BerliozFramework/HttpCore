@@ -1,4 +1,4 @@
 {% if app.isDebugEnabled -%}
-    {{- '' }}<script>var berlioz_debug_report = '{{ app.debugUniqid }}';</script>
+    {{- '' }}<script>var berlioz_debug_report = '{{ app.debugUniqid }}';var berlioz_base_url = '{{ finalize_path('') }}';</script>
     {{- '' }}<script async src="{{ path('_berlioz/console/toolbar-dist') }}"></script>
 {%- endif %}

@@ -12,7 +12,8 @@
 const TOOLBAR_COOKIE = 'berlioz_toolbar_direction';
 
 class Toolbar {
-    constructor() {
+    constructor(basePath) {
+        this._basePath = (basePath || '').replace(/\/$/, '');
         this._iframe = null;
         this._direction = null;
     }
@@ -24,7 +25,7 @@ class Toolbar {
 
         this._iframe = document.createElement('iframe');
         this._iframe.id = 'berlioz-toolbar';
-        this._iframe.src = '/_console/' + window.berlioz_debug_report + '/toolbar';
+        this._iframe.src = this._basePath + '/_console/' + window.berlioz_debug_report + '/toolbar';
         this.refresh();
         document.body.appendChild(this._iframe);
     }

@@ -18,8 +18,8 @@ import Toolbar from './js/Toolbar';
 
 let berliozConsole, berliozToolbar;
 window.berlioz = {
-    console: berliozConsole = new Console(window.berlioz_debug_report),
-    toolbar: berliozToolbar = new Toolbar,
+    console: berliozConsole = new Console(window.berlioz_debug_report, window.berlioz_base_url),
+    toolbar: berliozToolbar = new Toolbar(window.berlioz_base_url),
 }
 
 berliozToolbar.open();

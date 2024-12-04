@@ -63,4 +63,16 @@ trait RouterHelperTrait
     {
         return Uri::createFromString($this->getRouter()->generate($name, $parameters));
     }
+
+    /**
+     * Finalize path.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    protected function finalize_path(string $path): string
+    {
+        return $this->getRouter()->finalizePath($path);
+    }
 }

@@ -20,9 +20,7 @@
 @import "~bootstrap/scss/utilities";
 
 :root {
-  @media (prefers-color-scheme: dark) {
-    --bs-primary: #{$body-bg};
-  }
+  --bs-primary: #{$body-bg};
 }
 
 html, body {
