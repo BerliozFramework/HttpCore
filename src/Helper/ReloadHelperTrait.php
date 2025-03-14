@@ -36,6 +36,7 @@ trait ReloadHelperTrait
      * @param ResponseInterface|null $response Response
      *
      * @return ResponseInterface
+     * @deprecated Uses `ResponseHelperTrait::redirect()` to do redirection.
      */
     protected function reload(
         array $queryParams = [],

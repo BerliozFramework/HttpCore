@@ -30,7 +30,7 @@ class HttpException extends BerliozException
      * @param null|string $message
      * @param Throwable|null $previous
      */
-    public function __construct(int $code = 500, ?string $message = null, Throwable $previous = null)
+    public function __construct(int $code = 500, ?string $message = null, ?Throwable $previous = null)
     {
         // Default message
         if (null === $message) {

@@ -11,15 +11,15 @@ jobs:
         continue-on-error: ${{ !matrix.stable }}
         strategy:
             matrix:
-                php-versions: ['8.0', '8.1', '8.2']
+                php-versions: ['8.0', '8.1', '8.2', '8.3', '8.4']
                 stable: [true]
                 coverage: [true]
                 composer-flags: ['']
-                include:
-                    - php-versions: '8.3'
-                      stable: false
-                      coverage: false
-                      composer-flags: '--ignore-platform-reqs'
+#                include:
+#                    - php-versions: '8.3'
+#                      stable: false
+#                      coverage: false
+#                      composer-flags: '--ignore-platform-reqs'
 
         steps:
             - uses: actions/checkout@v2

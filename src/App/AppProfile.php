@@ -64,7 +64,7 @@ class AppProfile
      * @return mixed
      * @throws ConfigException
      */
-    public function getConfig(string $key = null, mixed $default = null): mixed
+    public function getConfig(?string $key = null, mixed $default = null): mixed
     {
         if (null !== $key) {
             return $this->app->getConfigKey($key, $default);
