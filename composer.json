@@ -1,0 +1,55 @@
+{
+  "name": "berlioz/http-core",
+  "description": "Berlioz Framework HTTP Core",
+  "type": "berlioz-package",
+  "license": "MIT",
+  "homepage": "https://getberlioz.com",
+  "support": {
+    "issues": "https://github.com/BerliozFramework/Berlioz/issues",
+    "source": "https://github.com/BerliozFramework/Berlioz"
+  },
+  "authors": [
+    {
+      "name": "Ronan Giron",
+      "email": "ronan@getberlioz.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Berlioz\\Http\\Core\\": ""
+    }
+  },
+  "require": {
+    "php": "^8.2",
+    "ext-intl": "*",
+    "ext-zlib": "*",
+    "berlioz/core": "self.version",
+    "berlioz/flash-bag": "self.version",
+    "berlioz/http-message": "self.version",
+    "berlioz/router": "self.version",
+    "berlioz/twig-package": "self.version",
+    "psr/http-server-handler": "^1.0",
+    "psr/http-server-middleware": "^1.0"
+  },
+  "provide": {
+    "psr/container-implementation": "^1.0",
+    "psr/http-message-implementation": "^1.0",
+    "psr/http-server-handler-implementation": "^1.0",
+    "psr/http-server-middleware-implementation": "^1.0",
+    "psr/simple-cache-implementation": "^1.0"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "3.x-dev"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "php-http/discovery": false
+    },
+    "berlioz": {
+      "package": "Berlioz\\Http\\Core\\BerliozPackage"
+    }
+  }
+}
