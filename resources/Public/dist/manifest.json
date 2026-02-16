@@ -1,0 +1,9 @@
+{
+  "debug.css": "/_console/dist/css/debug.a6c50277.css",
+  "debug.js": "/_console/dist/js/debug.492f33b5.js",
+  "debug-toolbar.css": "/_console/dist/css/debug-toolbar.a6c50277.css",
+  "debug-toolbar.js": "/_console/dist/js/debug-toolbar.9dd4536f.js",
+  "debug-caller.js": "/_console/dist/js/debug-caller.1ce22e83.js",
+  "fonts/bootstrap-icons.woff?": "/_console/dist/fonts/bootstrap-icons.39795c0b.woff?dd67030699838ea613ee6dbda90effa6",
+  "fonts/bootstrap-icons.woff2?": "/_console/dist/fonts/bootstrap-icons.b7bcc075.woff2?dd67030699838ea613ee6dbda90effa6"
+}

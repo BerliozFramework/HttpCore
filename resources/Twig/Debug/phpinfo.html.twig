@@ -1,0 +1,11 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1>PHP Info</h1>
+    </div>
+
+    <iframe type="text/html" src="{{ path('_berlioz/phpinfo') }}" class="border-0 w-100 iframe-h-auto">
+        Please, wait a moment.
+    </iframe>
+{% endblock %}

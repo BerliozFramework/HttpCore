@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Berlioz Debug Toolbar</title>
+
+    {{ entrypoints('debug-toolbar', 'css', {}, entrypoints) }}
+</head>
+
+<body class="{% if rtl %}rtl {% endif %}{% if snapshot.phpErrors.errors|length > 0 or snapshot.exceptions|length > 0 %}danger{% endif %}">
+<div id="toolbar">
+    <div id="toolbar-content" title="Open Berlioz Debug Console">
+        <div class="col col-auto">
+            {% if snapshot.phpErrors.errors|length == 0 and snapshot.exceptions is empty %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                     class="bi bi-check2-circle" viewBox="0 0 16 16">
+                    <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+                    <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+                </svg>
+            {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                     class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                </svg>
+            {% endif %}
+        </div>
+        <div class="col">{{ (snapshot.timeLine.duration * 1000)|round(3) }} ms</div>
+    </div>
+    <svg id="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+        <title>Open Berlioz Debug Console</title>
+        <path d="M250,0C111.93,0,0,111.93,0,250A250,250,0,0,0,141.28,475.18c14.54-25.75,36-64.21,42.81-78.36a88.54,88.54,0,0,0,8.23-40.48c-0.43-18.8-7.11-27.61-40.67-82.78-21.42-35.21-16.53-29.67-21.42-35.21-4.49-5.09-4.85-3.09-4.16,22.49,0.7,25.92-5,63.54-12.73,81.75-1.12,2.63-7.37,17.72-13.6,16.87s-6.23-21.73-18.49-36.82c-6.83-8.4-17.34-14.69-29.45-26.9A19.49,19.49,0,0,1,46,285.63a17.89,17.89,0,0,1,.6-8.6c24.29-61,42.24-87.92,54.58-101,7.93-8.39,18.39-16.17,25.52-32.79,4.77-11.13,5.35-19.91,13.74-26.59,6.35-5.05,11.75-4.58,22.06-6.56,30.18-5.81,34.51-19.62,71.09-28,9.26-2.12,12.24-.6,16.39-0.6s7.13-1.52,16.39.6c36.58,8.36,40.91,22.18,71.09,28,10.31,2,15.71,1.51,22.06,6.56,8.39,6.67,9,15.46,13.74,26.59,7.13,16.62,17.58,24.4,25.52,32.79,12.35,13.05,30.29,40,54.58,101a17.89,17.89,0,0,1,.6,8.6,19.49,19.49,0,0,1-5.77,10.13c-12.11,12.22-22.62,18.5-29.45,26.9-12.27,15.09-12.18,36-18.49,36.82s-12.48-14.24-13.6-16.87c-7.76-18.21-13.43-55.84-12.73-81.75,0.69-25.58.33-27.58-4.16-22.49-4.89,5.54,0,0-21.42,35.21-33.56,55.17-40.25,64-40.67,82.78a88.54,88.54,0,0,0,8.23,40.48c6.73,14.07,28.7,52.15,43.74,77.9A250,250,0,0,0,500,250C500,111.93,388.07,0,250,0Z"></path>
+    </svg>
+    <div id="logo-shadow"></div>
+
+    <div id="buttons">
+        <button data-toggle="close" class="btn btn-light" title="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x"
+                 viewBox="0 0 16 16">
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+        </button>
+        <button data-toggle="flip" class="btn btn-light" title="Flip">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                 class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                      d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+{{ entrypoints('debug-toolbar', 'js', {}, entrypoints) }}
+</body>
+</html>

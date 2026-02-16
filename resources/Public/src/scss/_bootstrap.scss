@@ -1,0 +1,65 @@
+/*!
+ * This file is part of Berlioz framework.
+ *
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @copyright 2021 Ronan GIRON
+ * @author    Ronan GIRON <https://github.com/ElGigi>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code, to the root.
+ */
+
+// Variables
+
+$primary: #ee7600;
+$white: #fff;
+$dark: #212529;
+$secondary: $white;
+$body-color: $white;
+$body-bg: #343a40;
+$text-muted: rgba($white, .5);
+$font-family-sans-serif: 'Open Sans', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
+
+$form-select-bg: transparent;
+$form-select-color: rgba($white, .75);
+$form-select-indicator-color: rgba($white, .75);
+
+$breadcrumb-padding-x: 2rem;
+$breadcrumb-padding-y: .25rem;
+$breadcrumb-bg: #505962;
+$breadcrumb-divider-color: #9a9d9d;
+$breadcrumb-active-color: #9a9d9d;
+
+$box-shadow: 0 0 0.25rem #000;
+
+$table-striped-bg: #495057;
+
+$modal-content-bg: $body-bg;
+$btn-close-color: $white;
+
+$nav-tabs-link-active-color: $white;
+
+$container-max-widths: (
+        sm: 620px,
+        md: 820px,
+        lg: 1060px,
+        xl: 1300px
+);
+
+$card-bg: $dark;
+$card-color: $body-color;
+$card-border-radius: .5rem;
+
+// Internal variables
+
+$debug-menu-time: 1s !default;
+
+// Theme mixins
+
+@mixin headings($from: 1, $to: 6) {
+  @for $i from $from through $to {
+    h#{$i} {
+      @content
+    }
+  }
+}

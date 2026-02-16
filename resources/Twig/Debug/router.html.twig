@@ -1,0 +1,208 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block menu %}
+    <span class="nav-icon"><i class="bi bi-share-fill"></i></span>
+    <span class="nav-text">{{ section.sectionName }}</span>
+{% endblock %}
+
+{% block widget %}
+    <dl class="mb-0">
+        <dt>Server request</dt>
+        <dd>
+            {% if section.serverRequest %}
+                {{ section.serverRequest.uri }}
+            {% else %}
+                <em class="text-muted">No server request!</em>
+            {% endif %}
+        </dd>
+        <dt>Route found</dt>
+        <dd class="mb-0">
+            {% if section.route %}
+                {{ section.route.name|default('--') }}
+            {% else %}
+                <em class="text-muted">No route found!</em>
+            {% endif %}
+        </dd>
+    </dl>
+{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1>Router</h1>
+</div>
+
+<p>
+    It's a snapshot of server request and route at the moment of request.
+</p>
+
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="route-tab" data-bs-toggle="tab" href="#route" role="tab"
+           aria-controls="route" aria-selected="true">
+            Route
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="request-tab" data-bs-toggle="tab" href="#server-request" role="tab"
+           aria-controls="server-request" aria-selected="false">
+            Server request
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="routeset-tab" data-bs-toggle="tab" href="#routeset" role="tab"
+           aria-controls="routeset" aria-selected="false">
+            Route set
+        </a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane py-3 fade show active" id="route" role="tabpanel" aria-labelledby="route-tab">
+        {% if section.route is null %}
+            <div class="alert alert-secondary" role="alert">
+                No route found!
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-striped table-sm border-top">
+                    <tbody>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Name</th>
+                        <td>{{ section.route.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Allowed methods</th>
+                        <td>
+                            {% if section.route.methods is empty %}
+                                <em>ALL</em>
+                            {% else %}
+                                {{ section.route.methods|join(', ') }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Path</th>
+                        <td>{{ section.route.path }}</td>
+                    </tr>
+                    <tr class="{% if section.route.context is empty %}bg-danger{% endif %}">
+                        <th scope="row" class="text-nowrap">Context</th>
+                        <td>
+                            {% if section.route.context is empty %}
+                                No context!
+                            {% else %}
+                                <pre class="m-0"><code
+                                            class="json">{{ section.route.context|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></pre>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr class="{% if section.route.context is empty %}bg-danger{% endif %}">
+                        <th scope="row" class="text-nowrap">Options</th>
+                        <td>
+                            {% if section.route.options is empty %}
+                                <em>No option</em>
+                            {% else %}
+                                <pre class="m-0"><code
+                                            class="json">{{ section.route.options|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></pre>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane py-3 fade" id="server-request" role="tabpanel" aria-labelledby="request-tab">
+        {% if not section.serverRequest %}
+        <div class="alert alert-secondary" role="alert">
+            No server request!
+        </div>
+        {% else %}
+        <h2>Request</h2>
+        <pre><code class="http">
+{{- section.serverRequest.method }} {{ section.serverRequest.uri.path ~ (section.serverRequest.uri.query ? '?' ~ section.serverRequest.uri.query : '') }} HTTP/{{ section.serverRequest.protocolVersion }}
+Host: {{ section.serverRequest.uri.host }}
+{%~ for name, requestHeader in section.serverRequest.headers %}
+    {%- if name != 'Host' -%}
+        {%- for value in requestHeader %}
+            {{~ name }}: {{ value }}
+        {%~ endfor -%}
+    {%- endif -%}
+                {%- endfor -%}</code></pre>
+
+        <h2>Attributes</h2>
+        {% if section.serverRequest.attributes is empty %}
+            <p><em>No attribute.</em></p>
+        {% else %}
+            <pre><code class="json">
+                        {{- section.serverRequest.attributes|json_encode(constant('JSON_PRETTY_PRINT')) -}}
+                    </code></pre>
+        {% endif %}
+
+        <h2>Server parameters</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for name, value in section.serverRequest.serverParams %}
+                    <tr>
+                        <th scope="row">{{ name }}</th>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane py-3 fade" id="routeset" role="tabpanel" aria-labelledby="routeset-tab">
+        {% if section.routes is empty %}
+            <div class="alert alert-secondary" role="alert">
+                No route defined!
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-striped table-sm align-middle">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Method</th>
+                        <th>Path</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set routeFound = false %}
+                    {%- for route in section.routes %}
+                        <tr class="
+                                  {%- if section.route is not empty and routeFound is same as(false) -%}
+                                    {%- if section.route.name == route.name -%}
+                                      {%- set routeFound  = true -%}
+                                      bg-success text-white
+                                    {%- else -%}
+                                      text-muted
+                                    {%- endif -%}
+                                  {%- endif -%}
+                                  ">
+                            <th scope="row">{{ route.name|default('--') }}</th>
+                            <td>
+                                {% if route.methods is empty or route.methods == ['GET', 'HEAD', 'POST', 'OPTIONS', 'CONNECT', 'TRACE', 'PUT', 'DELETE'] %}
+                                    <em>ALL</em>
+                                {% else %}
+                                    {{ route.methods|join(', ') }}
+                                {% endif %}
+                            </td>
+                            <td>{{ route.path }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

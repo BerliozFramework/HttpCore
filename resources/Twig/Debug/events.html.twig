@@ -1,0 +1,41 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1>
+            Events
+            {% if snapshot.events|length > 0 %}
+                <span class="badge bg-primary">{{ snapshot.events|length }}</span>
+            {% endif %}
+        </h1>
+    </div>
+
+    <p>
+        It's a snapshot of events dispatched at the moment of request.
+    </p>
+
+    {% if snapshot.events|length == 0 %}
+        <div class="alert alert-success" role="alert">
+            No event dispatched
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped table-sm align-middle">
+                <thead>
+                <tr>
+                    <th>Event name</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for event in snapshot.events.events %}
+                    <tr>
+                        <th>{{ event.name }}</th>
+                        <td>{{ event.time|date('c') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

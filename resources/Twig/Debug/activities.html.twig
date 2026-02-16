@@ -1,0 +1,127 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1>
+            Activities
+            {% if snapshot.timeLine|length > 0 %}
+                <span class="badge bg-primary">{{ snapshot.timeLine|length }}</span>
+            {% endif %}
+        </h1>
+    </div>
+    <p>
+        It's a snapshot of activities at the moment of request.
+    </p>
+
+    <h2>Time line</h2>
+    {% set timeLineFirstTime = snapshot.timeLine.firstTime %}
+    {% set timeLineDuration = snapshot.timeLine.duration %}
+    {% set timeLineMemoryPeakUsage = snapshot.timeLine.memoryPeakUsage %}
+    <div class="timeline mt-4 mb-5" data-duration="{{ timeLineDuration }}">
+        <div class="scales">
+            <div class="scale scale-0">0ms</div>
+            <div class="scale scale-12-5">{{ ((timeLineDuration * 0.125) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-25">{{ ((timeLineDuration * 0.25) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-37-5">{{ ((timeLineDuration * 0.375) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-50">{{ ((timeLineDuration * 0.50) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-62-5">{{ ((timeLineDuration * 0.625) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-75">{{ ((timeLineDuration * 0.75) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-87-5">{{ ((timeLineDuration * 0.875) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-100">{{ (timeLineDuration * 1000)|round(3) }} ms</div>
+
+            <div class="scale cursor" style="display: none;"><span class="cursor-value">0</span>ms</div>
+        </div>
+        <div class="activities">
+            {% for group in snapshot.timeLine.groups %}
+                {% set groupFirstTime = snapshot.timeLine.firstTime(group) %}
+                {% set groupDuration = snapshot.timeLine.duration(group) %}
+                {% if groupDuration > 0 %}
+                    <div class="group-container"
+                         style="width: {{ (groupDuration * 100 / timeLineDuration)|round(2, 'ceil') }}%; margin-left: {{ ((groupFirstTime - timeLineFirstTime) * 100 / timeLineDuration)|round(2, 'floor') }}%;">
+                        <div class="group">
+                            {% for activity in snapshot.timeLine.activities(group) %}
+                                <a href="#activity-{{ activity.uniqId }}"
+                                   data-bs-toggle="tooltip"
+                                   data-placement="bottom"
+                                   title="{{ activity.description }} (during {{ (activity.duration * 1000)|round(3) }} ms after {{ ((activity.startMicroTime - timeLineFirstTime) * 1000)|round(3) }} ms)"
+                                   class="activity"
+                                   style="width: {{ (activity.duration * 100 / groupDuration)|round(2, 'ceil') }}%; margin-left: {{ ((activity.startMicroTime - groupFirstTime) * 100 / groupDuration)|round(2, 'floor') }}%; opacity: {{ (100 - random(50)) / 100 }};"></a>
+                            {% endfor %}
+                        </div>
+                        <div class="group-name">{{ group }}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="memory-usage">
+            <div class="memory-title">Memory usage (peak: {{ timeLineMemoryPeakUsage|human_file_size }})</div>
+            <div class="memory-container">
+                {% for memoryUsage in snapshot.timeLine.memoryUsages %}
+                    <span data-bs-toggle="tooltip"
+                          data-placement="bottom"
+                          title="Usage: {{ memoryUsage.memory|human_file_size }} ; Peak: {{ memoryUsage.memory_peak|human_file_size }}"
+                          class="peak"
+                          style="width: {{ ((memoryUsage.to - memoryUsage.from) * 100 / timeLineDuration)|round(2, 'ceil') }}%;
+                                  margin-left: {{ (memoryUsage.from * 100 / timeLineDuration)|round(2, 'floor') }}%;
+                                  height: {{ memoryUsage.memory_peak * 100 / timeLineMemoryPeakUsage }}%;
+                                  z-index: {{ loop.index }};">
+                        <span class="memory"
+                              style="height: {{ memoryUsage.memory * 100 / memoryUsage.memory_peak }}%;"></span>
+                    </span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <h2>List of activities</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm align-middle">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Group</th>
+                <th>Duration</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for activity in snapshot.timeLine.activities %}
+                <tr id="activity-{{ activity.uniqId }}">
+                    <th>{{ ((activity.startMicroTime - snapshot.timeLine.firstTime) * 1000)|round(3) }} ms</th>
+                    <td>{{ activity.name|truncate(64) }}</td>
+                    <td>{{ activity.group|default('--') }}</td>
+                    <td>{{ (activity.duration * 1000)|round(3) }} ms</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-secondary" data-toggle="detail" data-type="activity"
+                                data-target="{{ path('_berlioz/console/activity', {"id": snapshot.uniqid, "activity": activity.uniqid}) }}">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center"><em>No activities</em></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="activityDetail" tabindex="-1" role="dialog" aria-labelledby="activityDetailTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="activityDetailTitle">Activity detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

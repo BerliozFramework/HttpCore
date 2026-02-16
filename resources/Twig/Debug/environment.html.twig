@@ -1,0 +1,114 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1>Environment</h1>
+    </div>
+
+    <p>
+        It's a snapshot of environment at the moment of request.
+    </p>
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <h2>System</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm border-top">
+                    <tbody>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Uname</th>
+                        <td>{{ snapshot.systemInfo.uname }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Current user</th>
+                        <td>{{ snapshot.systemInfo.current_user|default('--') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">User ID</th>
+                        <td>{{ snapshot.systemInfo.uid|default('--') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Group ID</th>
+                        <td>{{ snapshot.systemInfo.gid|default('--') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Process ID</th>
+                        <td>{{ snapshot.systemInfo.pid|default('--') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Inode</th>
+                        <td>{{ snapshot.systemInfo.inode|default('--') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">Temporary directory</th>
+                        <td>{{ snapshot.systemInfo.tmp_dir }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <h2>PHP</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm border-top">
+                    <tbody>
+                    <tr>
+                        <th scope="row" class="text-nowrap">PHP version</th>
+                        <td>{{ snapshot.phpInfo.version }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">PHP memory limit</th>
+                        <td>{{ snapshot.phpInfo.memoryLimit|human_file_size }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">PHP extensions</th>
+                        <td>{{ snapshot.phpInfo.extensions|join(', ') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-nowrap">PHP info</th>
+                        <td><a href="{{ path('_berlioz/console/phpinfo', {"id": snapshot.uniqid}) }}">phpinfo()</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <h2>
+                Composer
+                <span class="badge bg-primary">{{ snapshot.projectInfo.composer.packages|length }}</span>
+            </h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm align-middle">
+                    <thead>
+                    <tr>
+                        <th>Package name</th>
+                        <th>Version</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for package in snapshot.projectInfo.composer.packages %}
+                        <tr>
+                            <td>
+                                {{ package.name }}
+                                {% if package.description %}
+                                    <i class="bi bi-info-circle-fill ms-1"
+                                       data-bs-toggle="tooltip"
+                                       title="{{ package.description }}"></i>
+                                {% endif %}
+                            </td>
+                            <td>{{ package.version }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td><em>No package found</em></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

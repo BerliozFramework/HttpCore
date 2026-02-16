@@ -1,0 +1,80 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1>Cache</h1>
+    </div>
+
+    <p>
+        It's a live of cache status.
+    </p>
+
+    {% if cleared %}
+        <p class="alert alert-success">
+            Cache "{{ cleared }}" cleared.
+        </p>
+    {% endif %}
+
+    <div class="row">
+        <div class="col">
+            <div class="card bg-dark text-white my-3">
+                <div class="card-body text-center">
+                    <p class="card-text mb-0">Berlioz internal cache</p>
+                    {% if not cacheManager.class %}
+                        <p class="card-value mb-0">disabled</p>
+                    {% else %}
+                        <p class="card-value">{{ cacheManager.class }}</p>
+                        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'internal'}) }}"
+                           class="btn btn-primary">
+                            Clear cache
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-dark text-white my-3">
+                <div class="card-body text-center">
+                    <p class="card-text mb-0">OPcache</p>
+                    {% if opcache is same as(false) or not opcache.opcache_enabled %}
+                        <p class="card-value mb-0">disabled</p>
+                    {% else %}
+                        <p class="card-value">enabled</p>
+                        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'opcache'}) }}"
+                           class="btn btn-primary">
+                            Clear cache
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if cacheDirectories %}
+        <div class="row">
+            <div class="col col-md-6">
+                <div class="card bg-dark text-white my-3">
+                    <div class="card-body text-center">
+                        <p class="card-value">Cache directories</p>
+
+                        <table class="table table-striped text-start align-middle">
+                            <tbody>
+                            {% for cacheDirectory in cacheDirectories %}
+                                <tr>
+                                    <th>{{ cacheDirectory }}</th>
+                                    <td class="text-end">
+                                        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'directory', directory: cacheDirectory}) }}"
+                                           class="btn btn-sm btn-primary">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

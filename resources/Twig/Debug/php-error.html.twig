@@ -1,0 +1,57 @@
+<h4>Detail</h4>
+<div class="table-responsive">
+    <table class="table table-striped table-sm border-top">
+        <tbody>
+        <tr>
+            <th scope="row" class="text-nowrap">Type</th>
+            <td>
+                {% if error.errno == constant('E_ERROR') %}
+                    E_ERROR
+                {% elseif error.errno == constant('E_WARNING') %}
+                    E_WARNING
+                {% elseif error.errno == constant('E_PARSE') %}
+                    E_PARSE
+                {% elseif error.errno == constant('E_NOTICE') %}
+                    E_NOTICE
+                {% elseif error.errno == constant('E_CORE_ERROR') %}
+                    E_CORE_ERROR
+                {% elseif error.errno == constant('E_CORE_WARNING') %}
+                    E_CORE_WARNING
+                {% elseif error.errno == constant('E_COMPILE_ERROR') %}
+                    E_COMPILE_ERROR
+                {% elseif error.errno == constant('E_COMPILE_WARNING') %}
+                    E_COMPILE_WARNING
+                {% elseif error.errno == constant('E_USER_ERROR') %}
+                    E_USER_ERROR
+                {% elseif error.errno == constant('E_USER_WARNING') %}
+                    E_USER_WARNING
+                {% elseif error.errno == constant('E_USER_NOTICE') %}
+                    E_USER_NOTICE
+                {% elseif error.errno == constant('E_STRICT') %}
+                    E_STRICT
+                {% elseif error.errno == constant('E_RECOVERABLE_ERROR') %}
+                    E_RECOVERABLE_ERROR
+                {% elseif error.errno == constant('E_DEPRECATED') %}
+                    E_DEPRECATED
+                {% elseif error.errno == constant('E_USER_DEPRECATED') %}
+                    E_USER_DEPRECATED
+                {% else %}
+                    E_UNKNOWN
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">Message</th>
+            <td>{{ error.message|default('--') }}</td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">File</th>
+            <td>{{ error.file|default('--') }}</td>
+        </tr>
+        <tr>
+            <th scope="row" class="text-nowrap">Line</th>
+            <td>{{ error.line|default('--') }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

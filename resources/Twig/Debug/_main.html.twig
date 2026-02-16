@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Berlioz Debug Console">
+    <meta name="author" content="Berlioz Framework">
+    <meta name="color-scheme" content="dark">
+
+    <title>Berlioz Debug Console / Snapshot #{{ snapshot.uniqid }}</title>
+
+    {{ entrypoints('debug', 'css', {}, entrypoints) }}
+</head>
+
+<body class="console" data-report="{{ snapshot.uniqid }}">
+<div id="loader-wrapper" style="display: none;">
+    <div id="loader"></div>
+    <svg id="loader-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+        <title>Berlioz Framework</title>
+        <path d="M250,0C111.93,0,0,111.93,0,250A250,250,0,0,0,141.28,475.18c14.54-25.75,36-64.21,42.81-78.36a88.54,88.54,0,0,0,8.23-40.48c-0.43-18.8-7.11-27.61-40.67-82.78-21.42-35.21-16.53-29.67-21.42-35.21-4.49-5.09-4.85-3.09-4.16,22.49,0.7,25.92-5,63.54-12.73,81.75-1.12,2.63-7.37,17.72-13.6,16.87s-6.23-21.73-18.49-36.82c-6.83-8.4-17.34-14.69-29.45-26.9A19.49,19.49,0,0,1,46,285.63a17.89,17.89,0,0,1,.6-8.6c24.29-61,42.24-87.92,54.58-101,7.93-8.39,18.39-16.17,25.52-32.79,4.77-11.13,5.35-19.91,13.74-26.59,6.35-5.05,11.75-4.58,22.06-6.56,30.18-5.81,34.51-19.62,71.09-28,9.26-2.12,12.24-.6,16.39-0.6s7.13-1.52,16.39.6c36.58,8.36,40.91,22.18,71.09,28,10.31,2,15.71,1.51,22.06,6.56,8.39,6.67,9,15.46,13.74,26.59,7.13,16.62,17.58,24.4,25.52,32.79,12.35,13.05,30.29,40,54.58,101a17.89,17.89,0,0,1,.6,8.6,19.49,19.49,0,0,1-5.77,10.13c-12.11,12.22-22.62,18.5-29.45,26.9-12.27,15.09-12.18,36-18.49,36.82s-12.48-14.24-13.6-16.87c-7.76-18.21-13.43-55.84-12.73-81.75,0.69-25.58.33-27.58-4.16-22.49-4.89,5.54,0,0-21.42,35.21-33.56,55.17-40.25,64-40.67,82.78a88.54,88.54,0,0,0,8.23,40.48c6.73,14.07,28.7,52.15,43.74,77.9A250,250,0,0,0,500,250C500,111.93,388.07,0,250,0Z"></path>
+    </svg>
+</div>
+
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark flex-md-nowrap py-0 pr-2 shadow">
+        <a href="{{ path('_berlioz/console/home', {"id": snapshot.uniqid}) }}"
+           class="navbar-brand col-auto col-md-3 col-lg-2 px-3 me-auto me-md-0">
+            <svg id="logo" class="d-inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+                <title>Berlioz Framework</title>
+                <path d="M250,0C111.93,0,0,111.93,0,250A250,250,0,0,0,141.28,475.18c14.54-25.75,36-64.21,42.81-78.36a88.54,88.54,0,0,0,8.23-40.48c-0.43-18.8-7.11-27.61-40.67-82.78-21.42-35.21-16.53-29.67-21.42-35.21-4.49-5.09-4.85-3.09-4.16,22.49,0.7,25.92-5,63.54-12.73,81.75-1.12,2.63-7.37,17.72-13.6,16.87s-6.23-21.73-18.49-36.82c-6.83-8.4-17.34-14.69-29.45-26.9A19.49,19.49,0,0,1,46,285.63a17.89,17.89,0,0,1,.6-8.6c24.29-61,42.24-87.92,54.58-101,7.93-8.39,18.39-16.17,25.52-32.79,4.77-11.13,5.35-19.91,13.74-26.59,6.35-5.05,11.75-4.58,22.06-6.56,30.18-5.81,34.51-19.62,71.09-28,9.26-2.12,12.24-.6,16.39-0.6s7.13-1.52,16.39.6c36.58,8.36,40.91,22.18,71.09,28,10.31,2,15.71,1.51,22.06,6.56,8.39,6.67,9,15.46,13.74,26.59,7.13,16.62,17.58,24.4,25.52,32.79,12.35,13.05,30.29,40,54.58,101a17.89,17.89,0,0,1,.6,8.6,19.49,19.49,0,0,1-5.77,10.13c-12.11,12.22-22.62,18.5-29.45,26.9-12.27,15.09-12.18,36-18.49,36.82s-12.48-14.24-13.6-16.87c-7.76-18.21-13.43-55.84-12.73-81.75,0.69-25.58.33-27.58-4.16-22.49-4.89,5.54,0,0-21.42,35.21-33.56,55.17-40.25,64-40.67,82.78a88.54,88.54,0,0,0,8.23,40.48c6.73,14.07,28.7,52.15,43.74,77.9A250,250,0,0,0,500,250C500,111.93,388.07,0,250,0Z"></path>
+            </svg>
+            <span class="d-none d-md-inline">Berlioz Debug</span>
+        </a>
+
+        <div class="col col-md-auto px-3 d-flex justify-content-between align-items-center text-muted">
+            <label for="report_id" class="d-none d-md-inline me-3">Snapshot</label>
+            <select id="report_id" class="form-select form-select-sm">
+                <option value="{{ snapshot.uniqid }}">#{{ snapshot.uniqid }}</option>
+            </select>
+        </div>
+        <div class="col-auto pe-3 ms-auto text-end">
+            <button class="btn btn-sm btn-outline-secondary d-md-none" type="button" data-bs-target="#sidebar"
+                    data-bs-toggle="collapse" aria-expanded="true">
+                <i class="bi bi-list"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-secondary d-none" type="button"
+                    data-toggle="berlioz-console-new-window"
+                    aria-expanded="false">
+                <i class="bi bi-box-arrow-up-right"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-secondary d-none" type="button" data-dismiss="berlioz-console"
+                    aria-expanded="false">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    </nav>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="sidebar collapse" id="sidebar">
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/home' %} active{% endif %}"
+                       href="{{ path('_berlioz/console/home', {"id": snapshot.uniqid}) }}">
+                        <span class="nav-icon" data-bs-toggle="tooltip" title="Dashboard">
+                            <i class="bi bi-house-door-fill"></i>
+                        </span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/environment' %} active{% endif %}"
+                       href="{{ path('_berlioz/console/environment', {"id": snapshot.uniqid}) }}">
+                        <span class="nav-icon" data-bs-toggle="tooltip" title="Environment">
+                            <i class="bi bi-server"></i>
+                        </span>
+                        <span class="nav-text">Environment</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/performances' %} active{% endif %}"
+                       href="{{ path('_berlioz/console/performances', {"id": snapshot.uniqid}) }}">
+                        <span class="nav-icon" data-bs-toggle="tooltip" title="Performances">
+                            <i class="bi bi-speedometer2"></i>
+                        </span>
+                        <span class="nav-text">Performances</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/activities' %} active{% endif %}"
+                       href="{{ path('_berlioz/console/activities', {"id": snapshot.uniqid}) }}">
+                        <span class="nav-icon" data-bs-toggle="tooltip" title="Activities">
+                            <i class="bi bi-diagram-3-fill"></i>
+                            <span class="badge bg-primary">{{ snapshot.timeLine|length }}</span>
+                        </span>
+                        <span class="nav-text">Activities</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/events' %} active{% endif %}"
+                       href="{{ path('_berlioz/console/events', {"id": snapshot.uniqid}) }}">
+                        <span class="nav-icon" data-bs-toggle="tooltip" title="Events">
+                            <i class="bi bi-lightning-fill"></i>
+                            {% if snapshot.events|length > 0 %}
+                                <span class="badge bg-primary">{{ snapshot.events|length }}</span>
+                            {% endif %}
+                        </span>
+                        <span class="nav-text">Events</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/exception' %} active{% endif %}{% if snapshot.hasExceptionThrown() %} text-danger{% endif %}"
+                       href="{{ path('_berlioz/console/exception', {"id": snapshot.uniqid}) }}">
+                            <span class="nav-icon" data-bs-toggle="tooltip" title="Exception">
+                                <i class="bi bi-exclamation-octagon-fill"></i>
+                                {% if snapshot.exceptions|length %}
+                                    <span class="badge bg-danger">{{ snapshot.exceptions|length }}</span>
+                                {% endif %}
+                            </span>
+                        <span class="nav-text">Exception</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/php-errors' %} active{% endif %}{% if snapshot.phpError|length > 0 %} text-danger{% endif %}"
+                       href="{{ path('_berlioz/console/php-errors', {"id": snapshot.uniqid}) }}">
+                            <span class="nav-icon" data-bs-toggle="tooltip" title="PHP errors">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                {% if snapshot.phpErrors|length %}
+                                    <span class="badge bg-danger">{{ snapshot.phpErrors|length }}</span>
+                                {% endif %}
+                            </span>
+                        <span class="nav-text">PHP errors</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/used-classes' %} active{% endif %}"
+                       href="{{ path('_berlioz/console/used-classes', {"id": snapshot.uniqid}) }}">
+                        <span class="nav-icon" data-bs-toggle="tooltip" title="Used classes">
+                            <i class="bi bi-list-ul"></i>
+                        </span>
+                        <span class="nav-text">Used classes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/cache' %} active{% endif %}"
+                       href="{{ path('_berlioz/console/cache', {"id": snapshot.uniqid}) }}">
+                        <span class="nav-icon" data-bs-toggle="tooltip" title="Cache">
+                            <i class="bi bi-hdd-fill"></i>
+                        </span>
+                        <span class="nav-text">Cache</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if app.route.name starts with '_berlioz/console/config' %} active{% endif %}"
+                       href="{{ path('_berlioz/console/config', {"id": snapshot.uniqid}) }}">
+                        <span class="nav-icon" data-bs-toggle="tooltip" title="Configuration">
+                            <i class="bi bi-sliders"></i>
+                        </span>
+                        <span class="nav-text">Configuration</span>
+                    </a>
+                </li>
+            </ul>
+            {% if snapshot.sections|length > 0 %}
+                <hr/>
+                <ul class="nav flex-column my-2">
+                    {% with {selectedSection: section.sectionId} %}
+                        {% for section in snapshot.sections %}
+                            <li class="nav-item">
+                                <a class="nav-link{% if app.route.name starts with '_berlioz/console/section' and section.sectionId == selectedSection %} active{% endif %}"
+                                   href="{{ path('_berlioz/console/section', {"id": snapshot.uniqid, "section": section.sectionId}) }}">
+                                    {% if section.templateName and block("menu", section.templateName) is defined %}
+                                        {{ block("menu", section.templateName) }}
+                                    {% else %}
+                                        <span class="nav-icon" data-bs-toggle="tooltip" title="{{ section.sectionName }}">
+                                            <i class="bi bi-arrow-right-circle-fill"></i>
+                                        </span>
+                                        <span class="nav-text">{{ section.sectionName }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% endwith %}
+                </ul>
+            {% endif %}
+        </nav>
+
+        <main role="main" class="col px-4">
+            {% block main %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+{{ entrypoints('debug', 'js', {}, entrypoints) }}
+{% block inlineJscripts %}{% endblock %}
+</body>
+</html>

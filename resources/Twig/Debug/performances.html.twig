@@ -1,0 +1,83 @@
+{% extends "@Berlioz-HttpCore/Twig/Debug/_main.html.twig" %}
+
+{% block main %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1>Performances</h1>
+    </div>
+
+    <p>
+        It's a snapshot of performances at the moment of request.
+    </p>
+
+    <div class="row">
+        <div class="col-12 col-sm mb-3">
+            <div class="card bg-dark text-white text-center">
+                <div class="card-body">
+                    <i class="bi bi-speedometer2 fs-1"></i>
+                    <p class="card-value mb-0">{{ (snapshot.timeLine.duration * 1000)|round(3) }} ms</p>
+                    <p class="card-text">Execution time</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm mb-3">
+            <div class="card bg-dark text-white text-center">
+                <div class="card-body">
+                    <i class="bi bi-cpu-fill fs-1"></i>
+                    <p class="card-value mb-0">{{ snapshot.performanceInfo.loadavg|join(' / ')|default('--') }}</p>
+                    <p class="card-text">Load average</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm mb-3">
+            <div class="card bg-dark text-white text-center">
+                <div class="card-body">
+                    <i class="bi bi-battery-half fs-1"></i>
+                    <p class="card-value mb-0">{{ snapshot.performanceInfo.memoryPeakUsage|human_file_size }}</p>
+                    <p class="card-text">Memory peak usage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <h2>Memory usage</h2>
+    {% set timeLineFirstTime = snapshot.timeLine.firstTime %}
+    {% set timeLineDuration = snapshot.timeLine.duration %}
+    {% set timeLineMemoryPeakUsage = snapshot.timeLine.memoryPeakUsage %}
+    <div class="timeline timeline-memory mt-4" data-duration="{{ timeLineDuration }}">
+        <div class="scales">
+            <div class="scale scale-0">0ms</div>
+            <div class="scale scale-12-5">{{ ((timeLineDuration * 0.125) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-25">{{ ((timeLineDuration * 0.25) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-37-5">{{ ((timeLineDuration * 0.375) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-50">{{ ((timeLineDuration * 0.50) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-62-5">{{ ((timeLineDuration * 0.625) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-75">{{ ((timeLineDuration * 0.75) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-87-5">{{ ((timeLineDuration * 0.875) * 1000)|round(3) }} ms</div>
+            <div class="scale scale-100">{{ (timeLineDuration * 1000)|round(3) }} ms</div>
+
+            <div class="scale cursor" style="display: none;"><span class="cursor-value">0</span>ms</div>
+        </div>
+        <div class="memory-usage">
+            <div class="memory-container">
+                {% for memoryUsage in snapshot.timeLine.memoryUsages %}
+                    <span data-bs-toggle="tooltip"
+                          data-bs-placement="bottom"
+                          title="Usage: {{ memoryUsage.memory|human_file_size }} ; Peak: {{ memoryUsage.memory_peak|human_file_size }}"
+                          class="peak"
+                          style="width: {{ ((memoryUsage.to - memoryUsage.from) * 100 / timeLineDuration)|round(2, 'ceil') }}%;
+                                  margin-left: {{ (memoryUsage.from * 100 / timeLineDuration)|round(2, 'floor') }}%;
+                                  height: {{ memoryUsage.memory_peak * 100 / timeLineMemoryPeakUsage }}%;
+                                  z-index: {{ loop.index }};">
+                        <span class="memory"
+                              style="height: {{ memoryUsage.memory * 100 / memoryUsage.memory_peak }}%;"></span>
+                    </span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <p>
+        To see memory usage versus activities, you can see
+        "<a href="{{ path('_berlioz/console/activities', {id: snapshot.uniqid}) }}">Activities page</a>".
+    </p>
+{% endblock %}
