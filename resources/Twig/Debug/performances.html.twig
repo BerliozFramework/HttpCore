@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12 col-sm mb-3">
-            <div class="card bg-dark text-white text-center">
+            <div class="card text-bg-dark text-center">
                 <div class="card-body">
                     <i class="bi bi-speedometer2 fs-1"></i>
                     <p class="card-value mb-0">{{ (snapshot.timeLine.duration * 1000)|round(3) }} ms</p>
@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="col-12 col-sm mb-3">
-            <div class="card bg-dark text-white text-center">
+            <div class="card text-bg-dark text-center">
                 <div class="card-body">
                     <i class="bi bi-cpu-fill fs-1"></i>
                     <p class="card-value mb-0">{{ snapshot.performanceInfo.loadavg|join(' / ')|default('--') }}</p>
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="col-12 col-sm mb-3">
-            <div class="card bg-dark text-white text-center">
+            <div class="card text-bg-dark text-center">
                 <div class="card-body">
                     <i class="bi bi-battery-half fs-1"></i>
                     <p class="card-value mb-0">{{ snapshot.performanceInfo.memoryPeakUsage|human_file_size }}</p>

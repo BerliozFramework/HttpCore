@@ -12,7 +12,7 @@
             {% if section.serverRequest %}
                 {{ section.serverRequest.uri }}
             {% else %}
-                <em class="text-muted">No server request!</em>
+                <em class="text-body-secondary">No server request!</em>
             {% endif %}
         </dd>
         <dt>Route found</dt>
@@ -20,7 +20,7 @@
             {% if section.route %}
                 {{ section.route.name|default('--') }}
             {% else %}
-                <em class="text-muted">No route found!</em>
+                <em class="text-body-secondary">No route found!</em>
             {% endif %}
         </dd>
     </dl>
@@ -184,7 +184,7 @@ Host: {{ section.serverRequest.uri.host }}
                                       {%- set routeFound  = true -%}
                                       bg-success text-white
                                     {%- else -%}
-                                      text-muted
+                                       text-body-secondary
                                     {%- endif -%}
                                   {%- endif -%}
                                   ">

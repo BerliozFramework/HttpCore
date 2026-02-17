@@ -39,7 +39,7 @@ const loader = document.getElementById('loader-wrapper');
 /////////////////
 
 const highlight = (selector, parent) => {
-    (parent || document).querySelectorAll(selector).forEach((block) => hljs.highlightBlock(block));
+    (parent || document).querySelectorAll(selector).forEach((block) => hljs.highlightElement(block));
 };
 highlight('pre > code');
 

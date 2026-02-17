@@ -40,9 +40,8 @@
   margin: -90px 0 0 -90px;
   border: 16px solid transparent;
   border-radius: 50%;
-  border-top: 16px solid #ee7600;
-  border-bottom: 16px solid #ee7600;
-  -webkit-animation: spinLoader 2s linear infinite;
+  border-top: 16px solid $primary;
+  border-bottom: 16px solid $primary;
   animation: spinLoader 2s linear infinite;
 }
 
@@ -54,15 +53,6 @@
   height: 130px;
   margin: -65px 0 0 -65px;
   fill: $white;
-}
-
-@-webkit-keyframes spinLoader {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
 }
 
 @keyframes spinLoader {
@@ -109,7 +99,8 @@
 
   .form-select {
     option {
-      color: $black;
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
     }
   }
 }
@@ -225,11 +216,11 @@
  */
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid var(--bs-border-color);
 }
 
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--bs-border-color);
 }
 
 /*

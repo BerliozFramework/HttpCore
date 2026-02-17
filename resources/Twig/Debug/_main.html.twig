@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Berlioz Debug Console">
     <meta name="author" content="Berlioz Framework">
     <meta name="color-scheme" content="dark">
@@ -22,7 +22,7 @@
 </div>
 
 <div class="container-fluid">
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark flex-md-nowrap py-0 pr-2 shadow">
+    <nav class="navbar navbar-expand-lg fixed-top bg-dark flex-md-nowrap py-0 pe-2 shadow">
         <a href="{{ path('_berlioz/console/home', {"id": snapshot.uniqid}) }}"
            class="navbar-brand col-auto col-md-3 col-lg-2 px-3 me-auto me-md-0">
             <svg id="logo" class="d-inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
@@ -32,7 +32,7 @@
             <span class="d-none d-md-inline">Berlioz Debug</span>
         </a>
 
-        <div class="col col-md-auto px-3 d-flex justify-content-between align-items-center text-muted">
+        <div class="col col-md-auto px-3 d-flex justify-content-between align-items-center text-body-secondary">
             <label for="report_id" class="d-none d-md-inline me-3">Snapshot</label>
             <select id="report_id" class="form-select form-select-sm">
                 <option value="{{ snapshot.uniqid }}">#{{ snapshot.uniqid }}</option>

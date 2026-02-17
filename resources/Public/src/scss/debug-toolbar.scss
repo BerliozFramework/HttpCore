@@ -12,6 +12,7 @@
 @import 'bootstrap';
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/maps";
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/root";
 @import "~bootstrap/scss/reboot";
@@ -21,6 +22,7 @@
 
 :root {
   --bs-primary: #{$body-bg};
+  color-scheme: normal;
 }
 
 html, body {

@@ -1,9 +1,9 @@
 {
-  "debug.css": "/_console/dist/css/debug.a6c50277.css",
-  "debug.js": "/_console/dist/js/debug.492f33b5.js",
-  "debug-toolbar.css": "/_console/dist/css/debug-toolbar.a6c50277.css",
-  "debug-toolbar.js": "/_console/dist/js/debug-toolbar.9dd4536f.js",
-  "debug-caller.js": "/_console/dist/js/debug-caller.1ce22e83.js",
-  "fonts/bootstrap-icons.woff?": "/_console/dist/fonts/bootstrap-icons.39795c0b.woff?dd67030699838ea613ee6dbda90effa6",
-  "fonts/bootstrap-icons.woff2?": "/_console/dist/fonts/bootstrap-icons.b7bcc075.woff2?dd67030699838ea613ee6dbda90effa6"
+  "debug.css": "/_console/dist/css/debug.46026a0f.css",
+  "debug.js": "/_console/dist/js/debug.27b9a447.js",
+  "debug-toolbar.css": "/_console/dist/css/debug-toolbar.46026a0f.css",
+  "debug-toolbar.js": "/_console/dist/js/debug-toolbar.96946d38.js",
+  "debug-caller.js": "/_console/dist/js/debug-caller.899115e1.js",
+  "fonts/bootstrap-icons.woff?": "/_console/dist/fonts/bootstrap-icons.1295669c.woff?e34853135f9e39acf64315236852cd5a",
+  "fonts/bootstrap-icons.woff2?": "/_console/dist/fonts/bootstrap-icons.92ea18a8.woff2?e34853135f9e39acf64315236852cd5a"
 }

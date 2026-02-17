@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col">
-            <div class="card bg-dark text-white my-3">
+            <div class="card text-bg-dark my-3">
                 <div class="card-body text-center">
                     <p class="card-text mb-0">Berlioz internal cache</p>
                     {% if not cacheManager.class %}
@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="col">
-            <div class="card bg-dark text-white my-3">
+            <div class="card text-bg-dark my-3">
                 <div class="card-body text-center">
                     <p class="card-text mb-0">OPcache</p>
                     {% if opcache is same as(false) or not opcache.opcache_enabled %}
@@ -53,7 +53,7 @@
     {% if cacheDirectories %}
         <div class="row">
             <div class="col col-md-6">
-                <div class="card bg-dark text-white my-3">
+                <div class="card text-bg-dark my-3">
                     <div class="card-body text-center">
                         <p class="card-value">Cache directories</p>
 

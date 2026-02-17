@@ -54,7 +54,8 @@ class Toolbar {
             'height: 75px !important;' +
             'width: 210px !important;' +
             'background-color: transparent !important;' +
-            'border:none !important;';
+            'border:none !important;' +
+            'color-scheme: normal !important;';
 
         if (this.direction === 'rtl') {
             style += 'right: 0 !important;';
