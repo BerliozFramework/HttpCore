@@ -18,7 +18,7 @@
 
 It's the HTTP core of Berlioz Framework.
 
-📖 **[Full documentation](https://getberlioz.com/)**
+📖 **[Full documentation](https://getberlioz.com/docs/3.x/http)**
 
 ## Installation
 
@@ -30,4 +30,4 @@ $ composer require berlioz/http-core
 
 ## Documentation
 
-For usage and examples, visit the [official documentation on **getberlioz.com**](https://getberlioz.com/).
+For usage and examples, visit the [official documentation on **getberlioz.com**](https://getberlioz.com/docs/3.x/http).
