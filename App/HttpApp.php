@@ -171,6 +171,7 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         $activity = $this->core->getDebug()->newActivity('Middleware', 'Berlioz')->start();
 
         // Add middlewares to http handler
+        $this->httpHandler->resetMiddlewares();
         $middlewares = $this->getConfig()->get('berlioz.http.middlewares', []);
         uksort($middlewares, fn($key1, $key2) => (int)$key1 <=> (int)$key2);
         array_walk_recursive($middlewares, fn($middleware) => $this->httpHandler->addMiddleware($middleware));

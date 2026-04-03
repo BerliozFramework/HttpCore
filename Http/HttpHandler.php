@@ -38,6 +38,14 @@ class HttpHandler implements RequestHandlerInterface
     }
 
     /**
+     * Reset middlewares.
+     */
+    public function resetMiddlewares(): void
+    {
+        $this->middlewares = [];
+    }
+
+    /**
      * Add middleware.
      *
      * @param MiddlewareInterface|string ...$middleware
