@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `RouterBuilder::createRoutesFromArray()` unsetting wrong key (`children` instead of `routes`), breaking nested config routes
+- Fix `MaintenanceMiddleware` ignoring `start`/`end` dates of scheduled maintenance windows
 
 ## [3.0.0] - 2026-02-19
 

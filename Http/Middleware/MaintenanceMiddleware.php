@@ -36,11 +36,11 @@ class MaintenanceMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (null === ($this->app->getMaintenance())) {
+        if (null === ($maintenance = $this->app->getMaintenance()) || !$maintenance->isActive()) {
             return $handler->handle($request);
         }
 
-        $maintenanceHandler = $this->app->getMaintenance()?->getHandler() ?? MaintenanceHandler::class;
+        $maintenanceHandler = $maintenance->getHandler() ?? MaintenanceHandler::class;
         $maintenanceHandler = $this->app->call($maintenanceHandler, ['app' => $this->app]);
 
         return $maintenanceHandler->handle($request);

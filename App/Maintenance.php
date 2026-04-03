@@ -92,6 +92,26 @@ class Maintenance
     }
 
     /**
+     * Is maintenance currently active?
+     *
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        $now = new DateTimeImmutable();
+
+        if (null !== $this->start && $now < $this->start) {
+            return false;
+        }
+
+        if (null !== $this->end && $now > $this->end) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Get start.
      *
      * @return DateTimeImmutable|null
