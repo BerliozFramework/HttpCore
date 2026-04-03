@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Berlioz\Http\Core\Http\Handler;
 
 use Berlioz\Http\Core\App\HttpApp;
+use Berlioz\Http\Core\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\Http\Core\Exception\Http\NotFoundHttpException;
 use Berlioz\Http\Message\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -63,7 +64,13 @@ class ControllerHandler implements RequestHandlerInterface
                 return new Response($result);
             }
 
-            return new Response(json_encode($result), headers: ['Content-Type' => 'application/json']);
+            $json = json_encode($result);
+
+            if (false === $json) {
+                throw new InternalServerErrorHttpException('Failed to encode controller result to JSON: ' . json_last_error_msg());
+            }
+
+            return new Response($json, headers: ['Content-Type' => 'application/json']);
         } finally {
             $activity->end();
         }
