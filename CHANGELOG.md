@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `MaintenanceMiddleware` ignoring `start`/`end` dates of scheduled maintenance windows
 - Fix `ControllerHandler` silently returning empty 200 response when `json_encode()` fails
 - Fix middlewares accumulating on repeated `HttpApp::handle()` calls by resetting before adding
+- Fix non-exhaustive `match` for font extensions in `DebugController::distFiles()` causing `UnhandledMatchError`
 
 ## [3.0.0] - 2026-02-19
 

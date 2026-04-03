@@ -153,6 +153,7 @@ class DebugController extends AbstractController
                 'fonts' => match ($extension) {
                     'woff' => 'font/woff',
                     'woff2' => 'font/woff2',
+                    default => throw new NotFoundHttpException('Unsupported font type'),
                 }
             },
             'Content-Length' => $stream->getSize(),
