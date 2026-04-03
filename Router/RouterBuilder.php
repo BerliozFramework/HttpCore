@@ -131,7 +131,7 @@ class RouterBuilder
         foreach ($routes as $routeConfig) {
             // Get children
             $children = $routeConfig['routes'] ?? [];
-            unset($routeConfig['children']);
+            unset($routeConfig['routes']);
 
             $parent->addRoute($route = new Route(...$routeConfig));
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix `RouterBuilder::createRoutesFromArray()` unsetting wrong key (`children` instead of `routes`), breaking nested config routes
+
 ## [3.0.0] - 2026-02-19
 
 The version 3.0.0 marks the transition of the Berlioz Framework to a **Monorepo** structure.
