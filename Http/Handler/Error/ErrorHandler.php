@@ -128,7 +128,7 @@ class ErrorHandler implements ErrorHandlerInterface
         if ($throwable instanceof HttpException) {
             return new Response(
                 body: $str,
-                statusCode: $throwable->getCode() ?? 500,
+                statusCode: $throwable->getCode() ?: 500,
                 reasonPhrase: $throwable->getMessage()
             );
         }
