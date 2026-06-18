@@ -1,0 +1,11 @@
+[data-toggle="copy"]:not(a) {
+  cursor: default;
+
+  &:hover {
+    opacity: .75;
+  }
+}
+.copy-tooltip {
+  --bs-tooltip-bg: var(--bs-success);
+  --bs-tooltip-color: var(--bs-white);
+}

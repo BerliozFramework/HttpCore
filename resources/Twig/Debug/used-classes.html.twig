@@ -45,7 +45,7 @@
             <tbody>
             {% for class in classes %}
                 <tr>
-                    <td>{{ class.name }}</td>
+                    <td><span data-toggle="copy" data-text="{{ class.name|e('html_attr') }}">{{ class.name }}</span></td>
                     {% if class.type == 'berlioz' %}
                         <td>Berlioz Framework</td>
                     {% elseif class.type == 'composer' %}

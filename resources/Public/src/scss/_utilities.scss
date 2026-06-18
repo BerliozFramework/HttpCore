@@ -1,0 +1,16 @@
+$vh-steps: (25, 50, 75, 100);
+
+%scroll-y {
+  overflow-y: auto;
+}
+
+@each $vh in $vh-steps {
+  .max-vh-#{$vh} {
+    @extend %scroll-y;
+    max-height: #{$vh}vh;
+  }
+
+  .min-vh-#{$vh} {
+    min-height: #{$vh}vh;
+  }
+}

@@ -11,6 +11,7 @@
 
 import bootstrap from 'bootstrap/dist/js/bootstrap';
 import './scss/debug.scss';
+import copy from 'copy-to-clipboard';
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/atom-one-dark-reasonable.css';
 import {fetch} from 'whatwg-fetch';
@@ -153,6 +154,54 @@ document.querySelectorAll('.timeline').forEach(function (timelineEl) {
     });
     timelineEl.addEventListener('mouseleave', function () {
         timelineEl.querySelectorAll('.scales .scale.cursor').forEach((el) => el.style.display = 'none');
+    });
+});
+
+
+////////////
+/// COPY ///
+////////////
+
+document.querySelectorAll('[data-toggle="copy"]').forEach((element) => {
+  element.addEventListener('click',
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const tooltip = () => {
+        const tooltipInstance = bootstrap.Tooltip.getOrCreateInstance(
+          element,
+          {
+            title: 'Copied!',
+            delay: {hide: 1000},
+            placement: 'right',
+            customClass: 'copy-tooltip',
+          }
+        );
+        tooltipInstance.show();
+        element.addEventListener(
+          'hidden.bs.tooltip',
+          () => tooltipInstance.dispose(),
+        );
+      };
+
+      if (element.dataset.text) {
+        copy(element.dataset.text);
+        tooltip();
+        return;
+      }
+
+      if (element.dataset.target) {
+        const target = document.querySelector(element.dataset.target);
+
+        if (target instanceof HTMLInputElement) {
+          copy(target.value);
+          tooltip();
+          return;
+        }
+
+        copy(target.innerText);
+        tooltip();
+      }
     });
 });
 

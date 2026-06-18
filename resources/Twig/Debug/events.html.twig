@@ -30,7 +30,7 @@
                 <tbody>
                 {% for event in snapshot.events.events %}
                     <tr>
-                        <th>{{ event.name }}</th>
+                        <th><span data-toggle="copy" data-text="{{ event.name|e('html_attr') }}">{{ event.name }}</span></th>
                         <td>{{ event.time|date('c') }}</td>
                     </tr>
                 {% endfor %}

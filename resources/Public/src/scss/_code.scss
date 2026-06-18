@@ -1,0 +1,74 @@
+.hljs {
+  background-color: $dark !important;
+}
+
+pre {
+  border-radius: var(--bs-border-radius);
+
+  code {
+    display: block;
+  }
+}
+
+.code {
+  position: relative;
+  padding: .5em 1em;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  max-width: 100%;
+  min-width: 0;
+  border-radius: var(--bs-border-radius);
+  background-color: $dark !important;
+
+  pre {
+    margin: 0;
+    border-radius: 0;
+
+    code, code.hljs {
+      padding: .5em 0;
+      background-color: transparent !important;
+    }
+  }
+
+  > .btn,
+  > .btn-group,
+  > .btn-group-vertical {
+    position: absolute;
+    visibility: hidden;
+    top: .5em;
+    right: .5em;
+    z-index: 1;
+
+    + pre {
+      margin-right: 2rem;
+    }
+  }
+
+  &:hover > .btn,
+  &:hover > .btn-group,
+  &:hover > .btn-group-vertical {
+    visibility: visible;
+  }
+}
+
+pre {
+  code.hljs {
+    background-color: transparent !important;
+  }
+}
+
+pre.mermaid {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  background-color: transparent;
+  border-radius: 0;
+
+  &:not([data-processed="true"]) {
+    visibility: hidden;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+}

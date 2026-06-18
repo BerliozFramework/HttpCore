@@ -13,8 +13,15 @@
             Configuration empty!
         </div>
     {% else %}
-        <pre>
-            <code class="json">{{ configuration }}</code>
-        </pre>
+        <div class="code">
+            <button type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    data-toggle="copy"
+                    data-target="#config-json"
+                    title="Copy configuration">
+                <i class="bi bi-clipboard"></i>
+            </button>
+            <pre><code class="json" id="config-json">{{ configuration }}</code></pre>
+        </div>
     {% endif %}
 {% endblock %}

@@ -20,9 +20,16 @@
         </div>
     {% else %}
         {% for exception in snapshot.exceptions %}
-            <pre>
-                <code class="plaintext">{{ exception }}</code>
-            </pre>
+            <div class="code">
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        data-toggle="copy"
+                        data-target="#exception-{{ loop.index }}"
+                        title="Copy exception">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+                <pre><code class="plaintext" id="exception-{{ loop.index }}">{{ exception }}</code></pre>
+            </div>
         {% endfor %}
     {% endif %}
 {% endblock %}

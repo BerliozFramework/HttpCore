@@ -67,7 +67,7 @@
                     <tbody>
                     <tr>
                         <th scope="row" class="text-nowrap">Name</th>
-                        <td>{{ section.route.name }}</td>
+                        <td><span data-toggle="copy" data-text="{{ section.route.name|e('html_attr') }}">{{ section.route.name }}</span></td>
                     </tr>
                     <tr>
                         <th scope="row" class="text-nowrap">Allowed methods</th>
@@ -89,8 +89,17 @@
                             {% if section.route.context is empty %}
                                 No context!
                             {% else %}
-                                <pre class="m-0"><code
-                                            class="json">{{ section.route.context|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></pre>
+                                <div class="code m-0">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            data-toggle="copy"
+                                            data-target="#route-context"
+                                            title="Copy context">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                    <pre><code class="json"
+                                            id="route-context">{{ section.route.context|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></pre>
+                                </div>
                             {% endif %}
                         </td>
                     </tr>
@@ -100,8 +109,17 @@
                             {% if section.route.options is empty %}
                                 <em>No option</em>
                             {% else %}
-                                <pre class="m-0"><code
-                                            class="json">{{ section.route.options|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></pre>
+                                <div class="code m-0">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            data-toggle="copy"
+                                            data-target="#route-options"
+                                            title="Copy options">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                    <pre><code class="json"
+                                            id="route-options">{{ section.route.options|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></pre>
+                                </div>
                             {% endif %}
                         </td>
                     </tr>
@@ -118,7 +136,15 @@
         </div>
         {% else %}
         <h2>Request</h2>
-        <pre><code class="http">
+        <div class="code">
+            <button type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    data-toggle="copy"
+                    data-target="#request-http"
+                    title="Copy request">
+                <i class="bi bi-clipboard"></i>
+            </button>
+            <pre><code class="http" id="request-http">
 {{- section.serverRequest.method }} {{ section.serverRequest.uri.path ~ (section.serverRequest.uri.query ? '?' ~ section.serverRequest.uri.query : '') }} HTTP/{{ section.serverRequest.protocolVersion }}
 Host: {{ section.serverRequest.uri.host }}
 {%~ for name, requestHeader in section.serverRequest.headers %}
@@ -128,14 +154,24 @@ Host: {{ section.serverRequest.uri.host }}
         {%~ endfor -%}
     {%- endif -%}
                 {%- endfor -%}</code></pre>
+        </div>
 
         <h2>Attributes</h2>
         {% if section.serverRequest.attributes is empty %}
             <p><em>No attribute.</em></p>
         {% else %}
-            <pre><code class="json">
+            <div class="code">
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        data-toggle="copy"
+                        data-target="#request-attributes"
+                        title="Copy attributes">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+                <pre><code class="json" id="request-attributes">
                         {{- section.serverRequest.attributes|json_encode(constant('JSON_PRETTY_PRINT')) -}}
                     </code></pre>
+            </div>
         {% endif %}
 
         <h2>Server parameters</h2>
@@ -150,8 +186,8 @@ Host: {{ section.serverRequest.uri.host }}
                 <tbody>
                 {% for name, value in section.serverRequest.serverParams %}
                     <tr>
-                        <th scope="row">{{ name }}</th>
-                        <td>{{ value }}</td>
+                        <th scope="row"><span data-toggle="copy" data-text="{{ name|e('html_attr') }}">{{ name }}</span></th>
+                        <td><span data-toggle="copy" data-text="{{ value|e('html_attr') }}">{{ value }}</span></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -188,15 +224,21 @@ Host: {{ section.serverRequest.uri.host }}
                                     {%- endif -%}
                                   {%- endif -%}
                                   ">
-                            <th scope="row">{{ route.name|default('--') }}</th>
+                            <th scope="row">
+                                {% if route.name %}
+                                    <span data-toggle="copy" data-text="{{ route.name|e('html_attr') }}">{{ route.name }}</span>
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </th>
                             <td>
-                                {% if route.methods is empty or route.methods == ['GET', 'HEAD', 'POST', 'OPTIONS', 'CONNECT', 'TRACE', 'PUT', 'DELETE'] %}
+                                {% if route.methods is empty or route.methods == ['GET', 'HEAD', 'POST', 'OPTIONS', 'CONNECT', 'TRACE', 'PUT', 'PATCH', 'DELETE'] %}
                                     <em>ALL</em>
                                 {% else %}
                                     {{ route.methods|join(', ') }}
                                 {% endif %}
                             </td>
-                            <td>{{ route.path }}</td>
+                            <td><span data-toggle="copy" data-text="{{ route.path|e('html_attr') }}">{{ route.path }}</span></td>
                         </tr>
                     {% endfor %}
                     </tbody>

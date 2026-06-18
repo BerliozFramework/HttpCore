@@ -12,7 +12,10 @@
 @import 'bootstrap';
 @import '~bootstrap/scss/bootstrap';
 @import '~bootstrap-icons/font/bootstrap-icons.css';
+@import 'code';
+@import 'copy';
 @import 'tree';
+@import 'utilities';
 
 /*
  * Loader
@@ -62,14 +65,6 @@
   100% {
     transform: rotate(360deg);
   }
-}
-
-/*
- * Highlight
- */
-
-.hljs {
-  background-color: $dark !important;
 }
 
 /*
@@ -299,10 +294,6 @@
         word-break: break-all;
       }
     }
-  }
-
-  pre {
-    white-space: pre-wrap;
   }
 
   .timeline {

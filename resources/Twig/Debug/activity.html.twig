@@ -38,10 +38,28 @@
 
 {% if activity.detail %}
     <h4>Detail</h4>
-    <pre class="w-100"><code>{{ aDetail }}</code></pre>
+    <div class="code">
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary"
+                data-toggle="copy"
+                data-target="#activity-detail"
+                title="Copy detail">
+            <i class="bi bi-clipboard"></i>
+        </button>
+        <pre><code id="activity-detail">{{ aDetail }}</code></pre>
+    </div>
 {% endif %}
 
 {% if activity.result %}
     <h4>Result</h4>
-    <pre class="w-100"><code>{{ aResult }}</code></pre>
+    <div class="code">
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary"
+                data-toggle="copy"
+                data-target="#activity-result"
+                title="Copy result">
+            <i class="bi bi-clipboard"></i>
+        </button>
+        <pre><code id="activity-result">{{ aResult }}</code></pre>
+    </div>
 {% endif %}
