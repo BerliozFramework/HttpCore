@@ -23,7 +23,13 @@
             <div class="card text-bg-dark text-center">
                 <div class="card-body">
                     <i class="bi bi-cpu-fill fs-1"></i>
-                    <p class="card-value mb-0">{{ snapshot.performanceInfo.loadavg|join(' / ')|default('--') }}</p>
+                    <p class="card-value mb-0">
+                        {% if snapshot.performanceInfo.loadavg %}
+                            {{ snapshot.performanceInfo.loadavg|map(v => v|round(3))|join(' / ') }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </p>
                     <p class="card-text">Load average</p>
                 </div>
             </div>

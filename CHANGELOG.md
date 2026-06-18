@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Copy-to-clipboard buttons on debug console code blocks and values
 
+### Fixed
+
+- Round load average values in debug performances page to avoid excessive decimals
+
 ## [3.1.1] - 2026-06-10
 
 _No changes in this release._
