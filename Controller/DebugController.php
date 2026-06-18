@@ -573,6 +573,19 @@ class DebugController extends AbstractController
         // Clear
         if ($clear = $request->getQueryParam('clear')) {
             switch ($clear) {
+                case 'all':
+                    $this->getApp()->getCore()->getCache()->clear();
+                    if (function_exists('opcache_reset')) {
+                        opcache_reset();
+                    }
+                    $filesystem = $this->getApp()->getCore()->getFilesystem();
+                    foreach ($filesystem->listContents('cache://') as $attr) {
+                        if (false === $attr->isDir()) {
+                            continue;
+                        }
+                        $filesystem->deleteDirectory('cache://' . basename($attr->path()));
+                    }
+                    break;
                 case 'internal':
                     $this->getApp()->getCore()->getCache()->clear();
                     break;
