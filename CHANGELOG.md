@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Copy-to-clipboard buttons on debug console code blocks and values
 - "Clear all caches" button in debug console cache page (internal cache, OPcache and cache directories)
+- Cache clear shortcut on the debug console dashboard
 
 ### Fixed
 
