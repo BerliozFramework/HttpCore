@@ -42,168 +42,254 @@ const loader = document.getElementById('loader-wrapper');
 const highlight = (selector, parent) => {
     (parent || document).querySelectorAll(selector).forEach((block) => hljs.highlightElement(block));
 };
-highlight('pre > code');
+
+// Mark an element as initialized to keep components() idempotent across multiple calls.
+const markInit = (el) => {
+    if (el.dataset.berliozInit) {
+        return false;
+    }
+
+    el.dataset.berliozInit = '1';
+
+    return true;
+};
 
 
-///////////////////////
-/// CONSOLE BUTTONS ///
-///////////////////////
+//////////////////
+/// COMPONENTS ///
+//////////////////
 
-// Dismiss console
-document.querySelectorAll('[data-dismiss="berlioz-console"]').forEach(function (el) {
-    el.addEventListener('click', function () {
-        if (parentWindow && parentWindow.toggleBerliozConsole) {
-            parentWindow.toggleBerliozConsole()
-        }
-    });
+/**
+ * Initialize all DOM-bound components within the given root.
+ *
+ * Called once on the whole document at load time and again on any content
+ * injected dynamically (e.g. modal bodies loaded over fetch), so that copy
+ * buttons, tooltips, syntax highlighting, etc. stay interactive everywhere.
+ *
+ * @param {Document|HTMLElement} root
+ */
+function components(root = document) {
+    // Syntax highlighting
+    highlight('pre > code', root);
 
-    el.classList.toggle('d-none', !parentWindow);
-});
+    ///////////////////////
+    /// CONSOLE BUTTONS ///
+    ///////////////////////
 
-// New console
-document.querySelectorAll('[data-toggle="berlioz-console-new-window"]').forEach(function (el) {
-    el.addEventListener('click', function () {
-        if (parentWindow && parentWindow.openBerliozConsoleInNewWindow) {
-            parentWindow.openBerliozConsoleInNewWindow()
-        }
-    });
+    // Dismiss console
+    root.querySelectorAll('[data-dismiss="berlioz-console"]').forEach(function (el) {
+        el.classList.toggle('d-none', !parentWindow);
 
-    el.classList.toggle('d-none', !parentWindow);
-});
-
-
-////////////////
-/// Tooltips ///
-////////////////
-
-document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => new bootstrap.Tooltip(el));
-
-
-//////////////
-/// DETAIL ///
-//////////////
-
-document.querySelectorAll('[data-toggle="detail"][data-type][data-target]').forEach(function (el) {
-    el.addEventListener('click', function () {
-        let modalEl = document.getElementById(el.dataset.type + 'Detail');
-        if (!modalEl) {
+        if (!markInit(el)) {
             return;
         }
 
-        let modal = new bootstrap.Modal(modalEl);
-        loader.style.display = 'block';
-
-        fetch(el.dataset.target)
-            .then(function (response) {
-                return response.text()
-            })
-            .then(function (html) {
-                modalEl.querySelector('.modal-body').innerHTML = html;
-                highlight('.modal-body pre > code', modalEl);
-                modal.show()
-            })
-            .finally(() => loader.style.display = 'none');
-    });
-});
-
-
-////////////////
-/// TIMELINE ///
-////////////////
-
-document.querySelectorAll('.timeline').forEach(function (timelineEl) {
-    timelineEl.querySelectorAll('.activity[href]').forEach(function (activityLinkEl) {
-        activityLinkEl.addEventListener('click', function () {
-            // Activities on time line
-            timelineEl.querySelectorAll('.activity.bg-primary').forEach((el) => el.classList.remove('bg-primary'));
-            activityLinkEl.classList.add('bg-primary');
-
-            // Activities in list
-            let activityDetailEl = document.querySelector(activityLinkEl.getAttribute('href'));
-            activityDetailEl.classList.add('table-primary');
-            Array.prototype.filter.call(activityDetailEl.parentNode.children, function (child) {
-                return child !== activityDetailEl;
-            }).map((el) => el.classList.remove('table-primary'))
+        el.addEventListener('click', function () {
+            if (parentWindow && parentWindow.toggleBerliozConsole) {
+                parentWindow.toggleBerliozConsole()
+            }
         });
     });
 
-    timelineEl.addEventListener('mousemove', function (event) {
-        let
-            timeLineX = this.getBoundingClientRect().left + document.body.scrollLeft,
-            timeLineWidth = this.offsetWidth,
-            cursorX = event.pageX - timeLineX,
-            positionLeft = (cursorX * 100 / timeLineWidth),
-            finalPositionLeft = '',
-            finalPositionRight = '';
+    // New console
+    root.querySelectorAll('[data-toggle="berlioz-console-new-window"]').forEach(function (el) {
+        el.classList.toggle('d-none', !parentWindow);
 
-        if (positionLeft <= 50) {
-            finalPositionLeft = positionLeft + '%'
-        } else {
-            finalPositionRight = (100 - positionLeft) + '%'
+        if (!markInit(el)) {
+            return;
         }
 
-        timelineEl.querySelectorAll('.scales .scale.cursor').forEach(function (cursorEl) {
-            cursorEl.classList.toggle('cursor-inverted', finalPositionRight !== '');
-            cursorEl.style.left = finalPositionLeft;
-            cursorEl.style.right = finalPositionRight;
-            cursorEl.querySelector('.cursor-value').textContent = (Math.round((cursorX * timelineEl.dataset.duration / timeLineWidth) * 1000 * 1000) / 1000).toString();
+        el.addEventListener('click', function () {
+            if (parentWindow && parentWindow.openBerliozConsoleInNewWindow) {
+                parentWindow.openBerliozConsoleInNewWindow()
+            }
         });
     });
-    timelineEl.addEventListener('mouseenter', function () {
-        this.querySelectorAll('.scales .scale.cursor').forEach((el) => el.style.display = 'block');
-    });
-    timelineEl.addEventListener('mouseleave', function () {
-        timelineEl.querySelectorAll('.scales .scale.cursor').forEach((el) => el.style.display = 'none');
-    });
-});
 
 
-////////////
-/// COPY ///
-////////////
+    ////////////////
+    /// Tooltips ///
+    ////////////////
 
-document.querySelectorAll('[data-toggle="copy"]').forEach((element) => {
-  element.addEventListener('click',
-    (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const tooltip = () => {
-        const tooltipInstance = bootstrap.Tooltip.getOrCreateInstance(
-          element,
-          {
-            title: 'Copied!',
-            delay: {hide: 1000},
-            placement: 'right',
-            customClass: 'copy-tooltip',
-          }
-        );
-        tooltipInstance.show();
-        element.addEventListener(
-          'hidden.bs.tooltip',
-          () => tooltipInstance.dispose(),
-        );
-      };
-
-      if (element.dataset.text) {
-        copy(element.dataset.text);
-        tooltip();
-        return;
-      }
-
-      if (element.dataset.target) {
-        const target = document.querySelector(element.dataset.target);
-
-        if (target instanceof HTMLInputElement) {
-          copy(target.value);
-          tooltip();
-          return;
+    root.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+        if (!markInit(el)) {
+            return;
         }
 
-        copy(target.innerText);
-        tooltip();
-      }
+        new bootstrap.Tooltip(el);
     });
-});
+
+
+    //////////////
+    /// DETAIL ///
+    //////////////
+
+    root.querySelectorAll('[data-toggle="detail"][data-type]').forEach(function (el) {
+        if (!markInit(el)) {
+            return;
+        }
+
+        el.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            let modalEl = document.getElementById(el.dataset.type + 'Detail');
+            if (!modalEl) {
+                return;
+            }
+
+            let modal = new bootstrap.Modal(modalEl);
+
+            // Inline content: detail already embedded in the trigger.
+            if (el.dataset.content !== undefined) {
+                modalEl.querySelector('.modal-body').innerHTML = el.dataset.content;
+                components(modalEl);
+                modal.show();
+                return;
+            }
+
+            // Remote content: load detail over fetch.
+            if (el.dataset.target === undefined) {
+                return;
+            }
+
+            loader.style.display = 'block';
+
+            fetch(el.dataset.target)
+                .then(function (response) {
+                    return response.text()
+                })
+                .then(function (html) {
+                    modalEl.querySelector('.modal-body').innerHTML = html;
+                    components(modalEl);
+                    modal.show()
+                })
+                .finally(() => loader.style.display = 'none');
+        });
+    });
+
+
+    ////////////////
+    /// TIMELINE ///
+    ////////////////
+
+    root.querySelectorAll('.timeline').forEach(function (timelineEl) {
+        if (!markInit(timelineEl)) {
+            return;
+        }
+
+        timelineEl.querySelectorAll('.activity[href]').forEach(function (activityLinkEl) {
+            activityLinkEl.addEventListener('click', function () {
+                // Activities on time line
+                timelineEl.querySelectorAll('.activity.bg-primary').forEach((el) => el.classList.remove('bg-primary'));
+                activityLinkEl.classList.add('bg-primary');
+
+                // Activities in list
+                let activityDetailEl = document.querySelector(activityLinkEl.getAttribute('href'));
+                activityDetailEl.classList.add('table-primary');
+                Array.prototype.filter.call(activityDetailEl.parentNode.children, function (child) {
+                    return child !== activityDetailEl;
+                }).map((el) => el.classList.remove('table-primary'))
+            });
+        });
+
+        timelineEl.addEventListener('mousemove', function (event) {
+            let
+                timeLineX = this.getBoundingClientRect().left + document.body.scrollLeft,
+                timeLineWidth = this.offsetWidth,
+                cursorX = event.pageX - timeLineX,
+                positionLeft = (cursorX * 100 / timeLineWidth),
+                finalPositionLeft = '',
+                finalPositionRight = '';
+
+            if (positionLeft <= 50) {
+                finalPositionLeft = positionLeft + '%'
+            } else {
+                finalPositionRight = (100 - positionLeft) + '%'
+            }
+
+            timelineEl.querySelectorAll('.scales .scale.cursor').forEach(function (cursorEl) {
+                cursorEl.classList.toggle('cursor-inverted', finalPositionRight !== '');
+                cursorEl.style.left = finalPositionLeft;
+                cursorEl.style.right = finalPositionRight;
+                cursorEl.querySelector('.cursor-value').textContent = (Math.round((cursorX * timelineEl.dataset.duration / timeLineWidth) * 1000 * 1000) / 1000).toString();
+            });
+        });
+        timelineEl.addEventListener('mouseenter', function () {
+            this.querySelectorAll('.scales .scale.cursor').forEach((el) => el.style.display = 'block');
+        });
+        timelineEl.addEventListener('mouseleave', function () {
+            timelineEl.querySelectorAll('.scales .scale.cursor').forEach((el) => el.style.display = 'none');
+        });
+    });
+
+
+    ////////////
+    /// COPY ///
+    ////////////
+
+    root.querySelectorAll('[data-toggle="copy"]').forEach((element) => {
+        if (!markInit(element)) {
+            return;
+        }
+
+        element.addEventListener('click',
+            (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const tooltip = () => {
+                    const tooltipInstance = bootstrap.Tooltip.getOrCreateInstance(
+                        element,
+                        {
+                            title: 'Copied!',
+                            delay: {hide: 1000},
+                            placement: 'right',
+                            customClass: 'copy-tooltip',
+                        }
+                    );
+                    tooltipInstance.show();
+                    element.addEventListener(
+                        'hidden.bs.tooltip',
+                        () => tooltipInstance.dispose(),
+                    );
+                };
+
+                if (element.dataset.text) {
+                    copy(element.dataset.text);
+                    tooltip();
+                    return;
+                }
+
+                if (element.dataset.target) {
+                    const target = document.querySelector(element.dataset.target);
+
+                    if (target instanceof HTMLInputElement) {
+                        copy(target.value);
+                        tooltip();
+                        return;
+                    }
+
+                    copy(target.innerText);
+                    tooltip();
+                }
+            });
+    });
+
+
+    //////////////
+    /// LOADER ///
+    //////////////
+
+    root.querySelectorAll('a[href]:not([data-toggle]):not([href^="#"])').forEach(function (el) {
+        if (!markInit(el)) {
+            return;
+        }
+
+        el.addEventListener('click', () => loader.style.display = 'block');
+    });
+}
+
+// Initialize components on the whole document at load time.
+components(document);
 
 
 /////////////////////////
@@ -291,13 +377,4 @@ document.querySelectorAll('iframe').forEach(function (iframeEl) {
     }
 
     iframeEl.addEventListener('DOMContentLoaded', () => window.setTimeout(() => resizeIframe(iframeEl), 250));
-});
-
-
-//////////////
-/// LOADER ///
-//////////////
-
-document.querySelectorAll('a[href]:not([data-toggle]):not([href^="#"])').forEach(function (el) {
-    el.addEventListener('click', () => loader.style.display = 'block');
 });

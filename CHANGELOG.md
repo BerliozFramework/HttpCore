@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Copy-to-clipboard buttons on debug console code blocks and values
 - "Clear all caches" button in debug console cache page (internal cache, OPcache and cache directories)
 - Cache clear shortcuts on the debug console dashboard (clear internal cache or all caches)
+- Support for inline modal content in the debug console via `data-content` on `data-toggle="detail"` triggers (in addition to remote `data-target`)
 
 ### Changed
 
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Round load average values in debug performances page to avoid excessive decimals
+- Re-initialize debug console JS components (copy buttons, tooltips, syntax highlighting) on content loaded into modals (remote or inline)
 
 ## [3.1.1] - 2026-06-10
 
