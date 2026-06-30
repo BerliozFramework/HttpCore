@@ -563,15 +563,18 @@ class DebugController extends AbstractController
      * @throws Error
      * @throws RoutingException
      */
-    #[Route('/{id}/cache', name: '_berlioz/console/cache')]
+    #[Route('/{id}/cache', name: '_berlioz/console/cache', method: ['GET', 'POST'])]
     public function cache(
         ServerRequest $request
     ): ResponseInterface {
         $requestQueryParams = $request->getQueryParams();
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
-        // Clear
-        if ($clear = $request->getQueryParam('clear')) {
+        // Cache clearing is a state-changing action: only honour it over POST, with the parameters
+        // read from the request body. This prevents triggering it through a plain GET link/image.
+        $parsedBody = (array)($request->getParsedBody() ?? []);
+
+        if ('POST' === strtoupper($request->getMethod()) && ($clear = $parsedBody['clear'] ?? null)) {
             switch ($clear) {
                 case 'all':
                     $this->getApp()->getCore()->getCache()->clear();
@@ -595,12 +598,12 @@ class DebugController extends AbstractController
                     }
                     break;
                 case 'directory':
-                    if (null === ($directory = $request->getQueryParam('directory'))) {
+                    if (null === ($directory = $parsedBody['directory'] ?? null)) {
                         throw new BadRequestHttpException();
                     }
 
-                    $clear .= ':' . basename($directory);
-                    $this->getApp()->getCore()->getFilesystem()->deleteDirectory('cache://' . basename($directory));
+                    $clear .= ':' . basename((string)$directory);
+                    $this->getApp()->getCore()->getFilesystem()->deleteDirectory('cache://' . basename((string)$directory));
                     break;
             }
 

@@ -16,6 +16,9 @@
         "00": {
           "maintenance": "Berlioz\\Http\\Core\\Http\\Middleware\\MaintenanceMiddleware"
         },
+        "01": {
+          "debug_console": "Berlioz\\Http\\Core\\Http\\Middleware\\DebugConsoleMiddleware"
+        },
         "99": {
           "redirection": "Berlioz\\Http\\Core\\Http\\Middleware\\RedirectionMiddleware"
         }

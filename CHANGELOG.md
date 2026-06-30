@@ -18,11 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use a more meaningful cache icon in the debug console (menu and dashboard)
 - Use a distinct icon for the environment section in the debug console menu (avoid clash with Hector ORM section)
+- Debug console cache-clearing actions now require `POST` (cache page and dashboard buttons are forms instead of links)
 
 ### Fixed
 
 - Round load average values in debug performances page to avoid excessive decimals
 - Re-initialize debug console JS components (copy buttons, tooltips, syntax highlighting) on content loaded into modals (remote or inline)
+
+### Security
+
+- Gate the entire `/_console` debug surface (including `phpinfo`) behind debug-enabled + client IP allow-list via a new `DebugConsoleMiddleware`; non-allowed requests get a 404
+- Require `POST` for cache-clearing actions, removing the unauthenticated GET trigger
 
 ## [3.1.1] - 2026-06-10
 

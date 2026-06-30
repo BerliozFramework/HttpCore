@@ -23,6 +23,7 @@ use Berlioz\Http\Core\Container\RouteProvider;
 use Berlioz\Http\Core\Container\ServiceProvider;
 use Berlioz\Http\Core\Controller\DebugController;
 use Berlioz\Http\Core\Http\Handler\Error\DefaultErrorHandler;
+use Berlioz\Http\Core\Http\Middleware\DebugConsoleMiddleware;
 use Berlioz\Http\Core\Http\Middleware\MaintenanceMiddleware;
 use Berlioz\Http\Core\Http\Middleware\RedirectionMiddleware;
 use Berlioz\ServiceContainer\Container;
@@ -56,6 +57,9 @@ class BerliozPackage extends AbstractPackage implements PackageInterface
                         'middlewares' => [
                             0 => [
                                 'maintenance' => MaintenanceMiddleware::class,
+                            ],
+                            1 => [
+                                'debug_console' => DebugConsoleMiddleware::class,
                             ],
                             99 => [
                                 'redirection' => RedirectionMiddleware::class,

@@ -3,10 +3,12 @@
 {% block main %}
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1>Cache</h1>
-        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'all'}) }}"
-           class="btn btn-danger">
-            Clear all caches
-        </a>
+        <form method="post" action="{{ path('_berlioz/console/cache', {id: snapshot.uniqid}) }}" class="m-0">
+            <input type="hidden" name="clear" value="all">
+            <button type="submit" class="btn btn-danger">
+                Clear all caches
+            </button>
+        </form>
     </div>
 
     <p>
@@ -28,10 +30,12 @@
                         <p class="card-value mb-0">disabled</p>
                     {% else %}
                         <p class="card-value">{{ cacheManager.class }}</p>
-                        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'internal'}) }}"
-                           class="btn btn-primary">
-                            Clear cache
-                        </a>
+                        <form method="post" action="{{ path('_berlioz/console/cache', {id: snapshot.uniqid}) }}" class="m-0">
+                            <input type="hidden" name="clear" value="internal">
+                            <button type="submit" class="btn btn-primary">
+                                Clear cache
+                            </button>
+                        </form>
                     {% endif %}
                 </div>
             </div>
@@ -44,10 +48,12 @@
                         <p class="card-value mb-0">disabled</p>
                     {% else %}
                         <p class="card-value">enabled</p>
-                        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'opcache'}) }}"
-                           class="btn btn-primary">
-                            Clear cache
-                        </a>
+                        <form method="post" action="{{ path('_berlioz/console/cache', {id: snapshot.uniqid}) }}" class="m-0">
+                            <input type="hidden" name="clear" value="opcache">
+                            <button type="submit" class="btn btn-primary">
+                                Clear cache
+                            </button>
+                        </form>
                     {% endif %}
                 </div>
             </div>
@@ -67,10 +73,13 @@
                                 <tr>
                                     <th>{{ cacheDirectory }}</th>
                                     <td class="text-end">
-                                        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'directory', directory: cacheDirectory}) }}"
-                                           class="btn btn-sm btn-primary">
-                                            Delete
-                                        </a>
+                                        <form method="post" action="{{ path('_berlioz/console/cache', {id: snapshot.uniqid}) }}" class="m-0">
+                                            <input type="hidden" name="clear" value="directory">
+                                            <input type="hidden" name="directory" value="{{ cacheDirectory }}">
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             {% endfor %}

@@ -57,14 +57,20 @@
                     <i class="bi bi-database-fill-gear me-3 fs-1"></i>
                     <div class="me-auto ps-3">
                         <p class="card-text mb-2">Cache</p>
-                        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'internal'}) }}"
-                           class="btn btn-sm btn-primary">
-                            Clear cache
-                        </a>
-                        <a href="{{ path('_berlioz/console/cache', {id: snapshot.uniqid, clear: 'all'}) }}"
-                           class="btn btn-sm btn-danger">
-                            Clear all caches
-                        </a>
+                        <div class="d-flex gap-2">
+                            <form method="post" action="{{ path('_berlioz/console/cache', {id: snapshot.uniqid}) }}" class="m-0">
+                                <input type="hidden" name="clear" value="internal">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    Clear cache
+                                </button>
+                            </form>
+                            <form method="post" action="{{ path('_berlioz/console/cache', {id: snapshot.uniqid}) }}" class="m-0">
+                                <input type="hidden" name="clear" value="all">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    Clear all caches
+                                </button>
+                            </form>
+                        </div>
                     </div>
                     <a href="{{ path('_berlioz/console/cache', {"id": snapshot.uniqid}) }}"
                        class="ms-3 link-light text-end">
