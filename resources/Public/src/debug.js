@@ -247,9 +247,19 @@ function components(root = document) {
                         }
                     );
                     tooltipInstance.show();
+                    // Use {once: true} so the listener is auto-removed and never
+                    // accumulates across repeated clicks. Guard the dispose() call
+                    // because the instance may already have been disposed: a double
+                    // dispose() throws "Cannot read properties of null" inside Bootstrap.
                     element.addEventListener(
                         'hidden.bs.tooltip',
-                        () => tooltipInstance.dispose(),
+                        () => {
+                            const instance = bootstrap.Tooltip.getInstance(element);
+                            if (instance) {
+                                instance.dispose();
+                            }
+                        },
+                        {once: true},
                     );
                 };
 

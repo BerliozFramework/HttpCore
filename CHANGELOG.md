@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Round load average values in debug performances page to avoid excessive decimals
 - Re-initialize debug console JS components (copy buttons, tooltips, syntax highlighting) on content loaded into modals (remote or inline)
+- Prevent `TypeError` ("Cannot read properties of null") in debug console when repeatedly clicking copy buttons, caused by accumulated `hidden.bs.tooltip` listeners disposing the tooltip twice
 
 ### Security
 
