@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Clear all caches" button in debug console cache page (internal cache, OPcache and cache directories)
 - Cache clear shortcuts on the debug console dashboard (clear internal cache or all caches)
 - Support for inline modal content in the debug console via `data-content` on `data-toggle="detail"` triggers (in addition to remote `data-target`)
+- Display the number of open PHP resources in the debug console environment page
 
 ### Changed
 

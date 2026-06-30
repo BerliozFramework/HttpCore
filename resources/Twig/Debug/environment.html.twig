@@ -40,6 +40,10 @@
                         <td>{{ snapshot.systemInfo.inode|default('--') }}</td>
                     </tr>
                     <tr>
+                        <th scope="row" class="text-nowrap">Open resources</th>
+                        <td>{{ snapshot.systemInfo.openResources }}</td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="text-nowrap">Temporary directory</th>
                         <td>{{ snapshot.systemInfo.tmp_dir }}</td>
                     </tr>
