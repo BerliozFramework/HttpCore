@@ -19,14 +19,15 @@ use Berlioz\Core\Debug\DebugHandler;
 use Berlioz\Http\Core\App\HttpApp;
 use Berlioz\Router\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Stringable;
 
 /**
  * Class Router.
  */
-class RouterSection extends AbstractSection implements Section
+class RouterSection extends AbstractSection implements Section, Stringable
 {
-    protected ?ServerRequestInterface $serverRequest;
-    protected ?RouteInterface $route;
+    protected ?ServerRequestInterface $serverRequest = null;
+    protected ?RouteInterface $route = null;
     protected array $routes;
 
     /**

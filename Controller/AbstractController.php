@@ -17,20 +17,23 @@ namespace Berlioz\Http\Core\Controller;
 use Berlioz\FlashBag\FlashBag;
 use Berlioz\Http\Core\App\HttpAppAwareInterface;
 use Berlioz\Http\Core\App\HttpAppAwareTrait;
-use Berlioz\Http\Core\Helper;
-use Berlioz\Package\Twig;
+use Berlioz\Http\Core\Helper\ReloadHelperTrait;
+use Berlioz\Http\Core\Helper\ResponseHelperTrait;
+use Berlioz\Http\Core\Helper\RouterHelperTrait;
+use Berlioz\Package\Twig\TwigAwareInterface;
+use Berlioz\Package\Twig\TwigAwareTrait;
 use RuntimeException;
 
 /**
  * Class AbstractController.
  */
-abstract class AbstractController implements HttpAppAwareInterface, Twig\TwigAwareInterface
+abstract class AbstractController implements HttpAppAwareInterface, TwigAwareInterface
 {
     use HttpAppAwareTrait;
-    use Helper\ReloadHelperTrait;
-    use Helper\ResponseHelperTrait;
-    use Helper\RouterHelperTrait;
-    use Twig\TwigAwareTrait;
+    use ReloadHelperTrait;
+    use ResponseHelperTrait;
+    use RouterHelperTrait;
+    use TwigAwareTrait;
 
     /**
      * PHP serialize method.

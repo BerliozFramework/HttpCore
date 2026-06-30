@@ -38,7 +38,7 @@ class RouteProvider extends AbstractServiceProvider
         'route',
     ];
 
-    public function __construct(private Core $core)
+    public function __construct(private readonly Core $core)
     {
     }
 

@@ -29,7 +29,7 @@ use Berlioz\Http\Core\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\Http\Core\Exception\Http\NotFoundHttpException;
 use Berlioz\Http\Message\Response;
 use Berlioz\Http\Message\ServerRequest;
-use Berlioz\Http\Message\Stream;
+use Berlioz\Http\Message\Stream\FileStream;
 use Berlioz\Router\Exception\RoutingException;
 use League\Flysystem\DirectoryAttributes;
 use League\Flysystem\StorageAttributes;
@@ -46,7 +46,7 @@ use Twig\Error\Error;
 #[RouteGroup('/_console', requirements: ['id' => '\w+'], priority: 1000)]
 class DebugController extends AbstractController
 {
-    private string $resourceDist;
+    private readonly string $resourceDist;
     private array $snapshots = [];
 
     /**
@@ -136,14 +136,14 @@ class DebugController extends AbstractController
         $fileName =
             $this->resourceDist . '/' .
             $request->getAttribute('type') . '/' .
-            basename($request->getAttribute('file'));
+            basename((string)$request->getAttribute('file'));
 
         if (!file_exists($fileName)) {
             throw new NotFoundHttpException('Asset not found');
         }
 
         $extension = substr($fileName, strrpos($fileName, '.') + 1);
-        $stream = new Stream\FileStream($fileName, 'r');
+        $stream = new FileStream($fileName, 'r');
 
         // Headers
         $headers = [
@@ -184,7 +184,7 @@ class DebugController extends AbstractController
             throw new InternalServerErrorHttpException('Toolbar caller not found');
         }
 
-        $body = new Stream\FileStream($fileName, 'r');
+        $body = new FileStream($fileName, 'r');
 
         return $this->response(
             $body,

@@ -38,9 +38,9 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
 {
     private bool $printed = false;
     private HttpHandler $httpHandler;
-    protected ?Maintenance $maintenance;
-    protected ?ServerRequestInterface $request;
-    protected ?RouteInterface $route;
+    protected ?Maintenance $maintenance = null;
+    protected ?ServerRequestInterface $request = null;
+    protected ?RouteInterface $route = null;
 
     /**
      * HttpApp constructor.

@@ -18,6 +18,7 @@ use Berlioz\Config\Config;
 use Berlioz\Config\Exception\ConfigException;
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Core\Attribute;
+use Berlioz\Http\Core\Attribute\RouteGroup;
 use Berlioz\Router\Exception\RoutingException;
 use Berlioz\Router\Route;
 use Berlioz\Router\Router;
@@ -82,7 +83,7 @@ class RouterBuilder
 
             // Find a route group
             $routeGroup = null;
-            $attributes = $rClass->getAttributes(Attribute\RouteGroup::class, RAttribute::IS_INSTANCEOF);
+            $attributes = $rClass->getAttributes(RouteGroup::class, RAttribute::IS_INSTANCEOF);
             if (count($attributes) === 1) {
                 /** @var Route $routeGroup */
                 $routeGroup = $attributes[0]->newInstance()->getRouteGroup();

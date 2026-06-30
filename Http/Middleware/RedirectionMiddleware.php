@@ -51,10 +51,10 @@ class RedirectionMiddleware implements MiddlewareInterface
                     continue;
                 }
 
-                list('type' => $type, 'url' => $url) = $this->getRedirectionFromConfig($redirection);
+                ['type' => $type, 'url' => $url] = $this->getRedirectionFromConfig($redirection);
 
                 // Replacement
-                $url = preg_replace(sprintf('#%s#i', $origin), $url, $request->getUri()->getPath());
+                $url = preg_replace(sprintf('#%s#i', $origin), (string)$url, $request->getUri()->getPath());
 
                 return new Response(null, $type, ['Location' => $url]);
             }
