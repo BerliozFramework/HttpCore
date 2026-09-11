@@ -16,8 +16,7 @@ namespace Berlioz\Http\Core\Http\Middleware;
 
 use Berlioz\Config\Config;
 use Berlioz\Config\Exception\ConfigException;
-use Berlioz\Helpers\NetworkHelper;
-use Berlioz\Http\Core\Exception\Http\NotFoundHttpException;
+use Berlioz\Http\Core\Debug\DebugConsoleAccess;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -51,10 +50,7 @@ class DebugConsoleMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        if (false === $this->isAllowed($request)) {
-            // Do not disclose the existence of the debug console.
-            throw new NotFoundHttpException();
-        }
+        (new DebugConsoleAccess($this->config))->assertAllowed($request);
 
         return $handler->handle($request);
     }
@@ -68,59 +64,9 @@ class DebugConsoleMiddleware implements MiddlewareInterface
      */
     private function isConsolePath(string $path): bool
     {
+        // Route matching is case-insensitive; the guard must use the same semantics.
+        $path = strtolower($path);
+
         return $path === self::PATH_PREFIX || str_starts_with($path, self::PATH_PREFIX . '/');
-    }
-
-    /**
-     * Is the request allowed to reach the debug console?
-     *
-     * The console is reachable only when debug mode is enabled and, when an IP
-     * allow-list is configured, the (trusted) client IP matches it.
-     *
-     * @param ServerRequestInterface $request
-     *
-     * @return bool
-     * @throws ConfigException
-     */
-    private function isAllowed(ServerRequestInterface $request): bool
-    {
-        $enabled = $this->config->get('berlioz.debug.enable', false);
-
-        if (!is_bool($enabled) || false === $enabled) {
-            return false;
-        }
-
-        $allowedIps = $this->config->get('berlioz.debug.ip', []);
-
-        if (!is_array($allowedIps)) {
-            return false;
-        }
-
-        // No IP restriction: debug mode alone is enough.
-        if ([] === $allowedIps) {
-            return true;
-        }
-
-        $trustedProxies = $this->config->get('berlioz.proxies.trusted', []);
-
-        if (!is_array($trustedProxies)) {
-            $trustedProxies = [];
-        }
-
-        // Resolve the authoritative client IP from the PSR-7 request server params.
-        // `X-Forwarded-For` is only honoured when the direct peer is a trusted proxy.
-        $clientIp = NetworkHelper::clientIp($trustedProxies, $request->getServerParams());
-
-        if (null === $clientIp) {
-            return false;
-        }
-
-        // Match the client IP exactly...
-        if (in_array($clientIp, $allowedIps, true)) {
-            return true;
-        }
-
-        // ...or by reverse-DNS, performed only on the validated client IP.
-        return in_array(gethostbyaddr($clientIp), $allowedIps, true);
     }
 }

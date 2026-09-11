@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Berlioz\Http\Core\Http\Handler;
 
 use Berlioz\Http\Core\App\HttpApp;
+use Berlioz\Http\Core\Debug\DebugConsoleAccess;
 use Berlioz\Http\Core\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\Http\Core\Exception\Http\NotFoundHttpException;
 use Berlioz\Http\Message\Response;
@@ -41,6 +42,10 @@ class ControllerHandler implements RequestHandlerInterface
         // No route, so no controller to handle!
         if (null === ($route = $this->app->getRoute())) {
             throw new NotFoundHttpException();
+        }
+
+        if (DebugConsoleAccess::isDebugController($route->getContext())) {
+            (new DebugConsoleAccess($this->app->getConfig()))->assertAllowed($request);
         }
 
         $activity = $this->app->getDebug()->newActivity('Controller');
