@@ -39,6 +39,9 @@ class ErrorHandler implements ErrorHandlerInterface
     {
         // Add exception to debug
         if (null !== $throwable) {
+            if (!$throwable instanceof HttpException || $throwable->getCode() >= 500) {
+                $this->logException($throwable);
+            }
             $this->app->getCore()->getDebug()->addException($throwable);
         }
 
@@ -66,6 +69,7 @@ class ErrorHandler implements ErrorHandlerInterface
                 }
             }
         } catch (Throwable $exception) {
+            $this->logException($exception);
             $this->app->getCore()->getDebug()->addException($exception);
         }
 
@@ -87,11 +91,22 @@ class ErrorHandler implements ErrorHandlerInterface
 
             return $handler->handle($request, $throwable);
         } catch (Throwable $exception) {
+            $this->logException($exception);
             // Add exception to debug
             $this->app->getDebug()->addException($exception);
 
             return $this->fallback($throwable);
         }
+    }
+
+    /**
+     * Log an exception to the configured PHP error log independently of debug mode.
+     *
+     * @param Throwable $exception
+     */
+    protected function logException(Throwable $exception): void
+    {
+        error_log((string)$exception);
     }
 
     /**

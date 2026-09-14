@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Log caught HTTP server exceptions and error-handler failures to the configured PHP error log, even when debug is disabled
+
 ## [3.2.1] - 2026-09-11
 
 ### Security
