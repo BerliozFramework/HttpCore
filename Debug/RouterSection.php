@@ -27,6 +27,8 @@ use Stringable;
 class RouterSection extends AbstractSection implements Section, Stringable
 {
     protected ?ServerRequestInterface $serverRequest = null;
+    /** @var array{statusCode: int, reasonPhrase: string, protocolVersion: string, headers: array<string, string[]>}|null */
+    protected ?array $responseInfo = null;
     protected ?RouteInterface $route = null;
     protected array $routes;
 
@@ -44,7 +46,7 @@ class RouterSection extends AbstractSection implements Section, Stringable
      */
     public function getSectionName(): string
     {
-        return 'Router';
+        return 'HTTP / Router';
     }
 
     /**
@@ -61,6 +63,7 @@ class RouterSection extends AbstractSection implements Section, Stringable
     public function snap(DebugHandler $debug): void
     {
         $this->serverRequest = $this->app->getRequest();
+        $this->responseInfo = $this->app->getResponseInfo();
         $this->route = $this->app->getRoute();
         $this->routes = iterator_to_array($this->app->getRouter()->getRoutes(), false);
     }
@@ -86,6 +89,7 @@ class RouterSection extends AbstractSection implements Section, Stringable
     {
         return [
             'serverRequest' => $this->serverRequest,
+            'responseInfo' => $this->responseInfo,
             'route' => $this->route,
             'routes' => $this->routes,
         ];
@@ -99,6 +103,7 @@ class RouterSection extends AbstractSection implements Section, Stringable
     public function __unserialize(array $data): void
     {
         $this->serverRequest = $data['serverRequest'] ?? null;
+        $this->responseInfo = $data['responseInfo'] ?? null;
         $this->route = $data['route'] ?? null;
         $this->routes = $data['routes'] ?? [];
     }
@@ -111,6 +116,16 @@ class RouterSection extends AbstractSection implements Section, Stringable
     public function getServerRequest(): ?ServerRequestInterface
     {
         return $this->serverRequest;
+    }
+
+    /**
+     * Get captured response metadata.
+     *
+     * @return array{statusCode: int, reasonPhrase: string, protocolVersion: string, headers: array<string, string[]>}|null
+     */
+    public function getResponseInfo(): ?array
+    {
+        return $this->responseInfo;
     }
 
     /**

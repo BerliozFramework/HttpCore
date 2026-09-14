@@ -10,9 +10,17 @@
         <dt>Server request</dt>
         <dd>
             {% if section.serverRequest %}
-                {{ section.serverRequest.uri }}
+                {{ section.serverRequest.method }} {{ section.serverRequest.uri }}
             {% else %}
                 <em class="text-body-secondary">No server request!</em>
+            {% endif %}
+        </dd>
+        <dt>Response</dt>
+        <dd>
+            {% if section.responseInfo is not null %}
+                {{ section.responseInfo.statusCode }} {{ section.responseInfo.reasonPhrase }}
+            {% else %}
+                <em class="text-body-secondary">No response captured.</em>
             {% endif %}
         </dd>
         <dt>Route found</dt>
@@ -28,11 +36,11 @@
 
 {% block main %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1>Router</h1>
+    <h1>{{ section.sectionName }}</h1>
 </div>
 
 <p>
-    It's a snapshot of server request and route at the moment of request.
+    Snapshot of the server request, response metadata and routing information.
 </p>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -46,6 +54,12 @@
         <a class="nav-link" id="request-tab" data-bs-toggle="tab" href="#server-request" role="tab"
            aria-controls="server-request" aria-selected="false">
             Server request
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="response-tab" data-bs-toggle="tab" href="#response" role="tab"
+           aria-controls="response" aria-selected="false">
+            Response
         </a>
     </li>
     <li class="nav-item">
@@ -193,6 +207,28 @@ Host: {{ section.serverRequest.uri.host }}
                 </tbody>
             </table>
         </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane py-3 fade" id="response" role="tabpanel" aria-labelledby="response-tab">
+        {% if section.responseInfo is null %}
+            <div class="alert alert-secondary" role="alert">No response captured.</div>
+        {% else %}
+            <h2>Response</h2>
+            <div class="code">
+                <button type="button" class="btn btn-sm btn-outline-secondary"
+                        data-toggle="copy" data-target="#response-http" title="Copy response">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+                <pre><code class="http" id="response-http">
+{{- 'HTTP/' }}{{ section.responseInfo.protocolVersion }} {{ section.responseInfo.statusCode }} {{ section.responseInfo.reasonPhrase }}
+{% for name, values in section.responseInfo.headers %}
+    {%- for value in values %}
+        {{- name }}: {{ value }}{{ '\n' }}
+    {%- endfor %}
+{% endfor -%}
+                </code></pre>
+            </div>
         {% endif %}
     </div>
 
