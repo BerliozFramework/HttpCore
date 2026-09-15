@@ -18,6 +18,7 @@ use Berlioz\Config\Config;
 use Berlioz\Core\Core;
 use Berlioz\Http\Core\App\HttpApp;
 use Berlioz\Http\Core\Router\RouterBuilder;
+use Berlioz\Router\ForwardedPrefixResolver;
 use Berlioz\Router\Route;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\Router;
@@ -30,6 +31,7 @@ use Berlioz\ServiceContainer\Service\Service;
 class RouteProvider extends AbstractServiceProvider
 {
     protected array $provides = [
+        ForwardedPrefixResolver::class,
         Router::class,
         RouterInterface::class,
         Route::class,
@@ -62,6 +64,13 @@ class RouteProvider extends AbstractServiceProvider
             )
         );
         $service->addProvide(RouterInterface::class);
+
+        $container->addService(
+            new Service(
+                class: ForwardedPrefixResolver::class,
+                factory: fn(Router $router): ForwardedPrefixResolver => $router->getForwardedPrefixResolver(),
+            ),
+        );
 
         $container->addService(
             $service = new Service(

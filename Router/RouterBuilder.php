@@ -45,7 +45,15 @@ class RouterBuilder
      */
     public function reset(): void
     {
-        $this->router = new Router(options: (array)$this->config->get('berlioz.router', []));
+        $options = (array)$this->config->get('berlioz.router', []);
+
+        // Provide trusted proxies to the router (used to guard the X-Forwarded-Prefix
+        // handling) unless it is already defined in the router configuration.
+        if (!array_key_exists('trustedProxies', $options)) {
+            $options['trustedProxies'] = (array)$this->config->get('berlioz.proxies.trusted', []);
+        }
+
+        $this->router = new Router(options: $options);
     }
 
     /**

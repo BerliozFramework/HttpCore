@@ -22,7 +22,9 @@ use Berlioz\Http\Core\Debug\RouterSection;
 use Berlioz\Http\Core\Http\Handler\ControllerHandler;
 use Berlioz\Http\Core\Http\Handler\Error\ErrorHandler;
 use Berlioz\Http\Core\Http\HttpHandler;
+use Berlioz\Http\Core\Http\Middleware\ForwardedPrefixMiddleware;
 use Berlioz\Http\Message\HttpFactory;
+use Berlioz\Router\ForwardedPrefixResolver;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\Router;
 use Berlioz\Router\RouterInterface;
@@ -115,6 +117,18 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     }
 
     /**
+     * Set request.
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return void
+     */
+    public function setRequest(ServerRequestInterface $request): void
+    {
+        $this->request = $request;
+    }
+
+    /**
      * Get response metadata without retaining the response body.
      *
      * @return array{statusCode: int, reasonPhrase: string, protocolVersion: string, headers: array<string, string[]>}|null
@@ -193,6 +207,10 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         $this->request = $request;
         $activity->end();
 
+        // Keep generated routes and assets aligned with the current PSR-7 request,
+        // independently of whether request URI rewriting is enabled.
+        $this->getRouter()->setServerParams($request->getServerParams());
+
         // Find route
         $this->route = $this->findRoute($this->request);
 
@@ -203,6 +221,21 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
         $middlewares = $this->getConfig()->get('berlioz.http.middlewares', []);
         uksort($middlewares, fn($key1, $key2) => (int)$key1 <=> (int)$key2);
         array_walk_recursive($middlewares, fn($middleware) => $this->httpHandler->addMiddleware($middleware));
+
+        // Applied last (closest to the controller): rewrites the request URI with the
+        // reverse-proxy prefix so any URL derived from it (pagination, self-URLs, ...)
+        // is correctly prefixed. Runs after routing, so route matching is never affected.
+        if (false !== $this->getConfig()->get('berlioz.router.X-Forwarded-Prefix', false)) {
+            if (true === $this->getConfig()->get('berlioz.router.rewriteRequestUri', false)) {
+                $this->httpHandler->addMiddleware(ForwardedPrefixMiddleware::class);
+            } elseif (null !== $this->get(ForwardedPrefixResolver::class)->resolve($this->request->getServerParams())) {
+                trigger_error(
+                    'Handling a trusted forwarded prefix without request URI rewriting is deprecated. '
+                    . 'Set berlioz.router.rewriteRequestUri to true; rewriting will be mandatory in v4.',
+                    E_USER_DEPRECATED,
+                );
+            }
+        }
 
         $activity->end();
 

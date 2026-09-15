@@ -24,7 +24,9 @@
         }
       }
     },
-    "router": {},
+    "router": {
+      "rewriteRequestUri": false
+    },
     "maintenance": false
   },
   "controllers": [
