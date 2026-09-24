@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-09-24
+
 ### Added
 
 - Display response status, reason phrase, protocol and headers in the debug console's HTTP / Router section
@@ -16,10 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `HttpApp::setRequest()` to update the application-wide server request
 - Request rewriting uses a processing attribute to avoid applying the prefix twice to the same rewritten request, while preserving internal paths that overlap the proxy mount
 
-### Security
-
-- The reverse-proxy prefix is only applied when `REMOTE_ADDR` matches the router's trusted proxies (inherited from `berlioz.proxies.trusted` unless explicitly overridden); HTTP Core injects the concrete router's `ForwardedPrefixResolver` into the middleware to share the same validation and effective options
-
 ### Deprecated
 
 - Handling a valid trusted forwarded prefix without request URI rewriting now emits `E_USER_DEPRECATED`; enable `berlioz.router.rewriteRequestUri` to adopt the mandatory v4 behavior. Requests without a valid trusted prefix do not emit this deprecation
@@ -27,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Log caught HTTP server exceptions and error-handler failures to the configured PHP error log, even when debug is disabled
+
+### Security
+
+- The reverse-proxy prefix is only applied when `REMOTE_ADDR` matches the router's trusted proxies (inherited from `berlioz.proxies.trusted` unless explicitly overridden); HTTP Core injects the concrete router's `ForwardedPrefixResolver` into the middleware to share the same validation and effective options
 
 ## [3.2.1] - 2026-09-11
 
