@@ -296,7 +296,8 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             foreach ($response->getHeaders() as $name => $values) {
                 $replace = true;
                 foreach ($values as $value) {
-                    header(sprintf('%s: %s', $name, $value), $replace);
+                    // Pass status code to prevent PHP from rewriting it (e.g. 302 with a "Location" header)
+                    header(sprintf('%s: %s', $name, $value), $replace, $response->getStatusCode());
                     $replace = false;
                 }
             }

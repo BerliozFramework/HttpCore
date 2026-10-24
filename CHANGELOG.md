@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `HttpApp::print()` preserves the response status code when a `Location` header is sent with a status other than 201 or 3xx, instead of letting PHP turn it into a 302 redirect
+
 ## [3.3.1] - 2026-10-16
 
 _No changes in this release._
