@@ -8,6 +8,7 @@
       "entrypoints": "{config:berlioz.directories.app}/public/assets/entrypoints.json"
     },
     "http": {
+      "finish_request": true,
       "errors": {
         "default": "Berlioz\\Http\\Core\\Http\\Handler\\Error\\DefaultErrorHandler"
       },

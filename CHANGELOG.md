@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `HttpApp::terminate()` releasing the session lock and dispatching an `HttpTerminateEvent` (request and response metadata)
+- `berlioz.http.finish_request` configuration (default `true`)
+
+### Changed
+
+- `HttpApp::print()` closes the client connection once the response is printed (`fastcgi_finish_request()` or `litespeed_finish_request()` when available); output produced afterwards is no longer sent to the client
+
 ## [3.3.2] - 2026-10-25
 
 ### Fixed

@@ -19,6 +19,7 @@ use Berlioz\Core\App\AbstractApp;
 use Berlioz\Core\Core;
 use Berlioz\Core\Debug\Snapshot\TimelineActivity;
 use Berlioz\Http\Core\Debug\RouterSection;
+use Berlioz\Http\Core\Event\HttpTerminateEvent;
 use Berlioz\Http\Core\Http\Handler\ControllerHandler;
 use Berlioz\Http\Core\Http\Handler\Error\ErrorHandler;
 use Berlioz\Http\Core\Http\HttpHandler;
@@ -258,7 +259,12 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
     /**
      * Print ResponseInterface object.
      *
+     * Once printed, the connection with the client is closed (see finishRequest()),
+     * so that work done in terminate() is not perceived by the client.
+     *
      * @param ResponseInterface $response
+     *
+     * @throws ConfigException
      */
     public function print(ResponseInterface $response): void
     {
@@ -317,7 +323,58 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             $stream->close();
         }
 
+        $this->finishRequest();
+
         // Debug
         $printActivity->end();
+    }
+
+    /**
+     * Finish request: flush the response and close the connection with the client.
+     *
+     * Only available with PHP-FPM (and compatible SAPIs) or LiteSpeed; no-op otherwise.
+     * Can be disabled with the "berlioz.http.finish_request" configuration.
+     *
+     * @return bool True if the connection has been closed
+     * @throws ConfigException
+     */
+    protected function finishRequest(): bool
+    {
+        if (false === $this->getConfig()->get('berlioz.http.finish_request', true)) {
+            return false;
+        }
+
+        if (function_exists('fastcgi_finish_request')) {
+            return fastcgi_finish_request();
+        }
+
+        if (function_exists('litespeed_finish_request')) {
+            return litespeed_finish_request();
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * Releases the session lock before dispatching the terminate event,
+     * so that next requests of the same client are not blocked.
+     */
+    public function terminate(): void
+    {
+        if (PHP_SESSION_ACTIVE === session_status()) {
+            session_write_close();
+        }
+
+        parent::terminate();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createTerminateEvent(): HttpTerminateEvent
+    {
+        return new HttpTerminateEvent($this, $this->request, $this->responseInfo);
     }
 }
