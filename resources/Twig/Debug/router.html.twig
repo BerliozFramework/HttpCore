@@ -268,7 +268,7 @@ Host: {{ section.serverRequest.uri.host }}
                                 {% endif %}
                             </th>
                             <td>
-                                {% if route.methods is empty or route.methods == ['GET', 'HEAD', 'POST', 'OPTIONS', 'CONNECT', 'TRACE', 'PUT', 'PATCH', 'DELETE'] %}
+                                {% if route.methods is empty or route.methods == ['GET', 'HEAD', 'POST', 'OPTIONS', 'CONNECT', 'TRACE', 'PUT', 'PATCH', 'DELETE', 'QUERY'] %}
                                     <em>ALL</em>
                                 {% else %}
                                     {{ route.methods|join(', ') }}

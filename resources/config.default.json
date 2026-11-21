@@ -20,6 +20,9 @@
         "01": {
           "debug_console": "Berlioz\\Http\\Core\\Http\\Middleware\\DebugConsoleMiddleware"
         },
+        "02": {
+          "accept_query": "Berlioz\\Http\\Core\\Http\\Middleware\\AcceptQueryMiddleware"
+        },
         "99": {
           "redirection": "Berlioz\\Http\\Core\\Http\\Middleware\\RedirectionMiddleware"
         }

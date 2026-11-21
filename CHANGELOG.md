@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `HttpApp::terminate()` releasing the session lock and dispatching an `HttpTerminateEvent` (request and response metadata)
 - `berlioz.http.finish_request` configuration (default `true`)
+- `acceptQuery` route option and `AcceptQueryMiddleware` (enabled by default) for the HTTP `QUERY` method
+  (RFC 10008): sends the `Accept-Query` header and rejects `QUERY` requests with a missing or malformed (400) or
+  unsupported (415) content type
+- `MediaType` parser for media types and media ranges (RFC 9110), with quoted parameter values
+- `UnsupportedMediaTypeHttpException`
 
 ### Changed
 
@@ -18,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `HttpApp::print()` marks the debug response as sent and writes a pending snapshot marker when debug is enabled
 - Debug console and toolbar show an "in progress" page (HTTP 202, auto-reload) while the snapshot is pending, an "incomplete" page (HTTP 410) when abandoned, and a 404 when unknown, instead of waiting server-side
 - Debug toolbar shows the response time; dashboard, performances and activities show response time and total time
+- Debug router panel includes `QUERY` in the default methods
 
 ## [3.3.2] - 2026-10-25
 
