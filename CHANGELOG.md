@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `HttpApp::print()` closes the client connection once the response is printed (`fastcgi_finish_request()` or `litespeed_finish_request()` when available); output produced afterwards is no longer sent to the client
+- `HttpApp::print()` marks the debug response as sent and writes a pending snapshot marker when debug is enabled
+- Debug console and toolbar show an "in progress" page (HTTP 202, auto-reload) while the snapshot is pending, an "incomplete" page (HTTP 410) when abandoned, and a 404 when unknown, instead of waiting server-side
+- Debug toolbar shows the response time; dashboard, performances and activities show response time and total time
 
 ## [3.3.2] - 2026-10-25
 

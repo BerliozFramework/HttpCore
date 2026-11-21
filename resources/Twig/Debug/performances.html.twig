@@ -10,12 +10,23 @@
     </p>
 
     <div class="row">
+        {% if snapshot.responseTime is not null %}
+            <div class="col-12 col-sm mb-3">
+                <div class="card text-bg-dark text-center">
+                    <div class="card-body">
+                        <i class="bi bi-send-check-fill fs-1"></i>
+                        <p class="card-value mb-0">{{ (snapshot.responseTime * 1000)|round(3) }} ms</p>
+                        <p class="card-text">Response time</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         <div class="col-12 col-sm mb-3">
             <div class="card text-bg-dark text-center">
                 <div class="card-body">
                     <i class="bi bi-speedometer2 fs-1"></i>
                     <p class="card-value mb-0">{{ (snapshot.timeLine.duration * 1000)|round(3) }} ms</p>
-                    <p class="card-text">Execution time</p>
+                    <p class="card-text">{% if snapshot.responseTime is not null %}Total time{% else %}Execution time{% endif %}</p>
                 </div>
             </div>
         </div>

@@ -11,24 +11,44 @@
     {{ entrypoints('debug-toolbar', 'css', {}, entrypoints) }}
 </head>
 
-<body class="{% if rtl %}rtl {% endif %}{% if snapshot.phpErrors.errors|length > 0 or snapshot.exceptions|length > 0 %}danger{% endif %}">
+{# Pending snapshot: "status" and "pending" (marker data) are given instead of "snapshot" #}
+{% set pending_status = status ?? null %}
+{% set has_errors = pending_status is null and (snapshot.phpErrors.errors|length > 0 or snapshot.exceptions|length > 0) %}
+<body class="{% if rtl %}rtl {% endif %}{% if has_errors or pending_status == 'abandoned' %}danger{% endif %}">
 <div id="toolbar">
     <div id="toolbar-content" title="Open Berlioz Debug Console">
         <div class="col col-auto">
-            {% if snapshot.phpErrors.errors|length == 0 and snapshot.exceptions is empty %}
+            {% if pending_status == 'pending' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                     class="bi bi-clock" viewBox="0 0 16 16">
+                    <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                </svg>
+            {% elseif has_errors or pending_status == 'abandoned' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                     class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                </svg>
+            {% else %}
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                      class="bi bi-check2-circle" viewBox="0 0 16 16">
                     <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
                     <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
                 </svg>
-            {% else %}
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
-                     class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-                </svg>
             {% endif %}
         </div>
-        <div class="col">{{ (snapshot.timeLine.duration * 1000)|round(3) }} ms</div>
+        {% if pending_status is null %}
+            <div class="col">{{ ((snapshot.responseTime ?? snapshot.timeLine.duration) * 1000)|round(3) }} ms</div>
+        {% else %}
+            <div class="col"
+                 title="{% if pending_status == 'pending' %}Response sent, snapshot in progress{% else %}Snapshot incomplete (process interrupted?){% endif %}">
+                {% if pending.responseTime is defined and pending.responseTime is not null %}
+                    {{ (pending.responseTime * 1000)|round(3) }} ms
+                {% else %}
+                    --
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
     <svg id="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
         <title>Open Berlioz Debug Console</title>
@@ -54,5 +74,8 @@
 </div>
 
 {{ entrypoints('debug-toolbar', 'js', {}, entrypoints) }}
+{% if pending_status == 'pending' %}
+    {% include '@Berlioz-HttpCore/Twig/Debug/_pending-reload.html.twig' %}
+{% endif %}
 </body>
 </html>

@@ -28,6 +28,13 @@
             <div class="scale scale-75">{{ ((timeLineDuration * 0.75) * 1000)|round(3) }} ms</div>
             <div class="scale scale-87-5">{{ ((timeLineDuration * 0.875) * 1000)|round(3) }} ms</div>
             <div class="scale scale-100">{{ (timeLineDuration * 1000)|round(3) }} ms</div>
+            {% if snapshot.responseTime is not null and timeLineDuration > 0 %}
+                <div class="scale response-sent"
+                     title="Response sent after {{ (snapshot.responseTime * 1000)|round(3) }} ms"
+                     style="left: {{ (snapshot.responseTime * 100 / timeLineDuration)|round(2) }}%; z-index: 2; border-left: 2px dashed var(--bs-warning); color: var(--bs-warning);">
+                    Response sent
+                </div>
+            {% endif %}
 
             <div class="scale cursor" style="display: none;"><span class="cursor-value">0</span>ms</div>
         </div>

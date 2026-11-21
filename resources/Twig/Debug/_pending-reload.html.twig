@@ -1,0 +1,11 @@
+<script>
+    // Snapshot in progress: reload with a growing delay (500 ms, 1 s, 2 s, 4 s, then 5 s)
+    (function () {
+        var url = new URL(window.location.href);
+        var retry = parseInt(url.searchParams.get('retry') || '0', 10);
+        url.searchParams.set('retry', String(retry + 1));
+        setTimeout(function () {
+            window.location.replace(url.toString());
+        }, Math.min(500 * Math.pow(2, retry), 5000));
+    })();
+</script>

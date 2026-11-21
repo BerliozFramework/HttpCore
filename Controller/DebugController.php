@@ -19,6 +19,8 @@ use Berlioz\Core\Asset\EntryPoints;
 use Berlioz\Core\Asset\Manifest;
 use Berlioz\Core\Debug\DebugHandler;
 use Berlioz\Core\Debug\Snapshot;
+use Berlioz\Core\Debug\SnapshotLoader;
+use Berlioz\Core\Debug\SnapshotStatus;
 use Berlioz\Core\Exception\AssetException;
 use Berlioz\Core\Exception\BerliozException;
 use Berlioz\Http\Core\Attribute\Route;
@@ -46,8 +48,11 @@ use Twig\Error\Error;
 #[RouteGroup('/_console', requirements: ['id' => '\w+'], priority: 1000)]
 class DebugController extends AbstractController
 {
+    private const MISSING_SNAPSHOT_RETRIES = 4;
+
     private readonly string $resourceDist;
     private array $snapshots = [];
+    private ?SnapshotLoader $snapshotLoader = null;
 
     /**
      * DebugController constructor.
@@ -58,6 +63,93 @@ class DebugController extends AbstractController
     {
         $debug->setEnabled(false);
         $this->resourceDist = implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'resources', 'Public', 'dist']);
+    }
+
+    /**
+     * Get snapshot loader.
+     *
+     * @return SnapshotLoader
+     */
+    private function getSnapshotLoader(): SnapshotLoader
+    {
+        return $this->snapshotLoader ??= new SnapshotLoader(
+            $this->getApp()->getCore()->getFilesystem(),
+            $this->getApp()->getConfig(),
+        );
+    }
+
+    /**
+     * Get status of debug snapshot.
+     *
+     * A short grace period is kept for unknown snapshots: an application that does not
+     * print its response with HttpApp::print() writes no pending marker.
+     *
+     * @param string $id
+     *
+     * @return SnapshotStatus
+     * @throws BerliozException
+     */
+    private function getDebugSnapshotStatus(string $id): SnapshotStatus
+    {
+        if (array_key_exists($id, $this->snapshots)) {
+            return SnapshotStatus::READY;
+        }
+
+        $nbRetries = 0;
+        while (SnapshotStatus::MISSING === ($status = $this->getSnapshotLoader()->status($id))) {
+            if ($nbRetries >= self::MISSING_SNAPSHOT_RETRIES) {
+                break;
+            }
+
+            $nbRetries++;
+            usleep(250000);
+        }
+
+        return $status;
+    }
+
+    /**
+     * Get response for a snapshot that is not ready (pending or abandoned).
+     *
+     * @param ServerRequestInterface $request
+     * @param bool $toolbar
+     *
+     * @return ResponseInterface|null Null if the snapshot is ready
+     * @throws BerliozException
+     * @throws NotFoundHttpException
+     * @throws Error
+     */
+    private function pendingSnapshotResponse(
+        ServerRequestInterface $request,
+        bool $toolbar = false,
+    ): ?ResponseInterface {
+        $id = basename((string)$request->getAttribute('id'), '.debug');
+
+        $status = $this->getDebugSnapshotStatus($id);
+
+        if (SnapshotStatus::READY === $status) {
+            return null;
+        }
+
+        if (SnapshotStatus::MISSING === $status) {
+            throw new NotFoundHttpException(sprintf('Debug snapshot "%s" does not exist', $id));
+        }
+
+        return $this->response(
+            $this->render(
+                $toolbar ?
+                    '@Berlioz-HttpCore/Twig/Debug/_toolbar.html.twig' :
+                    '@Berlioz-HttpCore/Twig/Debug/pending.html.twig',
+                [
+                    'uniqid' => $id,
+                    'status' => $status->value,
+                    'pending' => $this->getSnapshotLoader()->getPending($id) ?? [],
+                    'rtl' => ($_COOKIE['berlioz_toolbar_direction'] ?? 'ltr') === 'rtl',
+                ]
+            ),
+            SnapshotStatus::PENDING === $status ? Response::HTTP_STATUS_ACCEPTED : Response::HTTP_STATUS_GONE,
+            ['Cache-Control' => 'no-store'],
+        );
     }
 
     /**
@@ -77,29 +169,12 @@ class DebugController extends AbstractController
         }
 
         try {
-            $fs = $this->getApp()->getCore()->getFilesystem();
-            $filename = sprintf('debug://%s.debug', $id);
-
-            $nbRetries = 0;
-            while (false === $fs->fileExists($filename)) {
-                if ($nbRetries > 4) {
-                    throw new BerliozException(sprintf('Debug snapshot "%s" does not exists', $id));
-                }
-
-                $nbRetries++;
-                usleep(250000);
-            }
-
-            if (empty($this->snapshots[$id] = unserialize(gzinflate($fs->read($filename))))) {
-                throw new BerliozException(sprintf('Debug snapshot "%s" corrupted', $id));
-            }
+            return $this->snapshots[$id] = $this->getSnapshotLoader()->load($id);
         } catch (BerliozException $e) {
             throw $e;
         } catch (Throwable $e) {
             throw new BerliozException(sprintf('Error during get debug snapshot "%s"', $id), 0, $e);
         }
-
-        return $this->snapshots[$id];
     }
 
     /**
@@ -209,6 +284,10 @@ class DebugController extends AbstractController
     public function toolbar(
         ServerRequestInterface $request
     ) {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request, toolbar: true))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -255,6 +334,10 @@ class DebugController extends AbstractController
     public function dashboard(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -278,6 +361,10 @@ class DebugController extends AbstractController
     public function environment(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -301,6 +388,10 @@ class DebugController extends AbstractController
     public function performances(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -324,6 +415,10 @@ class DebugController extends AbstractController
     public function phpInfo(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -347,6 +442,10 @@ class DebugController extends AbstractController
     public function activities(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -370,6 +469,10 @@ class DebugController extends AbstractController
     public function activity(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         if (null === ($activity = $snapshot->getTimeline()->getActivity($request->getAttribute('activity')))) {
@@ -405,6 +508,10 @@ class DebugController extends AbstractController
     public function events(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -430,6 +537,10 @@ class DebugController extends AbstractController
     public function exception(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -455,6 +566,10 @@ class DebugController extends AbstractController
     public function phpErrors(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         return $this->response(
@@ -478,6 +593,10 @@ class DebugController extends AbstractController
     public function phpError(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
         $phpErrors = iterator_to_array($snapshot->getPhpErrors()->getErrors());
 
@@ -510,6 +629,10 @@ class DebugController extends AbstractController
     public function usedClasses(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         $nbClasses = ['berlioz' => 0, 'composer' => 0, 'user' => 0];
@@ -568,6 +691,10 @@ class DebugController extends AbstractController
         ServerRequest $request
     ): ResponseInterface {
         $requestQueryParams = $request->getQueryParams();
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
 
         // Cache clearing is a state-changing action: only honour it over POST, with the parameters
@@ -659,6 +786,10 @@ class DebugController extends AbstractController
     public function configuration(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
         $configuration = json_encode($snapshot->getConfig()->getArrayCopy(), JSON_PRETTY_PRINT);
 
@@ -686,6 +817,10 @@ class DebugController extends AbstractController
     public function section(
         ServerRequestInterface $request
     ): ResponseInterface {
+        if (null !== ($pendingResponse = $this->pendingSnapshotResponse($request))) {
+            return $pendingResponse;
+        }
+
         $snapshot = $this->getDebugSnapshot($request->getAttribute('id'));
         $snapshotSection = $snapshot->getSection($request->getAttribute('section'));
 

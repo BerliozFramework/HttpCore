@@ -18,6 +18,7 @@ use Berlioz\Config\Exception\ConfigException;
 use Berlioz\Core\App\AbstractApp;
 use Berlioz\Core\Core;
 use Berlioz\Core\Debug\Snapshot\TimelineActivity;
+use Berlioz\Core\Debug\SnapshotLoader;
 use Berlioz\Http\Core\Debug\RouterSection;
 use Berlioz\Http\Core\Event\HttpTerminateEvent;
 use Berlioz\Http\Core\Http\Handler\ControllerHandler;
@@ -33,6 +34,7 @@ use Berlioz\ServiceContainer\Inflector\Inflector;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
 /**
  * Class HttpApp.
@@ -323,10 +325,35 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             $stream->close();
         }
 
+        $this->markDebugResponseSent();
         $this->finishRequest();
 
         // Debug
         $printActivity->end();
+    }
+
+    /**
+     * Mark debug response as sent.
+     *
+     * The debug snapshot is saved at the end of the process, after terminate work. A pending marker
+     * is written to let the debug console know that the snapshot is in progress.
+     */
+    protected function markDebugResponseSent(): void
+    {
+        $debug = $this->getDebug();
+
+        if (false === $debug->isEnabled()) {
+            return;
+        }
+
+        $debug->markResponseSent();
+
+        try {
+            (new SnapshotLoader($this->getCore()->getFilesystem(), $this->getConfig()))
+                ->markPending($debug->getUniqid(), ['responseTime' => $debug->getResponseTime()]);
+        } catch (Throwable) {
+            trigger_error('Unable to mark debug snapshot as pending', E_USER_WARNING);
+        }
     }
 
     /**
