@@ -14,7 +14,9 @@ declare(strict_types=1);
 
 namespace Berlioz\Http\Core\Helper;
 
+use Berlioz\Http\Core\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\Http\Message\Response;
+use JsonException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 
@@ -57,6 +59,7 @@ trait ResponseHelperTrait
      * @param array $headers
      *
      * @return ResponseInterface
+     * @throws InternalServerErrorHttpException
      */
     protected function jsonResponse(
         mixed $body = null,
@@ -64,8 +67,17 @@ trait ResponseHelperTrait
         int $statusCode = Response::HTTP_STATUS_OK,
         array $headers = [],
     ): ResponseInterface {
+        try {
+            $json = null !== $body ? json_encode($body, $flags | JSON_THROW_ON_ERROR) : '';
+        } catch (JsonException $exception) {
+            throw new InternalServerErrorHttpException(
+                'Failed to encode JSON response: ' . $exception->getMessage(),
+                $exception,
+            );
+        }
+
         $response = new Response(
-            null !== $body ? json_encode($body, $flags) : '',
+            $json,
             $statusCode,
             array_replace(['Content-Type' => 'application/json'], $headers)
         );

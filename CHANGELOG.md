@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Debug toolbar shows the response time; dashboard, performances and activities show response time and total time
 - Debug router panel includes `QUERY` in the default methods
 
+### Fixed
+
+- Fix `ResponseHelperTrait::jsonResponse()` silently returning an empty 204 response when JSON encoding fails; an
+  `InternalServerErrorHttpException` is now thrown
+
 ## [3.3.2] - 2026-10-25
 
 ### Fixed
