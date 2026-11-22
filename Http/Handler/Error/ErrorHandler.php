@@ -15,8 +15,10 @@ declare(strict_types=1);
 namespace Berlioz\Http\Core\Http\Handler\Error;
 
 use Berlioz\Http\Core\App\HttpApp;
+use Berlioz\Http\Core\Exception\Http\BadRequestHttpException;
 use Berlioz\Http\Core\Exception\Http\InternalServerErrorHttpException;
 use Berlioz\Http\Core\Exception\HttpException;
+use Berlioz\Http\Message\Exception\MalformedBodyException;
 use Berlioz\Http\Message\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -37,6 +39,14 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     public function handle(ServerRequestInterface $request, ?Throwable $throwable = null): ResponseInterface
     {
+        // An unusable request body is a client error; other bodies (e.g. upstream responses) stay server errors
+        if (
+            $throwable instanceof MalformedBodyException
+            && $throwable->getHttpMessage() instanceof ServerRequestInterface
+        ) {
+            $throwable = new BadRequestHttpException(previous: $throwable);
+        }
+
         // Add exception to debug
         if (null !== $throwable) {
             if (!$throwable instanceof HttpException || $throwable->getCode() >= 500) {
