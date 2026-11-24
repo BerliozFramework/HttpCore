@@ -25,7 +25,9 @@ use Berlioz\Http\Core\Http\Handler\ControllerHandler;
 use Berlioz\Http\Core\Http\Handler\Error\ErrorHandler;
 use Berlioz\Http\Core\Http\HttpHandler;
 use Berlioz\Http\Core\Http\Middleware\ForwardedPrefixMiddleware;
+use Berlioz\Http\Message\Exception\InvalidResponseException;
 use Berlioz\Http\Message\HttpFactory;
+use Berlioz\Http\Message\Validator\Http1ResponseValidator;
 use Berlioz\Router\ForwardedPrefixResolver;
 use Berlioz\Router\RouteInterface;
 use Berlioz\Router\Router;
@@ -264,9 +266,13 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
      * Once printed, the connection with the client is closed (see finishRequest()),
      * so that work done in terminate() is not perceived by the client.
      *
+     * The complete response is validated before any output: an invalid response emits
+     * nothing and the application remains printable.
+     *
      * @param ResponseInterface $response
      *
      * @throws ConfigException
+     * @throws InvalidResponseException If the response cannot be emitted as a valid HTTP/1 message.
      */
     public function print(ResponseInterface $response): void
     {
@@ -274,39 +280,38 @@ class HttpApp extends AbstractApp implements RequestHandlerInterface
             return;
         }
 
+        // Debug? So attach a header for unique id of debug snapshot
+        if ($this->getDebug()->isEnabled()) {
+            $response = $response->withAddedHeader('X-Berlioz-Debug', $this->getDebug()->getUniqid());
+        }
+
+        // Validate the complete response before any output, so that an invalid response is never partially emitted
+        $head = (new Http1ResponseValidator())->validate($response);
+
         // Set response printed to not print again the response
         $this->setPrinted();
 
         $printActivity = $this->getDebug()->newActivity('Print response', TimelineActivity::BERLIOZ_GROUP);
         $printActivity->start();
 
-        // Debug? So attach a header for unique id of debug snapshot
-        if ($this->getDebug()->isEnabled()) {
-            $response = $response->withAddedHeader('X-Berlioz-Debug', $this->getDebug()->getUniqid());
-        }
-
         $this->captureResponseInfo($response);
 
         // Headers
         if (!headers_sent()) {
             // Remove headers and add main header
-            header(
-                sprintf(
-                    'HTTP/%s %d %s',
-                    $response->getProtocolVersion(),
-                    $response->getStatusCode(),
-                    $response->getReasonPhrase()
-                ),
-                true
-            );
+            header($head->statusLine, true);
 
             // Headers
-            foreach ($response->getHeaders() as $name => $values) {
-                $replace = true;
+            $replaced = [];
+            foreach ($head->headers as $name => $values) {
+                $lowerName = strtolower($name);
+
                 foreach ($values as $value) {
+                    $replace = !isset($replaced[$lowerName]);
+                    $replaced[$lowerName] = true;
+
                     // Pass status code to prevent PHP from rewriting it (e.g. 302 with a "Location" header)
-                    header(sprintf('%s: %s', $name, $value), $replace, $response->getStatusCode());
-                    $replace = false;
+                    header(sprintf('%s: %s', $name, $value), $replace, $head->statusCode);
                 }
             }
         }

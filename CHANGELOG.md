@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Debug console and toolbar show an "in progress" page (HTTP 202, auto-reload) while the snapshot is pending, an "incomplete" page (HTTP 410) when abandoned, and a 404 when unknown, instead of waiting server-side
 - Debug toolbar shows the response time; dashboard, performances and activities show response time and total time
 - Debug router panel includes `QUERY` in the default methods
+- `HttpApp::print()` validates the complete response (status line and headers) before any output; an invalid
+  response throws an `InvalidResponseException` and emits no header nor body; the exception is left to the front
+  controller
 
 ### Fixed
 
