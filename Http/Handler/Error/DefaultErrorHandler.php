@@ -60,7 +60,24 @@ class DefaultErrorHandler extends AbstractController implements ErrorHandlerInte
         return new Response(
             body: $str,
             statusCode: $httpException->getCode(),
-            reasonPhrase: $httpException->getMessage()
+            reasonPhrase: $this->getReasonPhrase($httpException)
         );
+    }
+
+    /**
+     * Get the reason phrase of an HTTP exception.
+     *
+     * A message with a control character other than HTAB cannot be emitted in a status line: no reason phrase is
+     * given, so the default one of the status code applies.
+     *
+     * @param HttpException $httpException
+     *
+     * @return string|null
+     */
+    private function getReasonPhrase(HttpException $httpException): ?string
+    {
+        $message = $httpException->getMessage();
+
+        return 1 === preg_match('/[\x00-\x08\x0A-\x1F\x7F]/', $message) ? null : $message;
     }
 }

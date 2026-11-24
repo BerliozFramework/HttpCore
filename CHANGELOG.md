@@ -38,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `ResponseHelperTrait::jsonResponse()` silently returning an empty 204 response when JSON encoding fails; an
   `InternalServerErrorHttpException` is now thrown
 - A malformed incoming request body (`MalformedBodyException` raised for the server request, e.g. invalid JSON) produces a 400 Bad Request instead of a 500 Internal Server Error, and is no longer logged as a server error; malformed bodies of other messages (e.g. upstream responses) remain logged 500 errors
+- `DefaultErrorHandler` and the fallback of `ErrorHandler` use the default reason phrase of the status code when the
+  `HttpException` message cannot be used as a reason phrase (control character other than a tab), instead of failing
+  and losing the status code
 
 ## [3.3.2] - 2026-10-25
 

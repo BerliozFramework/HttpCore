@@ -154,10 +154,27 @@ class ErrorHandler implements ErrorHandlerInterface
             return new Response(
                 body: $str,
                 statusCode: $throwable->getCode() ?: 500,
-                reasonPhrase: $throwable->getMessage()
+                reasonPhrase: $this->getReasonPhrase($throwable)
             );
         }
 
         return new Response(body: $str, statusCode: 500);
+    }
+
+    /**
+     * Get the reason phrase of an HTTP exception.
+     *
+     * A message with a control character other than HTAB cannot be emitted in a status line: no reason phrase is
+     * given, so the default one of the status code applies.
+     *
+     * @param HttpException $httpException
+     *
+     * @return string|null
+     */
+    private function getReasonPhrase(HttpException $httpException): ?string
+    {
+        $message = $httpException->getMessage();
+
+        return 1 === preg_match('/[\x00-\x08\x0A-\x1F\x7F]/', $message) ? null : $message;
     }
 }
