@@ -16,7 +16,7 @@ namespace Berlioz\Http\Core\Debug;
 
 use Berlioz\Config\ConfigInterface;
 use Berlioz\Config\Exception\ConfigException;
-use Berlioz\Helpers\NetworkHelper;
+use Berlioz\Core\Debug\DebugAccessPolicy;
 use Berlioz\Http\Core\Controller\DebugController;
 use Berlioz\Http\Core\Exception\Http\NotFoundHttpException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -63,33 +63,6 @@ class DebugConsoleAccess
     private function isAllowed(ServerRequestInterface $request): bool
     {
         // DebugController disables collection; authorization must use configuration instead.
-        if (true !== $this->config->get('berlioz.debug.enable', false)) {
-            return false;
-        }
-
-        $allowedIps = $this->config->get('berlioz.debug.ip', []);
-        if (!is_array($allowedIps)) {
-            return false;
-        }
-
-        if ([] === $allowedIps) {
-            return true;
-        }
-
-        $trustedProxies = $this->config->get('berlioz.proxies.trusted', []);
-        if (!is_array($trustedProxies)) {
-            $trustedProxies = [];
-        }
-
-        $clientIp = NetworkHelper::clientIp($trustedProxies, $request->getServerParams());
-        if (null === $clientIp) {
-            return false;
-        }
-
-        if (in_array($clientIp, $allowedIps, true)) {
-            return true;
-        }
-
-        return in_array(gethostbyaddr($clientIp), $allowedIps, true);
+        return (new DebugAccessPolicy($this->config))->isClientAllowed($request->getServerParams());
     }
 }

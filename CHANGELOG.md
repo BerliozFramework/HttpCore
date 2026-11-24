@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MediaType` parser for media types and media ranges (RFC 9110), with quoted parameter values
 - `UnsupportedMediaTypeHttpException`
 
+### Security
+
+- Debug console access follows the core `DebugAccessPolicy`: loopback clients only by default, an empty
+  `berlioz.debug.ip` list denies access, and clients behind an untrusted or non-forwarding proxy are denied
+
 ### Changed
 
 - `HttpApp::print()` closes the client connection once the response is printed (`fastcgi_finish_request()` or `litespeed_finish_request()` when available); output produced afterwards is no longer sent to the client
